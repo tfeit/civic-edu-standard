@@ -16,7 +16,7 @@ Jeder Verband erhebt seine Daten anders — unterschiedliche Felder, unterschied
 
 ## Hintergrund
 
-Das Projekt entsteht im Rahmen des Koordinierungskreises Außerschulische Bildungsanbieter (KKAB), einem Netzwerk zivilgesellschaftlicher Bildungsverbände mit über 400 Mitgliedsorganisationen. Direktes Vorbild ist die [Nova SBE Social Database](https://www.basededadossocial.pt) in Portugal — ein sektorweiter Ansatz zur Vergleichbarkeit sozialer Organisationen. Der [Datenatlas Zivilgesellschaft](https://datenatlas-zivilgesellschaft.de) begleitet das Vorhaben als Dateninfrastruktur-Partner.
+Das Projekt entsteht im Rahmen des Koordinierungskreises Außerschulische Bildungsanbieter (KKAB), einem Netzwerk zivilgesellschaftlicher Bildungsverbände mit über 400 Mitgliedsorganisationen. Direktes Vorbild ist die [Nova SBE Social Database](https://www.basededadossocial.pt) in Portugal — ein sektorweiter Ansatz zur Vergleichbarkeit sozialer Organisationen. 
 
 ---
 
@@ -47,23 +47,3 @@ Das Projekt entsteht im Rahmen des Koordinierungskreises Außerschulische Bildun
 | Pilotierung (2–3 Verbände) | ⏳ Ausstehend |
 | Version 1.0 | ⏳ Ausstehend |
 
----
-
-## Mitmachen
-
-Dieses Projekt ist offen für alle, die etwas beizutragen haben — Fragen, Vorschläge und Korrekturen sind willkommen, einfach ein [GitHub Issue](../../issues) eröffnen. Derzeit wird eine Arbeitsgruppe konstituiert; Verbände, die aktiv mitgestalten möchten, können ihr Interesse über ein Issue mit dem Label `Mitmachen` signalisieren oder sich direkt beim Projektmaintainer melden.
-
----
-
-## Referenzen
-
-- [Nova SBE Social Database (Portugal)](https://www.basededadossocial.pt) — Direktes Vorbild für den sektorweiten Ansatz
-- [IATI Standard](https://iatistandard.org) — Technisches Architekturvorbild für föderierte Datenpublikation
-- [Datenatlas Zivilgesellschaft](https://datenatlas-zivilgesellschaft.de) — Dateninfrastruktur und Prozessbegleitung
-- [Social Reporting Standard (SRS)](https://www.social-reporting-standard.de) — Inhaltlicher Bezugspunkt für Wirkungsberichterstattung
-
----
-
-**Lizenz:** CC BY 4.0 — Inhalte dürfen geteilt und weiterverwendet werden mit Nennung der Quelle.
-
-**Maintainer:** Tobias / Bundesverband Innovative Bildungsprogramme
