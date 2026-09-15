@@ -2071,8 +2071,16 @@
 
   /* ------------------------------------------------------ Pflichtfeldzähler */
 
+  /*
+   * Nur sichtbare Pflichtfelder zaehlen. Ein Feld, das zu einer anderen
+   * Variante gehoert oder dessen Bedingung nicht erfuellt ist, kann nicht
+   * ausgefuellt werden — es im Zaehler zu fuehren, hiesse eine Huerde
+   * anzeigen, die es nicht gibt.
+   */
   function pflichtfelder() {
-    return alleFelder().filter(function (feld) { return feld.requirement === 'P'; });
+    return alleFelder().filter(function (feld) {
+      return feld.requirement === 'P' && istSichtbar(feld);
+    });
   }
 
   function pflichtfeldErfuellt(feld) {
