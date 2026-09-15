@@ -38,7 +38,8 @@ Repositoriumsdateien erscheinen dort nicht.
 
 | Datei | Inhalt |
 |---|---|
-| `fields.js` | Das Feldmodell als Datenstruktur: Blöcke, Felder, Typen, Verbindlichkeit, Hilfetexte, Vokabulare — dazu die drei Beispielprofile |
+| `fields.js` | Das Feldmodell als Datenstruktur: Blöcke, Felder, Typen, Verbindlichkeit, Hilfetexte — dazu die drei Beispielprofile. Enthält keine Wertelisten mehr |
+| `vocab/` | Eine Datei je Werteliste, mit Version, Quelle, Abrufdatum und Prüfstand. Dazu `loader.js`, der die Struktur beim Start prüft |
 | `akteure.js` | 36 erfundene Akteure, schemakonform — Grundlage für Netz und Kreuztabelle |
 | `app.js` | Renderer und Verhalten des Formulars — kennt Feldtypen, nicht Felder |
 | `netz.js` | Kraftlayout und SVG-Zeichnung für die Netzdarstellung |
@@ -139,6 +140,69 @@ Kennung künftig erfasst, ist von der Arbeitsgruppe zu entscheiden; der
 Rechtsstand sollte dabei geprüft werden. In `fields.js` ist die Stelle
 vermerkt — umgesetzt wäre es mit einer Zeile.
 
+## Vokabulare
+
+Die Wertelisten stehen nicht im Code, sondern je Vokabular in einer eigenen
+Datei unter `vocab/` — mit Version, Quelle, Abrufdatum und Prüfstand. Der
+Loader prüft beim Start die Struktur und meldet Verstöße **sichtbar in der
+Seite**: Eine defekte Vokabulardatei erzeugte sonst nur ein leeres
+Auswahlfeld, ohne dass es jemand bemerkt.
+
+Zwei Regeln tragen das:
+
+- **Schlüssel sind stabil** und vom Anzeigenamen getrennt. Ein Label darf sich
+  ändern, der Schlüssel nie — er steht in bereits erfassten Datensätzen.
+- **Begriffe werden nicht gelöscht**, sondern auf `deprecated` gesetzt. Sie
+  verschwinden aus der Auswahl, bleiben in bestehenden Datensätzen aber
+  sichtbar und nennen ihren Ersatz. Ein stillschweigendes Verschwinden wäre
+  schlimmer als ein Hinweis.
+
+Herkunft und Prüfstand jeder Liste: `VOKABULARSTAND.md`. Änderungen und
+Prüfläufe: `CHANGELOG.md`.
+
+**Nichts davon ist beschlossen.** Der Prüfstand sagt etwas über die Herkunft
+einer Liste, nicht über ihre Verbindlichkeit.
+
+## Zweistufige Handlungsfelder
+
+Angekreuzt wird bildungsspezifisch — die Platzhalterliste aus Block C.
+Abgeleitet wird sektorstatistisch: jedes Handlungsfeld trägt in
+`vocab/crosswalks.js` eine Zuordnung zu genau einem ZiviZ-Engagementfeld,
+genau einer ICNPO-Gruppe und dem DCAT-Datenthema `EDUC`.
+
+Die Aggregation wird **nicht abgefragt**. Sie erscheint nur in der
+JSON-Vorschau als `derived`-Block, grau hinterlegt wie „Aktiv in
+(Bundesland)". Genau das ist der Punkt: Die Verbände kreuzen an, was sie
+kennen, und das Schema liefert die vergleichbare Einordnung mit.
+
+## Bildungsabschnitte und ihr Crosswalk
+
+Die Achterliste bleibt unverändert. Jeder Abschnitt trägt im Formular seine
+ISCED-Entsprechung neben dem Label — nicht nur im Tooltip, weil gerade sie im
+Workshop gebraucht wird. Bei `nachberufliche Bildung` steht dort: „Kein
+internationales Äquivalent — eigenes Konzept der Arbeitsgruppe." Das ist kein
+Schönheitsfehler, sondern die Information.
+
+Vier Konzepte aus `educationalContext` sind keine Bildungsphasen, sondern
+Lernformen oder Schulformen. Sie stehen in einem eigenen optionalen Feld
+„Lernform / Schulform" mit Vorschlags-Badge, damit die Phasenachse eindeutig
+bleibt.
+
+## Datenschutz im Prototyp
+
+Der Dummy speichert nichts auf Servern; Eingaben bleiben im Browser des
+Geräts. Die Herkunftsangaben bei E-Mail, Telefon und Adressen existieren
+trotzdem, weil ein späteres Verzeichnis sie braucht: Werden Kontaktdaten aus
+öffentlichen Quellen übernommen, trägt Art. 6 Abs. 1 lit. f DSGVO das nur mit
+dokumentierter Interessenabwägung, Ersatzmaßnahmen nach Art. 14 Abs. 5 lit. b
+und einem Widerspruchsweg.
+
+Der Fall Bisnode Polska (UODO, 15.03.2019) zeigt, warum die Herkunft je
+Datum festgehalten werden muss: Eine Datenschutzerklärung auf der eigenen
+Website genügt nicht, wenn Kontaktadressen vorliegen. Deshalb werden Quelle
+und Erfassungsdatum mitgespeichert — und bei Fremdquellen erscheint ein
+Hinweis auf die Informationspflichten.
+
 ## Barrierefreiheit
 
 Jede Eingabe hat eine eigene `<label for>`-Zuordnung, jeder Abschnitt ein
@@ -170,7 +234,7 @@ Ein vollständiger Beispieldatensatz — dieselbe Organisation wie im Profil
 | Getippte Zeichen | 710, davon 424 für die Kurzbeschreibung |
 | Klicks und Auswahlen | 16 |
 | Pflichtfelder | 6 von 6 |
-| Schlüssel im Datensatz | 21 |
+| Schlüssel im Datensatz | 22 (inkl. abgeleitetem `derived`-Block) |
 
 Der Wert misst die mechanische Eingabedauer bei bereits vorliegendem Text. Was
 im Workshop tatsächlich Zeit kostet, ist die Verständigung über die Vokabulare
@@ -182,7 +246,7 @@ Erzeugter Datensatz:
 
 ```json
 {
-  "id": "36dd08f5-287a-4618-8737-4c41576cacaf",
+  "id": "048a61dc-0b43-4c82-a05c-691f5a5cfb78",
   "name": "Lernraum Nord — Initiative für Demokratiebildung e. V.",
   "alternateName": "Lernraum Nord",
   "url": "https://www.lernraum-nord.example",
@@ -252,8 +316,18 @@ Erzeugter Datensatz:
       "key": "01",
       "label": "Schleswig-Holstein"
     }
-  ]
-}```
+  ],
+  "derived": {
+    "zivizFields": [
+      "bildung_und_erziehung"
+    ],
+    "icnpoGroups": [
+      "2_300"
+    ],
+    "dataTheme": "EDUC"
+  }
+}
+```
 
 ## Datenmodell im Netz
 

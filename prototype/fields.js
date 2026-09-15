@@ -18,168 +18,39 @@
 
   /* ------------------------------------------------------------------ *
    * Vokabulare
+   *
+   * Die Wertelisten stehen nicht mehr hier, sondern je Vokabular in einer
+   * eigenen Datei unter vocab/ — mit Version, Quelle, Abrufdatum und
+   * Pruefstand. Dieses Modul referenziert sie nur noch ueber ihre id.
+   *
+   * Der Loader liefert bei optionen() nur nicht-veraltete Begriffe; die
+   * Beschriftung eines veralteten Schluessels bleibt ueber beschriftung()
+   * erreichbar, damit bestehende Datensaetze lesbar bleiben.
    * ------------------------------------------------------------------ */
 
-  // Amtliche Laenderschluessel (erste zwei Stellen des Regionalschluessels).
-  var BUNDESLAENDER = [
-    { value: '01', label: 'Schleswig-Holstein' },
-    { value: '02', label: 'Hamburg' },
-    { value: '03', label: 'Niedersachsen' },
-    { value: '04', label: 'Bremen' },
-    { value: '05', label: 'Nordrhein-Westfalen' },
-    { value: '06', label: 'Hessen' },
-    { value: '07', label: 'Rheinland-Pfalz' },
-    { value: '08', label: 'Baden-Württemberg' },
-    { value: '09', label: 'Bayern' },
-    { value: '10', label: 'Saarland' },
-    { value: '11', label: 'Berlin' },
-    { value: '12', label: 'Brandenburg' },
-    { value: '13', label: 'Mecklenburg-Vorpommern' },
-    { value: '14', label: 'Sachsen' },
-    { value: '15', label: 'Sachsen-Anhalt' },
-    { value: '16', label: 'Thüringen' }
-  ];
+  var V = global.EduVocab;
 
-  var RECHTSFORMEN = [
-    { value: 'registeredAssociation', label: 'eingetragener Verein (e. V.)' },
-    { value: 'unincorporatedAssociation', label: 'nicht rechtsfähiger Verein' },
-    { value: 'gGmbH', label: 'gGmbH' },
-    { value: 'GmbH', label: 'GmbH' },
-    { value: 'UG', label: 'gUG/UG' },
-    { value: 'AG', label: 'gAG/AG' },
-    { value: 'cooperative', label: 'gemeinnützige Genossenschaft (eG)' },
-    { value: 'commercialCooperative', label: 'Genossenschaft (eG)' },
-    { value: 'foundation', label: 'rechtsfähige Stiftung' },
-    { value: 'dependentFoundation', label: 'nicht rechtsfähige (treuhänderische) Stiftung' },
-    { value: 'eGbR', label: 'eingetragene GbR (eGbR)' },
-    { value: 'partnership', label: 'Partnerschaftsgesellschaft (PartG, PartG mbB)' },
-    { value: 'commercialPartnership', label: 'Personenhandelsgesellschaft (OHG, KG)' },
-    { value: 'publicLawCorporation', label: 'Körperschaft des öffentlichen Rechts' },
-    { value: 'informalGroup', label: 'nicht eingetragene Initiative/Gruppe' },
-    { value: 'naturalPerson', label: 'Einzelperson' },
-    { value: 'foreignLegalForm', label: 'ausländische Rechtsform' },
-    { value: 'other', label: 'andere' }
-  ];
+  function vok(id) { return V.optionen(id); }
 
-  // Registerart je Rechtsform. Rechtsformen ohne Eintrag bekommen kein
-  // Registerfeld: nicht rechtsfaehiger Verein, Stiftung, treuhaenderische
-  // Stiftung, Koerperschaft des oeffentlichen Rechts, informelle Gruppe,
-  // Einzelperson, auslaendische Rechtsform, andere.
-  //
-  // Zur Entscheidung in WS 4: Mit dem bundesweiten Stiftungsregister fuehren
-  // rechtsfaehige Stiftungen eine Registerkennung. Die Vorgabe fuer diesen
-  // Arbeitsstand lautet "Stiftung: kein Registerfeld"; ob das Schema die
-  // Kennung kuenftig erfasst, ist von der Arbeitsgruppe zu klaeren und der
-  // Rechtsstand dabei zu pruefen. Umgesetzt waere es mit einer Zeile hier:
-  //   foundation: 'SR'
-  var REGISTERART_JE_RECHTSFORM = {
-    registeredAssociation: 'VR',
-    gGmbH: 'HRB',
-    GmbH: 'HRB',
-    UG: 'HRB',
-    AG: 'HRB',
-    eGbR: 'GsR',
-    cooperative: 'GnR',
-    commercialCooperative: 'GnR',
-    partnership: 'PR',
-    commercialPartnership: 'HRA'
-  };
+  var BUNDESLAENDER = vok('bundeslaender');
+  var RECHTSFORMEN = vok('rechtsformen');
+  var STATUS = vok('organisationsstatus');
+  var ADRESSTYPEN = vok('adresstypen');
+  var HANDLUNGSFELDER = vok('handlungsfelder');
+  var BILDUNGSABSCHNITTE = vok('bildungsabschnitte');
+  var LERNFORMEN = vok('lernformen');
+  var ZIELGRUPPENROLLEN = vok('zielgruppenrollen');
+  var SDGS = vok('sdg');
+  var VERWIRKLICHUNG = vok('verwirklichung');
+  var SICHTBARKEIT = vok('sichtbarkeit');
+  var REICHWEITEN = vok('reichweite');
+  var HERKUNFTSQUELLEN = vok('herkunftsquellen');
 
-  var STATUS = [
-    { value: 'founding', label: 'in Gründung' },
-    { value: 'active', label: 'aktiv' },
-    { value: 'dormant', label: 'ruhend' },
-    { value: 'dissolving', label: 'in Auflösung' },
-    { value: 'ended', label: 'beendet' }
-  ];
-
-  var ADRESSTYPEN = [
-    { value: 'headquarters', label: 'Sitz' },
-    { value: 'office', label: 'Geschäftsstelle' },
-    { value: 'branch', label: 'weiterer Standort' },
-    { value: 'postalAddress', label: 'Postanschrift' }
-  ];
-
-  // Platzhalterliste — Konsolidierung in Workshop 4.
-  var HANDLUNGSFELDER = [
-    { value: 'democracyEducation', label: 'Demokratiebildung' },
-    { value: 'stemEducation', label: 'MINT-Bildung' },
-    { value: 'culturalEducation', label: 'kulturelle Bildung' },
-    { value: 'sustainabilityEducation', label: 'Bildung für nachhaltige Entwicklung' },
-    { value: 'careerOrientation', label: 'Berufsorientierung' },
-    { value: 'languageAndLiteracy', label: 'Sprach- und Leseförderung' },
-    { value: 'digitalEducation', label: 'digitale Bildung und Medienkompetenz' },
-    { value: 'mentoring', label: 'Mentoring und Patenschaften' },
-    { value: 'civicEducation', label: 'politische Bildung' },
-    { value: 'healthEducation', label: 'Gesundheitsbildung' },
-    { value: 'volunteering', label: 'Engagementförderung' },
-    { value: 'inclusion', label: 'Inklusion' },
-    { value: 'interculturalEducation', label: 'interkulturelle Bildung' },
-    { value: 'economicLiteracy', label: 'ökonomische Bildung und Finanzbildung' },
-    { value: 'antiDiscrimination', label: 'Antidiskriminierung und Diversität' },
-    { value: 'violencePrevention', label: 'Gewaltprävention und Konfliktbearbeitung' },
-    { value: 'familyEducation', label: 'Eltern- und Familienbildung' },
-    { value: 'environmentalEducation', label: 'Umweltbildung und Naturerfahrung' }
-  ];
-
-  var BILDUNGSABSCHNITTE = [
-    { value: 'earlyChildhood', label: 'frühkindliche Bildung' },
-    { value: 'primary', label: 'Primarstufe' },
-    { value: 'lowerSecondary', label: 'Sekundarstufe I' },
-    { value: 'upperSecondary', label: 'Sekundarstufe II' },
-    { value: 'vocational', label: 'berufliche Bildung' },
-    { value: 'tertiary', label: 'Hochschulbildung' },
-    { value: 'adultEducation', label: 'Erwachsenen- und Weiterbildung' },
-    { value: 'postRetirement', label: 'nachberufliche Bildung' }
-  ];
-
-  var ZIELGRUPPENROLLEN = [
-    { value: 'beneficiaries', label: 'Endbegünstigte' },
-    { value: 'multipliers', label: 'Multiplikator:innen/Fachkräfte' },
-    { value: 'institutions', label: 'Institutionen' },
-    { value: 'policyMakers', label: 'politische Entscheidungsträger:innen' },
-    { value: 'funders', label: 'Fördergebende' }
-  ];
-
-  var SDGS = [
-    { value: '1', label: '1 · Keine Armut' },
-    { value: '2', label: '2 · Kein Hunger' },
-    { value: '3', label: '3 · Gesundheit und Wohlergehen' },
-    { value: '4', label: '4 · Hochwertige Bildung' },
-    { value: '5', label: '5 · Geschlechtergleichheit' },
-    { value: '6', label: '6 · Sauberes Wasser und Sanitäreinrichtungen' },
-    { value: '7', label: '7 · Bezahlbare und saubere Energie' },
-    { value: '8', label: '8 · Menschenwürdige Arbeit und Wirtschaftswachstum' },
-    { value: '9', label: '9 · Industrie, Innovation und Infrastruktur' },
-    { value: '10', label: '10 · Weniger Ungleichheiten' },
-    { value: '11', label: '11 · Nachhaltige Städte und Gemeinden' },
-    { value: '12', label: '12 · Nachhaltige/r Konsum und Produktion' },
-    { value: '13', label: '13 · Maßnahmen zum Klimaschutz' },
-    { value: '14', label: '14 · Leben unter Wasser' },
-    { value: '15', label: '15 · Leben an Land' },
-    { value: '16', label: '16 · Frieden, Gerechtigkeit und starke Institutionen' },
-    { value: '17', label: '17 · Partnerschaften zur Erreichung der Ziele' }
-  ];
-
-  var VERWIRKLICHUNG = [
-    { value: 'operational', label: 'operativ' },
-    { value: 'funding', label: 'fördernd' },
-    { value: 'both', label: 'beides' }
-  ];
-
-  var SICHTBARKEIT = [
-    { value: 'public', label: 'öffentlich' },
-    { value: 'network', label: 'nur Plattform-Austausch' }
-  ];
-
-  var REICHWEITEN = [
-    { value: 'local', label: 'lokal', hint: 'Gemeinde, Stadtteil, Ort' },
-    { value: 'regional', label: 'regional', hint: 'mehrere Gemeinden oder Kreise unterhalb der Landesebene' },
-    { value: 'state', label: 'landesweit', hint: 'ein oder mehrere ganze Bundesländer' },
-    { value: 'national', label: 'bundesweit', hint: '' },
-    { value: 'international', label: 'international', hint: '' },
-    { value: 'locationIndependent', label: 'ortsunabhängig', hint: 'rein digital' }
-  ];
+  // Registerart je Rechtsform: steht als Attribut am jeweiligen Begriff.
+  var REGISTERART_JE_RECHTSFORM = {};
+  (V.vokabular('rechtsformen') || { concepts: [] }).concepts.forEach(function (b) {
+    if (b.registerart) { REGISTERART_JE_RECHTSFORM[b.key] = b.registerart; }
+  });
 
   // Reichweiten, bei denen eine Gebietsliste erfasst wird.
   var REICHWEITEN_MIT_GEBIETEN = ['local', 'regional', 'state'];
@@ -240,7 +111,8 @@
             help: 'Unter welcher Adresse ist die Organisation als solche erreichbar?',
             placeholder: 'info@beispiel.de',
             note: 'Bitte funktionsbezogen (info@, kontakt@) — keine persönlichen Adressen.',
-            checks: ['personalEmail']
+            checks: ['personalEmail'],
+            provenance: true
           },
           {
             key: 'telephone',
@@ -249,7 +121,8 @@
             requirement: 'E',
             pending: true,
             help: 'Zentrale, organisationsbezogene Nummer.',
-            placeholder: '+49 228 1234567'
+            placeholder: '+49 228 1234567',
+            provenance: true
           },
           {
             key: 'addresses',
@@ -259,6 +132,7 @@
             help: 'Wo ist die Organisation ansässig — nicht: wo wirkt sie?',
             entryLabel: 'Standort',
             addLabel: 'Standort hinzufügen',
+            provenance: true,
             checks: ['singleHeadquarters'],
             subfields: [
               {
@@ -304,6 +178,7 @@
           },
           {
             key: 'legalForm',
+            vokabular: 'rechtsformen',
             label: 'Rechtsform',
             type: 'select',
             requirement: 'E',
@@ -343,6 +218,7 @@
           },
           {
             key: 'status',
+            vokabular: 'organisationsstatus',
             label: 'Status',
             type: 'select',
             requirement: 'P',
@@ -398,6 +274,28 @@
             pattern: '^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}|Q\\d+)$',
             patternMessage: 'Erwartet wird eine Organisations-ID oder eine Wikidata-QID (Q…).',
             note: 'Referenz, kein Freitext. Ohne referenzierbare Mutter bleibt das Feld leer — das ist kein Fehler.'
+          },
+          {
+            key: 'gndId',
+            label: 'GND-Kennung',
+            type: 'text',
+            requirement: 'O',
+            experimental: true,
+            help: 'Kennung in der Gemeinsamen Normdatei der Deutschen Nationalbibliothek. In Wikidata als Property P227 geführt.',
+            placeholder: '2007744-0',
+            pattern: '^[0-9X-]+$',
+            patternMessage: 'Erwartet werden Ziffern, Bindestriche und ggf. ein X.',
+            note: 'Nachschlagbar unter d-nb.info/gnd/ gefolgt von der Kennung.'
+          },
+          {
+            key: 'lobbyregisterId',
+            label: 'Lobbyregister-Kennung',
+            type: 'text',
+            requirement: 'O',
+            experimental: true,
+            help: 'Kennung im Lobbyregister des Deutschen Bundestages. In Wikidata als Property P10301 geführt.',
+            placeholder: 'R001234',
+            note: 'Nur relevant für im Lobbyregister des Bundestages eingetragene Organisationen.'
           }
         ]
       },
@@ -408,6 +306,7 @@
         fields: [
           {
             key: 'fieldsOfAction',
+            vokabular: 'handlungsfelder',
             label: 'Handlungsfelder',
             type: 'checkboxes',
             requirement: 'P',
@@ -428,6 +327,7 @@
           },
           {
             key: 'educationStages',
+            vokabular: 'bildungsabschnitte',
             label: 'Bildungsabschnitte',
             type: 'checkboxes',
             requirement: 'E',
@@ -461,6 +361,7 @@
           },
           {
             key: 'sdgs',
+            vokabular: 'sdg',
             label: 'Nachhaltigkeitsziele (SDGs)',
             type: 'checkboxes',
             requirement: 'O',
@@ -468,6 +369,16 @@
             options: SDGS,
             max: 3,
             columns: 1
+          },
+          {
+            key: 'learningFormats',
+            label: 'Lernform / Schulform',
+            type: 'checkboxes',
+            requirement: 'O',
+            proposal: true,
+            vokabular: 'lernformen',
+            help: 'Keine Bildungsphase, sondern die Form des Lernens oder die Schulform. Getrennt geführt, damit die Phasenachse eindeutig bleibt.',
+            options: LERNFORMEN
           },
           {
             key: 'implementation',
@@ -490,6 +401,7 @@
         fields: [
           {
             key: 'scope',
+            vokabular: 'reichweite',
             label: 'Reichweite',
             type: 'select',
             requirement: 'P',
@@ -658,11 +570,13 @@
     adresstypen: ADRESSTYPEN,
     handlungsfelder: HANDLUNGSFELDER,
     bildungsabschnitte: BILDUNGSABSCHNITTE,
+    lernformen: LERNFORMEN,
     zielgruppenrollen: ZIELGRUPPENROLLEN,
     sdgs: SDGS,
     verwirklichung: VERWIRKLICHUNG,
     sichtbarkeit: SICHTBARKEIT,
     reichweiten: REICHWEITEN,
+    herkunftsquellen: HERKUNFTSQUELLEN,
     reichweitenMitGebieten: REICHWEITEN_MIT_GEBIETEN
   };
 })(window);

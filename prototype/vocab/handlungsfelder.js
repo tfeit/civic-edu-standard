@@ -1,0 +1,239 @@
+/*
+ * Handlungsfelder — Erfassungsebene.
+ *
+ * Platzhalterliste aus Auftrag 1, erweitert. Nicht abgestimmt.
+ * Die Aggregation nach ZiviZ und ICNPO steht in crosswalks.js und
+ * wird nicht erfasst, sondern abgeleitet.
+ */
+
+EduVocab.register({
+    "id": "handlungsfelder",
+    "label": "Handlungsfelder",
+    "version": "0.2.0",
+    "status": "arbeitsstand",
+    "quelle": {
+      "bezeichnung": "Platzhalterliste KKAB, Konsolidierung ausstehend",
+      "url": null,
+      "abgerufen": "2026-09-15",
+      "pruefstand": "unbestaetigt"
+    },
+    "hinweis": "Nicht abgestimmt. Konsolidierung folgt aus dem Hausaufgabenformat der Arbeitsgruppe. Die Zahl der KKAB-Handlungsfelder ist offen (23 oder 24).",
+    "concepts": [
+      {
+        "key": "democracyEducation",
+        "label": "Demokratiebildung",
+        "definition": "Befähigung zu demokratischer Teilhabe: Aushandlung, Mitbestimmung, Umgang mit Konflikten in der Gruppe.",
+        "beispiele": [
+          "Klassenrat an Schulen begleiten",
+          "Jugendparlamente moderieren"
+        ],
+        "negativbeispiel": "Eine Informationsveranstaltung zur Bundestagswahl ohne Beteiligungsanteil — das ist politische Bildung.",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "stemEducation",
+        "label": "MINT-Bildung",
+        "definition": "Zugang zu Mathematik, Informatik, Naturwissenschaft und Technik jenseits des Pflichtunterrichts.",
+        "beispiele": [
+          "Schülerlabor für Robotik",
+          "Forschungs-AG in der Grundschule"
+        ],
+        "negativbeispiel": "Ein Programmierkurs, der ausschließlich auf Berufseinstieg zielt — das ist Berufsorientierung.",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "culturalEducation",
+        "label": "kulturelle Bildung",
+        "definition": "Eigenes künstlerisches Tun und die Auseinandersetzung mit kulturellen Ausdrucksformen.",
+        "beispiele": [
+          "Theaterwerkstatt an einer Gesamtschule",
+          "Museumspädagogik für Kitagruppen"
+        ],
+        "negativbeispiel": "Ein Konzertbesuch ohne begleitende Auseinandersetzung — Kulturkonsum ist keine kulturelle Bildung.",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "sustainabilityEducation",
+        "label": "Bildung für nachhaltige Entwicklung",
+        "definition": "Gestaltungskompetenz für ökologisch, sozial und ökonomisch tragfähiges Handeln.",
+        "beispiele": [
+          "Schülerfirma für Reparatur und Wiederverwendung",
+          "Klimawerkstatt in der Sekundarstufe"
+        ],
+        "negativbeispiel": "Reine Naturerfahrung ohne Bezug auf Gestaltungsfragen — das ist Umweltbildung.",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "careerOrientation",
+        "label": "Berufsorientierung",
+        "definition": "Begleitung am Übergang von der Schule in Ausbildung, Studium oder Beruf.",
+        "beispiele": [
+          "Praktikumsbörse für Realschulen",
+          "Bewerbungstraining im Abschlussjahrgang"
+        ],
+        "negativbeispiel": "Fachliche Weiterbildung bereits Beschäftigter — das ist berufliche Weiterbildung.",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "languageAndLiteracy",
+        "label": "Sprach- und Leseförderung",
+        "definition": "Aufbau von Sprach-, Lese- und Schreibfähigkeit, auch in der Zweitsprache Deutsch.",
+        "beispiele": [
+          "Lesepatenschaften in Grundschulen",
+          "Sprachcamps in den Ferien"
+        ],
+        "negativbeispiel": "Fremdsprachenunterricht als Schulfach — der ist Teil des Regelunterrichts.",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "digitalEducation",
+        "label": "digitale Bildung und Medienkompetenz",
+        "definition": "Sicherer, kritischer und gestaltender Umgang mit digitalen Medien und Werkzeugen.",
+        "beispiele": [
+          "Workshops zu Desinformation",
+          "Medienscouts an weiterführenden Schulen"
+        ],
+        "negativbeispiel": "Die Ausstattung einer Schule mit Endgeräten — Infrastruktur ist keine Bildungsleistung.",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "mentoring",
+        "label": "Mentoring und Patenschaften",
+        "definition": "Längerfristige Eins-zu-eins-Begleitung durch eine erfahrene Person.",
+        "beispiele": [
+          "Bildungspatenschaften für Grundschulkinder",
+          "Studien-Mentoring für Erstakademiker:innen"
+        ],
+        "negativbeispiel": "Einmalige Hausaufgabenhilfe ohne feste Zuordnung — ohne Beziehungskontinuität kein Mentoring.",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "civicEducation",
+        "label": "politische Bildung",
+        "definition": "Wissen über politische Ordnung, Institutionen und gesellschaftliche Konflikte.",
+        "beispiele": [
+          "Planspiel zum Gesetzgebungsverfahren",
+          "Seminare zu Kommunalpolitik"
+        ],
+        "negativbeispiel": "Parteinahe Werbung oder Mitgliederwerbung — politische Bildung ist überparteilich.",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "healthEducation",
+        "label": "Gesundheitsbildung",
+        "definition": "Wissen und Handlungsfähigkeit für körperliche und seelische Gesundheit.",
+        "beispiele": [
+          "Ernährungswerkstatt in der Kita",
+          "Programme zu psychischer Gesundheit an Schulen"
+        ],
+        "negativbeispiel": "Medizinische Behandlung oder Therapie — das ist Versorgung, keine Bildung.",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "volunteering",
+        "label": "Engagementförderung",
+        "definition": "Menschen zu freiwilligem Engagement befähigen und Engagementstrukturen stärken.",
+        "beispiele": [
+          "Qualifizierung von Ehrenamtlichen",
+          "Freiwilligenagentur für Jugendliche"
+        ],
+        "negativbeispiel": "Die Gewinnung von Spenden — Fundraising ist keine Engagementförderung.",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "inclusion",
+        "label": "Inklusion",
+        "definition": "Abbau von Barrieren, damit Menschen mit Behinderung gleichberechtigt teilhaben.",
+        "beispiele": [
+          "Assistenz im gemeinsamen Unterricht",
+          "Fortbildung zu Leichter Sprache"
+        ],
+        "negativbeispiel": "Ein Angebot ausschließlich für Menschen mit Behinderung in gesonderten Einrichtungen — Separation ist nicht Inklusion.",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "interculturalEducation",
+        "label": "interkulturelle Bildung",
+        "definition": "Umgang mit kultureller Vielfalt, Perspektivwechsel und Verständigung.",
+        "beispiele": [
+          "Begegnungsprojekte zwischen Schulklassen",
+          "Elternarbeit in mehreren Sprachen"
+        ],
+        "negativbeispiel": "Sprachkurse Deutsch als Zweitsprache — die gehören zur Sprachförderung.",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "economicLiteracy",
+        "label": "ökonomische Bildung und Finanzbildung",
+        "definition": "Verständnis wirtschaftlicher Zusammenhänge und Umgang mit eigenen Finanzen.",
+        "beispiele": [
+          "Haushaltsplanung für Berufseinsteiger:innen",
+          "Planspiel Börse in der Oberstufe"
+        ],
+        "negativbeispiel": "Produktwerbung von Finanzdienstleistern — gesponserte Werbung ist keine Bildung.",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "antiDiscrimination",
+        "label": "Antidiskriminierung und Diversität",
+        "definition": "Sensibilisierung für Diskriminierung und Stärkung von Betroffenen.",
+        "beispiele": [
+          "Antirassismus-Workshops",
+          "Beratung bei Diskriminierung im Schulalltag"
+        ],
+        "negativbeispiel": "Allgemeine Konfliktmoderation ohne Diskriminierungsbezug — das ist Konfliktbearbeitung.",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "violencePrevention",
+        "label": "Gewaltprävention und Konfliktbearbeitung",
+        "definition": "Vorbeugung von Gewalt und Befähigung zu gewaltfreier Konfliktlösung.",
+        "beispiele": [
+          "Streitschlichter-Ausbildung",
+          "Programme gegen Mobbing"
+        ],
+        "negativbeispiel": "Ordnungsmaßnahmen oder Sicherheitsdienste — Kontrolle ist keine Prävention.",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "familyEducation",
+        "label": "Eltern- und Familienbildung",
+        "definition": "Stärkung von Erziehungskompetenz und Familien als Bildungsort.",
+        "beispiele": [
+          "Elternkurse zu Mediennutzung",
+          "Familienzentren mit Bildungsangebot"
+        ],
+        "negativbeispiel": "Betreuungsangebote ohne Bildungsanteil — reine Kinderbetreuung zählt nicht.",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "environmentalEducation",
+        "label": "Umweltbildung und Naturerfahrung",
+        "definition": "Naturerfahrung und Wissen über ökologische Zusammenhänge.",
+        "beispiele": [
+          "Waldpädagogik für Grundschulen",
+          "Schulgarten-Projekte"
+        ],
+        "negativbeispiel": "Gestaltungsorientierte Programme zu Klima und Konsum — die gehören zur Bildung für nachhaltige Entwicklung.",
+        "deprecated": false,
+        "ersetztDurch": null
+      }
+    ]
+  });

@@ -1,0 +1,115 @@
+/*
+ * Laenderschluessel — erste zwei Stellen des Regionalschluessels.
+ */
+
+EduVocab.register({
+    "id": "bundeslaender",
+    "label": "Bundesländer",
+    "version": "1.0.0",
+    "status": "referenz",
+    "quelle": {
+      "bezeichnung": "Amtlicher Gemeindeschluessel, erste zwei Stellen (Statistisches Bundesamt)",
+      "url": null,
+      "abgerufen": "2026-09-15",
+      "pruefstand": "bestaetigt"
+    },
+    "hinweis": "Zu pruefen bei Gebietsreformen.",
+    "concepts": [
+      {
+        "key": "01",
+        "label": "Schleswig-Holstein",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "02",
+        "label": "Hamburg",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "03",
+        "label": "Niedersachsen",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "04",
+        "label": "Bremen",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "05",
+        "label": "Nordrhein-Westfalen",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "06",
+        "label": "Hessen",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "07",
+        "label": "Rheinland-Pfalz",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "08",
+        "label": "Baden-Württemberg",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "09",
+        "label": "Bayern",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "10",
+        "label": "Saarland",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "11",
+        "label": "Berlin",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "12",
+        "label": "Brandenburg",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "13",
+        "label": "Mecklenburg-Vorpommern",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "14",
+        "label": "Sachsen",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "15",
+        "label": "Sachsen-Anhalt",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "16",
+        "label": "Thüringen",
+        "deprecated": false,
+        "ersetztDurch": null
+      }
+    ]
+  });
