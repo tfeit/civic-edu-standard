@@ -42,20 +42,36 @@
 
   var RECHTSFORMEN = [
     { value: 'registeredAssociation', label: 'eingetragener Verein (e. V.)' },
+    { value: 'unincorporatedAssociation', label: 'nicht rechtsfähiger Verein' },
     { value: 'gGmbH', label: 'gGmbH' },
     { value: 'GmbH', label: 'GmbH' },
     { value: 'UG', label: 'gUG/UG' },
-    { value: 'cooperative', label: 'gemeinnützige Genossenschaft' },
-    { value: 'foundation', label: 'rechtsfähige Stiftung' },
     { value: 'AG', label: 'gAG/AG' },
+    { value: 'cooperative', label: 'gemeinnützige Genossenschaft (eG)' },
+    { value: 'commercialCooperative', label: 'Genossenschaft (eG)' },
+    { value: 'foundation', label: 'rechtsfähige Stiftung' },
+    { value: 'dependentFoundation', label: 'nicht rechtsfähige (treuhänderische) Stiftung' },
     { value: 'eGbR', label: 'eingetragene GbR (eGbR)' },
+    { value: 'partnership', label: 'Partnerschaftsgesellschaft (PartG, PartG mbB)' },
+    { value: 'commercialPartnership', label: 'Personenhandelsgesellschaft (OHG, KG)' },
+    { value: 'publicLawCorporation', label: 'Körperschaft des öffentlichen Rechts' },
     { value: 'informalGroup', label: 'nicht eingetragene Initiative/Gruppe' },
     { value: 'naturalPerson', label: 'Einzelperson' },
+    { value: 'foreignLegalForm', label: 'ausländische Rechtsform' },
     { value: 'other', label: 'andere' }
   ];
 
   // Registerart je Rechtsform. Rechtsformen ohne Eintrag bekommen kein
-  // Registerfeld (Stiftung, informelle Gruppe, Einzelperson, andere).
+  // Registerfeld: nicht rechtsfaehiger Verein, Stiftung, treuhaenderische
+  // Stiftung, Koerperschaft des oeffentlichen Rechts, informelle Gruppe,
+  // Einzelperson, auslaendische Rechtsform, andere.
+  //
+  // Zur Entscheidung in WS 4: Mit dem bundesweiten Stiftungsregister fuehren
+  // rechtsfaehige Stiftungen eine Registerkennung. Die Vorgabe fuer diesen
+  // Arbeitsstand lautet "Stiftung: kein Registerfeld"; ob das Schema die
+  // Kennung kuenftig erfasst, ist von der Arbeitsgruppe zu klaeren und der
+  // Rechtsstand dabei zu pruefen. Umgesetzt waere es mit einer Zeile hier:
+  //   foundation: 'SR'
   var REGISTERART_JE_RECHTSFORM = {
     registeredAssociation: 'VR',
     gGmbH: 'HRB',
@@ -63,7 +79,10 @@
     UG: 'HRB',
     AG: 'HRB',
     eGbR: 'GsR',
-    cooperative: 'GnR'
+    cooperative: 'GnR',
+    commercialCooperative: 'GnR',
+    partnership: 'PR',
+    commercialPartnership: 'HRA'
   };
 
   var STATUS = [
@@ -76,7 +95,9 @@
 
   var ADRESSTYPEN = [
     { value: 'headquarters', label: 'Sitz' },
-    { value: 'branch', label: 'weiterer Standort' }
+    { value: 'office', label: 'Geschäftsstelle' },
+    { value: 'branch', label: 'weiterer Standort' },
+    { value: 'postalAddress', label: 'Postanschrift' }
   ];
 
   // Platzhalterliste — Konsolidierung in Workshop 4.
@@ -92,7 +113,13 @@
     { value: 'civicEducation', label: 'politische Bildung' },
     { value: 'healthEducation', label: 'Gesundheitsbildung' },
     { value: 'volunteering', label: 'Engagementförderung' },
-    { value: 'inclusion', label: 'Inklusion' }
+    { value: 'inclusion', label: 'Inklusion' },
+    { value: 'interculturalEducation', label: 'interkulturelle Bildung' },
+    { value: 'economicLiteracy', label: 'ökonomische Bildung und Finanzbildung' },
+    { value: 'antiDiscrimination', label: 'Antidiskriminierung und Diversität' },
+    { value: 'violencePrevention', label: 'Gewaltprävention und Konfliktbearbeitung' },
+    { value: 'familyEducation', label: 'Eltern- und Familienbildung' },
+    { value: 'environmentalEducation', label: 'Umweltbildung und Naturerfahrung' }
   ];
 
   var BILDUNGSABSCHNITTE = [
@@ -109,7 +136,9 @@
   var ZIELGRUPPENROLLEN = [
     { value: 'beneficiaries', label: 'Endbegünstigte' },
     { value: 'multipliers', label: 'Multiplikator:innen/Fachkräfte' },
-    { value: 'institutions', label: 'Institutionen' }
+    { value: 'institutions', label: 'Institutionen' },
+    { value: 'policyMakers', label: 'politische Entscheidungsträger:innen' },
+    { value: 'funders', label: 'Fördergebende' }
   ];
 
   var SDGS = [
@@ -512,11 +541,115 @@
   };
 
   /* ------------------------------------------------------------------ *
+   * Beispielprofile
+   *
+   * Erfundene Organisationen zum Vorfuehren im Workshop. Die Werte folgen
+   * der internen Form des Formulars; leer gelassene Felder bleiben leer.
+   * Die Organisations-ID und das Datum der letzten Aktualisierung vergibt
+   * die Maske selbst.
+   *
+   * Die Wikidata-Kennung bleibt in allen Profilen leer: Eine QID verweist
+   * immer auf eine reale Organisation und liesse sich fuer eine erfundene
+   * nicht wahrheitsgemaess setzen.
+   * ------------------------------------------------------------------ */
+
+  var BEISPIELE = [
+    {
+      id: 'kleineInitiative',
+      label: 'Kleine Initiative',
+      summary: 'informell, lokal, ohne Registereintrag',
+      data: {
+        name: 'Lesebrücke Marzahn',
+        url: 'https://www.lesebruecke-marzahn.example',
+        email: 'kontakt@lesebruecke-marzahn.example',
+        addresses: [
+          { type: 'headquarters', streetAddress: '', postalCode: '12679', addressLocality: 'Berlin' }
+        ],
+        legalForm: 'informalGroup',
+        status: 'active',
+        description: 'Die Lesebrücke Marzahn bringt ehrenamtliche Lesepat:innen mit Grundschulkindern zusammen, die zu Hause wenig Gelegenheit zum Lesen haben. Einmal wöchentlich wird in kleinen Gruppen an zwei Schulen im Bezirk gelesen. Die Initiative arbeitet ohne feste Stellen und finanziert sich aus Spenden und einer Bezirksförderung.',
+        fieldsOfAction: ['languageAndLiteracy', 'mentoring'],
+        primaryFieldOfAction: 'languageAndLiteracy',
+        educationStages: ['primary'],
+        targetGroups: [
+          { role: 'beneficiaries', label: 'Kinder der Jahrgangsstufen 1 bis 4' },
+          { role: 'multipliers', label: 'Ehrenamtliche Lesepat:innen' }
+        ],
+        sdgs: ['4'],
+        implementation: { value: 'operational', visibility: 'public' },
+        scope: 'local',
+        areasOfActivity: [{ key: '11000', label: 'Berlin' }]
+      }
+    },
+    {
+      id: 'mittlererVerein',
+      label: 'Mittlerer Verein',
+      summary: 'e. V. mit Registereintrag, zwei Standorte, landesweit',
+      data: {
+        name: 'Lernraum Nord — Initiative für Demokratiebildung e. V.',
+        alternateName: 'Lernraum Nord',
+        url: 'https://www.lernraum-nord.example',
+        email: 'info@lernraum-nord.example',
+        telephone: '+49 431 1234567',
+        addresses: [
+          { type: 'headquarters', streetAddress: 'Holstenstraße 12', postalCode: '24103', addressLocality: 'Kiel' },
+          { type: 'office', streetAddress: 'Königstraße 47', postalCode: '23552', addressLocality: 'Lübeck' }
+        ],
+        legalForm: 'registeredAssociation',
+        registerIds: { registerNumber: '6742', registerCourt: 'Amtsgericht Kiel' },
+        status: 'active',
+        description: 'Lernraum Nord begleitet Schulen in Schleswig-Holstein bei der Demokratiebildung. Der Verein qualifiziert Lehrkräfte, moderiert Klassenrats- und Beteiligungsprozesse und stellt frei nutzbare Materialien bereit. Ziel ist, dass Jugendliche Aushandlung und Mitbestimmung im Schulalltag praktisch erfahren und nicht nur als Unterrichtsthema kennenlernen. Getragen wird die Arbeit von 14 Hauptamtlichen und rund 60 Ehrenamtlichen.',
+        fieldsOfAction: ['democracyEducation', 'civicEducation'],
+        primaryFieldOfAction: 'democracyEducation',
+        educationStages: ['lowerSecondary', 'upperSecondary', 'adultEducation'],
+        targetGroups: [
+          { role: 'multipliers', label: 'Lehrkräfte Sekundarstufe I' },
+          { role: 'beneficiaries', label: 'Schülerinnen und Schüler der Jahrgänge 7 bis 10' }
+        ],
+        sdgs: ['4', '16'],
+        implementation: { value: 'operational', visibility: 'public' },
+        scope: 'state',
+        areasOfActivity: [{ key: '01', label: 'Schleswig-Holstein' }]
+      }
+    },
+    {
+      id: 'bundesweiterTraeger',
+      label: 'Bundesweiter Träger',
+      summary: 'Stiftung ohne Registerfeld, fördernd, Angabe nur im Plattform-Austausch',
+      data: {
+        name: 'Stiftung Bildungschancen',
+        alternateName: 'SBC',
+        url: 'https://www.stiftung-bildungschancen.example',
+        email: 'info@stiftung-bildungschancen.example',
+        telephone: '+49 69 9876543',
+        addresses: [
+          { type: 'headquarters', streetAddress: 'Mainzer Landstraße 8', postalCode: '60329', addressLocality: 'Frankfurt am Main' },
+          { type: 'postalAddress', streetAddress: 'Postfach 90 01 21', postalCode: '60441', addressLocality: 'Frankfurt am Main' }
+        ],
+        legalForm: 'foundation',
+        status: 'active',
+        description: 'Die Stiftung Bildungschancen fördert gemeinnützige Träger, die Jugendliche beim Übergang von der Schule in Ausbildung und Beruf begleiten. Sie vergibt Projektmittel, finanziert Qualifizierung in den geförderten Organisationen und wertet die Ergebnisse gemeinsam mit ihnen aus. Eigene Angebote führt die Stiftung nicht durch; sie versteht sich als Ko-Finanziererin und Lernpartnerin der Trägerlandschaft.',
+        fieldsOfAction: ['careerOrientation', 'stemEducation', 'digitalEducation'],
+        primaryFieldOfAction: 'careerOrientation',
+        educationStages: ['lowerSecondary', 'upperSecondary', 'vocational'],
+        targetGroups: [
+          { role: 'institutions', label: 'Gemeinnützige Bildungsträger' },
+          { role: 'policyMakers', label: 'Bildungsverwaltungen der Länder' }
+        ],
+        sdgs: ['4', '8', '10'],
+        implementation: { value: 'funding', visibility: 'network' },
+        scope: 'national'
+      }
+    }
+  ];
+
+  /* ------------------------------------------------------------------ *
    * Export
    * ------------------------------------------------------------------ */
 
   global.EduStandard = global.EduStandard || {};
   global.EduStandard.feldmodell = FELDMODELL;
+  global.EduStandard.beispiele = BEISPIELE;
   global.EduStandard.vokabulare = {
     bundeslaender: BUNDESLAENDER,
     rechtsformen: RECHTSFORMEN,
