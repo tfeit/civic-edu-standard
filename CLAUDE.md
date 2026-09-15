@@ -88,19 +88,48 @@ Beide laufen im Pages-Workflow, bevor veröffentlicht wird. Nach jeder
 
 Akzentfarbe `#1F3864`. Ruhige Typografie, keine Werbesprache, keine
 Superlative. Sachliche Beschriftungen; wo eine Angabe unsicher ist, steht das
-dabei.
+dabei. Nüchtern heißt nicht farblos: Die Chips dürfen bunt sein, die Flächen
+dahinter bleiben ruhig.
+
+**Grundfarben**
 
 | Zweck | Farbe | Einsatz |
 |---|---|---|
-| Akzent | `#1F3864` | Pflichtkennzeichen, Balken, aktive Auswahl |
+| Akzent | `#1F3864` | Pflicht-Chip, Balken, aktive Auswahl |
 | Akzent hell | `#E8ECF4` | Hinweisflächen, gewählte Optionen |
-| Linie | `#D2D5DB` | Trennlinien, Umrandungen |
-| Warnung | `#B58900` / `#FDF6E3` | weiche Grenzen |
+| Linie | `#DFE2E8` | Trennlinien, Umrandungen |
 
-**Farbe trägt nie allein.** Das Pflichtkennzeichen hat Text, Sternchen *und*
-eine gefüllte Fläche; optionale Felder tragen ein sichtbares Label
-„optional". In der Review wurde ein optionales Feld für ein Pflichtfeld
-gehalten — daher die dreifache Kennzeichnung.
+**Chips — eine Familie je Bedeutung**
+
+Alle Chips teilen eine Grundform (`.chip`) und tragen eine Familienklasse.
+Jede Familie ist ein Dreiklang aus Schrift, Fläche und Kante.
+
+| Klasse | Bedeutung | Schrift auf Fläche |
+|---|---|---|
+| `.chip-pflicht` | Pflichtangabe | `#FFFFFF` auf `#1F3864` — 11,6:1 |
+| `.chip-empfohlen` | empfohlen | `#185C4A` auf `#E4F2ED` — 6,8:1 |
+| `.chip-optional` | optional | `#5A5E66` auf `#F1F3F6` — 5,9:1 |
+| `.chip-berechnet` | wird berechnet | `#4B3A7A` auf `#EEEAF8` — 8,1:1 |
+| `.chip-offen` | noch zu entscheiden | `#8A4B00` auf `#FDF0DF` — 6,1:1 |
+| `.chip-vorschlag` | Vorschlag, nicht beschlossen | `#1F5A78` auf `#E3F1F8` — 6,5:1 |
+| `.chip-abgeleitet` | abgeleiteter Wert | `#1F3864` auf `#E8ECF4` — 9,8:1 |
+
+Die Werte sind nachgerechnet, nicht geschätzt. Neue Familien nur mit
+gemessenem Kontrast über 4,5:1 aufnehmen.
+
+**Farbe trägt nie allein.** Jeder Chip nennt seine Bedeutung im Text. Das
+Pflichtkennzeichen hat zusätzlich Sternchen und gefüllte Fläche; optionale
+Felder tragen ein sichtbares Label „optional". In der Review wurde ein
+optionales Feld für ein Pflichtfeld gehalten — daher die mehrfache
+Kennzeichnung.
+
+**Bewegung ist Zugabe.** Übergänge dauern 140 ms und betreffen nur Farbe,
+Schatten und Breite. Unter `prefers-reduced-motion: reduce` werden sie
+abgeschaltet — das ist keine Kür, Bewegung kann Schwindel auslösen.
+
+**Datierung.** Kennzeichen nennen keinen Termin. „zur Entscheidung in WS 4"
+war nach dem vierten Workshop falsch datiert; „noch zu entscheiden" bleibt
+richtig, solange die Frage offen ist.
 
 ---
 
@@ -136,6 +165,7 @@ Diese Punkte werden von Hand nachgestellt, nicht nur automatisch:
 - [ ] Der Ausdruck der Auswertung auf A4 ist ohne Navigation lesbar
 - [ ] `node tools/validate.mjs` läuft durch
 - [ ] `node tools/vokabular-einbetten.mjs --pruefen` meldet keine Abweichung
+- [ ] Kein Text unter 4,5:1 Kontrast (bzw. 3:1 bei großer Schrift)
 
 ---
 

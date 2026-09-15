@@ -4,17 +4,73 @@
 :root {
   --akzent: #1F3864;
   --akzent-hell: #E8ECF4;
-  --text: #1A1A1A;
-  --text-leise: #55585E;
-  --linie: #D2D5DB;
-  --linie-kraeftig: #9BA1AC;
+  --akzent-kante: #C6D0E2;
+  --text: #16181D;
+  --text-leise: #5A5E66;
+  --linie: #DFE2E8;
+  --linie-kraeftig: #A8AEB8;
   --flaeche: #FFFFFF;
-  --flaeche-leise: #F6F7F9;
+  --flaeche-leise: #F4F6F9;
   --warnung-linie: #8A5A00;
   --warnung-flaeche: #FDF6E7;
   --fehler: #A02020;
-  --radius: 3px;
+
+  /*
+   * Chipfarben je Bedeutung. Jede Familie ist ein Dreiklang aus Schrift,
+   * Flaeche und Kante. Die Schriftfarben sind gegen ihre eigene Flaeche
+   * geprueft und liegen alle ueber 4.5:1 — Farbe schmueckt, sie traegt nicht.
+   */
+  --chip-pflicht-text: #FFFFFF;
+  --chip-pflicht-flaeche: #1F3864;
+  --chip-pflicht-kante: #1F3864;
+
+  --chip-empfohlen-text: #185C4A;
+  --chip-empfohlen-flaeche: #E4F2ED;
+  --chip-empfohlen-kante: #B4D8CC;
+
+  --chip-optional-text: #5A5E66;
+  --chip-optional-flaeche: #F1F3F6;
+  --chip-optional-kante: #DFE2E8;
+
+  --chip-berechnet-text: #4B3A7A;
+  --chip-berechnet-flaeche: #EEEAF8;
+  --chip-berechnet-kante: #CFC5EA;
+
+  --chip-offen-text: #8A4B00;
+  --chip-offen-flaeche: #FDF0DF;
+  --chip-offen-kante: #EFD3AC;
+
+  --chip-vorschlag-text: #1F5A78;
+  --chip-vorschlag-flaeche: #E3F1F8;
+  --chip-vorschlag-kante: #B4D8E8;
+
+  --chip-platzhalter-text: #8A2C48;
+  --chip-platzhalter-flaeche: #FBE9EF;
+  --chip-platzhalter-kante: #EFC2D2;
+
+  --radius: 8px;
+  --radius-klein: 6px;
+  --radius-chip: 999px;
   --spalte: 1.5rem;
+
+  /* Zwei Schattenstufen genuegen: ruhende Flaeche und angehobene Flaeche. */
+  --schatten: 0 1px 2px rgba(22, 24, 29, .05), 0 1px 3px rgba(22, 24, 29, .04);
+  --schatten-hoch: 0 2px 4px rgba(22, 24, 29, .06), 0 8px 20px rgba(22, 24, 29, .07);
+
+  --tempo: 140ms;
+  --kurve: cubic-bezier(.2, .7, .3, 1);
+}
+
+/*
+ * Wer Bewegung abbestellt hat, bekommt keine. Das ist keine Kuer: Uebergaenge
+ * koennen Schwindel und Migraene ausloesen.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 * { box-sizing: border-box; }
@@ -33,11 +89,29 @@ body {
 /* ---------------------------------------------------------------- Kopf */
 
 .banner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   background: var(--akzent);
   color: #FFFFFF;
-  padding: 0.5rem 1.5rem;
-  font-size: 0.875rem;
+  padding: 0.45rem var(--spalte);
+  font-size: 0.8125rem;
+  font-weight: 500;
   letter-spacing: 0.02em;
+}
+
+/*
+ * Der Punkt vor dem Banner sagt "laeuft noch". Er ist Schmuck: Der Text
+ * daneben sagt dasselbe, und ohne CSS faellt nichts weg.
+ */
+.banner::before {
+  content: "";
+  flex: 0 0 auto;
+  width: .45rem;
+  height: .45rem;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: .75;
 }
 
 .kopf {
@@ -46,16 +120,17 @@ body {
   gap: 1rem;
   align-items: flex-start;
   justify-content: space-between;
-  padding: 1.5rem;
+  padding: 1.5rem var(--spalte);
   background: var(--flaeche);
   border-bottom: 1px solid var(--linie);
 }
 
 .kopf h1 {
-  margin: 0 0 0.25rem;
-  font-size: 1.375rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  margin: 0 0 0.3rem;
+  font-size: 1.6rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
 .kopf p {
@@ -105,15 +180,17 @@ fieldset.abschnitt {
   border: 1px solid var(--linie);
   border-radius: var(--radius);
   background: var(--flaeche);
+  box-shadow: var(--schatten);
   margin: 0 0 var(--spalte);
   padding: 0 1.5rem 1.5rem;
 }
 
 fieldset.abschnitt legend {
-  padding: 0 0.5rem;
-  margin-left: -0.5rem;
+  padding: 0 0.6rem;
+  margin-left: -0.6rem;
   font-size: 1.0625rem;
-  font-weight: 600;
+  font-weight: 650;
+  letter-spacing: -0.01em;
   color: var(--akzent);
 }
 
@@ -127,8 +204,9 @@ fieldset.abschnitt legend {
 /* ----------------------------------------------------------------- Feld */
 
 .feld {
-  padding: 0.875rem 0;
-  border-top: 1px solid var(--flaeche-leise);
+  padding: 0.95rem 0;
+  border-top: 1px solid var(--linie);
+  scroll-margin-top: 1rem;
 }
 
 .feld:first-of-type { border-top: 0; }
@@ -164,53 +242,73 @@ fieldset.abschnitt legend {
 
 /* --------------------------------------------------------------- Badges */
 
-.kennzeichen {
+/*
+ * Chips.
+ *
+ * Eine Grundform, sechs Farbfamilien. Die Farbe sagt, um welche Art von
+ * Kennzeichen es geht; der Text sagt dasselbe noch einmal. In der Review
+ * wurde ein optionales Feld fuer ein Pflichtfeld gehalten — seither traegt
+ * die Unterscheidung mehrere Merkmale zugleich: Text, Sternchen, Fuellung und
+ * Farbfamilie. Keines davon ist auf Farbwahrnehmung angewiesen.
+ */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
   font-size: 0.75rem;
-  font-weight: 400;
-  letter-spacing: 0.02em;
-  color: var(--text-leise);
-  border: 1px solid var(--linie);
-  border-radius: 2px;
-  padding: 0 0.375rem;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  border-radius: var(--radius-chip);
+  padding: .05rem .5rem;
   white-space: nowrap;
+  border: 1px solid transparent;
 }
 
-/*
- * In der Review wurde ein optionales Feld fuer ein Pflichtfeld gehalten. Die
- * Unterscheidung traegt deshalb drei Merkmale, nicht nur eines: Text,
- * Sternchen und ein gefuellter Hintergrund gegenueber der leeren Umrandung.
- * Keines davon ist auf Farbwahrnehmung angewiesen.
- */
-.kennzeichen.pflicht {
-  color: #fff;
-  background: var(--akzent);
-  border-color: var(--akzent);
+.chip-pflicht {
+  color: var(--chip-pflicht-text);
+  background: var(--chip-pflicht-flaeche);
+  border-color: var(--chip-pflicht-kante);
   font-weight: 600;
 }
 
-.kennzeichen.optional {
-  font-style: italic;
+.chip-empfohlen {
+  color: var(--chip-empfohlen-text);
+  background: var(--chip-empfohlen-flaeche);
+  border-color: var(--chip-empfohlen-kante);
 }
 
-.badge-ws4 {
-  font-size: 0.75rem;
-  color: var(--akzent);
-  background: var(--akzent-hell);
-  border: 1px solid var(--akzent-hell);
-  border-radius: 2px;
-  padding: 0 0.375rem;
-  white-space: nowrap;
+.chip-optional {
+  color: var(--chip-optional-text);
+  background: var(--chip-optional-flaeche);
+  border-color: var(--chip-optional-kante);
 }
 
-.badge-platzhalter {
-  display: inline-block;
-  font-size: 0.75rem;
-  color: var(--warnung-linie);
-  background: var(--warnung-flaeche);
-  border: 1px solid #E8D9B4;
-  border-radius: 2px;
-  padding: 0 0.375rem;
-  margin-bottom: 0.5rem;
+.chip-berechnet {
+  color: var(--chip-berechnet-text);
+  background: var(--chip-berechnet-flaeche);
+  border-color: var(--chip-berechnet-kante);
+}
+
+.chip-offen {
+  color: var(--chip-offen-text);
+  background: var(--chip-offen-flaeche);
+  border-color: var(--chip-offen-kante);
+}
+
+.chip-vorschlag {
+  color: var(--chip-vorschlag-text);
+  background: var(--chip-vorschlag-flaeche);
+  border-color: var(--chip-vorschlag-kante);
+}
+
+/* Der Platzhalterhinweis steht als eigene Zeile, nicht in der Kopfzeile. */
+.chip-platzhalter {
+  display: inline-flex;
+  color: var(--chip-platzhalter-text);
+  background: var(--chip-platzhalter-flaeche);
+  border-color: var(--chip-platzhalter-kante);
+  margin: 0 0 0.5rem;
 }
 
 /* -------------------------------------------------------- Eingabefelder */
@@ -227,10 +325,23 @@ textarea {
   color: var(--text);
   background: var(--flaeche);
   border: 1px solid var(--linie-kraeftig);
-  border-radius: var(--radius);
-  padding: 0.4375rem 0.5rem;
+  border-radius: var(--radius-klein);
+  padding: 0.5rem 0.65rem;
   width: 100%;
   max-width: 34rem;
+  transition: border-color var(--tempo) var(--kurve),
+              box-shadow var(--tempo) var(--kurve);
+}
+
+input[type="text"]:hover,
+input[type="url"]:hover,
+input[type="email"]:hover,
+input[type="tel"]:hover,
+input[type="date"]:hover,
+input[type="search"]:hover,
+select:hover,
+textarea:hover {
+  border-color: var(--akzent);
 }
 
 textarea { max-width: 48rem; resize: vertical; }
@@ -299,11 +410,26 @@ a:focus:not(:focus-visible) { outline: none; }
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
-  padding: 0.1875rem 0;
+  padding: 0.3rem 0.45rem;
+  margin-left: -0.45rem;
+  border-radius: var(--radius-klein);
   font-size: 0.9375rem;
+  cursor: pointer;
+  transition: background-color var(--tempo) var(--kurve);
 }
 
-.option input { margin: 0.3125rem 0 0; flex: 0 0 auto; }
+.option:hover { background: var(--flaeche-leise); }
+
+.option:has(input:checked) { background: var(--akzent-hell); }
+
+.option input { margin: 0.3125rem 0 0; flex: 0 0 auto; accent-color: var(--akzent); }
+
+.option.gesperrt {
+  cursor: not-allowed;
+  opacity: .62;
+}
+
+.option.gesperrt:hover { background: transparent; }
 
 .option.gesperrt > span { color: var(--text-leise); }
 
@@ -394,15 +520,27 @@ a:focus:not(:focus-visible) { outline: none; }
 button {
   font: inherit;
   font-size: 0.875rem;
+  font-weight: 500;
   color: var(--akzent);
   background: var(--flaeche);
-  border: 1px solid var(--akzent);
-  border-radius: var(--radius);
-  padding: 0.3125rem 0.75rem;
+  border: 1px solid var(--akzent-kante);
+  border-radius: var(--radius-klein);
+  padding: 0.4rem 0.85rem;
   cursor: pointer;
+  transition: background-color var(--tempo) var(--kurve),
+              border-color var(--tempo) var(--kurve),
+              box-shadow var(--tempo) var(--kurve),
+              transform var(--tempo) var(--kurve);
 }
 
-button:hover { background: var(--akzent-hell); }
+button:hover {
+  background: var(--akzent-hell);
+  border-color: var(--akzent);
+  box-shadow: var(--schatten);
+}
+
+/* Ein Hauch Nachgeben beim Druecken — genug, um den Klick zu bestaetigen. */
+button:active { transform: translateY(1px); box-shadow: none; }
 
 button.leise {
   color: var(--text-leise);
@@ -498,12 +636,14 @@ button.primaer:hover { background: #16294A; }
   list-style: none;
 }
 
-.chip {
-  border: 1px solid var(--akzent);
-  background: var(--akzent-hell);
+/*
+ * Abgeleitete Werte sind ebenfalls Chips und folgen derselben Grundform.
+ * Eigene Familie, damit man sie von erfassten Angaben unterscheidet.
+ */
+.chip-abgeleitet {
   color: var(--akzent);
-  border-radius: 2px;
-  padding: 0.0625rem 0.5rem;
+  background: var(--akzent-hell);
+  border-color: var(--akzent-kante);
   font-size: 0.8125rem;
 }
 
@@ -521,14 +661,17 @@ button.primaer:hover { background: #16294A; }
   border: 1px solid var(--linie);
   border-radius: var(--radius);
   background: var(--flaeche);
-  padding: 1rem 1.125rem;
+  box-shadow: var(--schatten);
+  padding: 1.1rem 1.2rem;
 }
 
 .karte h2 {
-  margin: 0 0 0.5rem;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  letter-spacing: 0.01em;
+  margin: 0 0 0.55rem;
+  font-size: 0.8125rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-leise);
 }
 
 .zaehler-wert {
@@ -537,19 +680,21 @@ button.primaer:hover { background: #16294A; }
 }
 
 .zaehler-balken {
-  height: 6px;
+  height: 8px;
   background: var(--flaeche-leise);
   border: 1px solid var(--linie);
-  border-radius: 3px;
+  border-radius: var(--radius-chip);
   overflow: hidden;
-  margin: 0.5rem 0 0.5rem;
+  margin: 0.55rem 0;
 }
 
 .zaehler-balken span {
   display: block;
   height: 100%;
-  background: var(--akzent);
+  border-radius: var(--radius-chip);
+  background: linear-gradient(90deg, #2C4E86, var(--akzent));
   width: 0;
+  transition: width 260ms var(--kurve);
 }
 
 .zaehler-offen {
@@ -819,31 +964,42 @@ pre.json .j-block.hervorgehoben {
 
 /* ------------------------------------------------ Seitennavigation */
 
+/*
+ * Segmentleiste statt einzelner Kaesten: Die vier Ansichten gehoeren
+ * zusammen, und eine durchgehende Flaeche zeigt das deutlicher als vier
+ * Rahmen nebeneinander.
+ */
 .seitennavigation {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem;
+  gap: 0.15rem;
   flex: 0 0 auto;
+  padding: 0.2rem;
+  background: var(--flaeche-leise);
+  border: 1px solid var(--linie);
+  border-radius: var(--radius-chip);
 }
 
 .seitennavigation a {
   display: block;
-  padding: 0.3125rem 0.75rem;
+  padding: 0.32rem 0.8rem;
   font-size: 0.875rem;
+  font-weight: 500;
   text-decoration: none;
   color: var(--akzent);
-  border: 1px solid var(--linie);
-  border-radius: var(--radius);
-  background: var(--flaeche);
+  border-radius: var(--radius-chip);
+  background: transparent;
+  transition: background-color var(--tempo) var(--kurve),
+              color var(--tempo) var(--kurve);
 }
 
 .seitennavigation a:hover { background: var(--akzent-hell); }
 
 .seitennavigation a[aria-current="page"] {
   background: var(--akzent);
-  border-color: var(--akzent);
   color: #FFFFFF;
   font-weight: 600;
+  box-shadow: var(--schatten);
 }
 
 /* ---------------------------------------------------- Netz: Layout */
@@ -1300,11 +1456,19 @@ pre.json .j-block.hervorgehoben {
   transition: outline-color 100ms linear;
 }
 
+/*
+ * Der Punkt fuer die leere Kombination lag bei 1.76:1 und war damit fuer
+ * viele nicht wahrnehmbar — obwohl die Fusszeile ausdruecklich sagt, er
+ * stehe fuer eine leere Zelle. Jetzt 6:1, dafuer kleiner gesetzt: sichtbar,
+ * aber leiser als jede belegte Zelle.
+ */
 .zelle.leer {
   cursor: default;
-  color: #b9bcc3;
+  color: var(--text-leise);
   background: var(--flaeche-leise);
 }
+
+.zelle.leer .zellwert { font-size: .78rem; }
 
 .zellwert { display: block; line-height: 2rem; }
 
@@ -1423,16 +1587,6 @@ fieldset.abschnitt legend {
 .vokabular-maengel p { margin: 0.375rem 0 0; }
 
 /* ------------------------------------- Vokabular-Erweiterungen (Auftrag 2) */
-
-.badge-vorschlag {
-  font-size: 0.75rem;
-  color: #6B4E00;
-  background: #FBF3DD;
-  border: 1px solid #E8D9B4;
-  border-radius: 2px;
-  padding: 0 0.375rem;
-  white-space: nowrap;
-}
 
 /* Die ISCED-Entsprechung steht neben dem Begriff, nicht nur im Tooltip:
    im Workshop ist gerade sie die gesuchte Information. */

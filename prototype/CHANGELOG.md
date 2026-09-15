@@ -7,6 +7,48 @@ Format: Datum · Datei · Änderung · Quelle.
 
 ---
 
+## 2026-09-15 · Chips und Feinschliff der Oberfläche
+
+### Chips
+
+- **Kennzeichen** · Aus vier Einzelklassen wird ein System: eine Grundform
+  `.chip` und je Bedeutung eine Farbfamilie aus Schrift, Fläche und Kante.
+  Der Text nennt die Bedeutung weiterhin ausdrücklich — Farbe schmückt, sie
+  trägt nicht. Alle sieben Familien sind nachgerechnet und liegen zwischen
+  5,9:1 und 11,6:1.
+- **Datierung** · Der Chip an den Übergängen las sich als „Vorschlag aus
+  Workshop 4 — nicht beschlossen" und datierte damit auf einen Termin, der
+  vorbei ist. Jetzt „Vorschlag aus Workshop 4 · noch zu entscheiden": die
+  Herkunft bleibt, der Status wird benannt. Ebenso „Entscheidung offen" →
+  „noch zu entscheiden".
+- **Namenskollision** · `.chip` war bereits für die abgeleiteten
+  Bundesland-Werte vergeben; die alte Regel stand später im Stylesheet und
+  überschrieb die neuen Familien. Statt auszuweichen sind die abgeleiteten
+  Werte jetzt Teil desselben Systems (`.chip-abgeleitet`) — sie sind ja
+  ebenfalls Chips.
+
+### Feinschliff
+
+- **Flächen** · Weichere Radien, zwei Schattenstufen statt harter Rahmen,
+  mehr Luft in Karten und Feldern.
+- **Navigation** · Segmentleiste statt vier einzelner Kästen: Die vier
+  Ansichten gehören zusammen, und eine durchgehende Fläche zeigt das besser.
+- **Auswahl** · Optionen haben jetzt eine anklickbare Fläche mit Hover- und
+  Auswahlzustand; der Fortschrittsbalken wächst mit einer kurzen Bewegung.
+- **Bewegung** · Alle Übergänge dauern 140 ms und betreffen nur Farbe,
+  Schatten und Breite. Unter `prefers-reduced-motion: reduce` sind sie
+  abgeschaltet.
+
+### Ein Fund nebenbei
+
+- **Kreuztabelle** · Der Punkt für die leere Kombination lag bei 1,76:1 und
+  war damit für viele nicht wahrnehmbar — obwohl die Fußzeile ausdrücklich
+  sagt, er stehe für eine leere Zelle. Jetzt 6:1, dafür kleiner gesetzt:
+  sichtbar, aber leiser als jede belegte Zelle. Der Befund stammt aus einer
+  Messung aller sichtbaren Texte, nicht aus dem Augenschein.
+
+---
+
 ## 2026-09-15 · Durchsicht der veröffentlichten Seiten
 
 Prüfung der vier Seiten auf Darstellungsfehler und der Inhalte auf innere

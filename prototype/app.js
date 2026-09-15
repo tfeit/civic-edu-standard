@@ -220,11 +220,16 @@
 
   /* ------------------------------------------------- Kennzeichen / Badges */
 
+  /*
+   * Chips. Jede Art traegt eine eigene Farbfamilie, damit man die Art am Ton
+   * wiedererkennt — der Text steht aber immer dabei. Farbe ist die Zugabe,
+   * nicht der Traeger: Wer sie nicht unterscheiden kann, liest dasselbe.
+   */
   var KENNZEICHEN = {
-    P: { text: 'Pflicht', klasse: 'kennzeichen pflicht', stern: true },
-    E: { text: 'empfohlen', klasse: 'kennzeichen', stern: false },
-    O: { text: 'optional', klasse: 'kennzeichen optional', stern: false },
-    B: { text: 'berechnet', klasse: 'kennzeichen', stern: false }
+    P: { text: 'Pflicht', klasse: 'chip chip-pflicht', stern: true },
+    E: { text: 'empfohlen', klasse: 'chip chip-empfohlen', stern: false },
+    O: { text: 'optional', klasse: 'chip chip-optional', stern: false },
+    B: { text: 'berechnet', klasse: 'chip chip-berechnet', stern: false }
   };
 
   function kennzeichenKnoten(feld) {
@@ -243,13 +248,13 @@
    * Felder sind weiterhin offen, nur nicht mehr auf diesen Termin bezogen.
    */
   function badgeWs4() {
-    return el('span', { class: 'badge-ws4', text: 'Entscheidung offen' });
+    return el('span', { class: 'chip chip-offen', text: 'noch zu entscheiden' });
   }
 
   // Felder aus der Vokabularrecherche: als Vorschlag kenntlich, nicht als
   // beschlossener Bestandteil des Schemas.
   function badgeVorschlag() {
-    return el('span', { class: 'badge-vorschlag', text: 'Vorschlag aus Recherche — nicht beschlossen' });
+    return el('span', { class: 'chip chip-vorschlag', text: 'Vorschlag aus Recherche · noch zu entscheiden' });
   }
 
   /*
@@ -300,7 +305,7 @@
     var kinder = [el('div', { class: 'feld-kopf' }, kopfKinder)];
     if (feld.help) { kinder.push(el('p', { class: 'hilfe', id: hilfeId, text: feld.help })); }
     if (feld.placeholderList) {
-      kinder.push(el('p', { class: 'badge-platzhalter', text: 'Platzhalterliste — Vokabular in Konsolidierung' }));
+      kinder.push(el('p', { class: 'chip chip-platzhalter', text: 'Platzhalterliste · Vokabular in Konsolidierung' }));
     }
     kinder.push(steuerelement);
     if (feld.note) { kinder.push(el('p', { class: 'hinweis', id: hinweisId, text: feld.note })); }
@@ -698,7 +703,7 @@
     /* Übergänge — nur bei Modell B */
     var uebergangsTitel = el('span', { class: 'gruppen-label', id: id + '-ueb-label' }, [
       document.createTextNode('Übergänge '),
-      el('span', { class: 'badge-vorschlag', text: 'Vorschlag aus Workshop 4 — nicht beschlossen' })
+      el('span', { class: 'chip chip-vorschlag', text: 'Vorschlag aus Workshop 4 · noch zu entscheiden' })
     ]);
     var uebergangsListe = el('div', {
       class: 'optionsliste einspaltig',
@@ -1173,10 +1178,11 @@
     ref.abgeleitet.appendChild(el('span', { class: 'chips-titel', text: 'Ergibt sich daraus: ' }));
     laender.forEach(function (land) {
       ref.abgeleitet.appendChild(el('span', {
-        class: 'chip', text: window.EduVocab.beschriftung('bundeslaender', land) + ' (' + land + ')'
+        class: 'chip chip-abgeleitet',
+        text: window.EduVocab.beschriftung('bundeslaender', land) + ' (' + land + ')'
       }));
     });
-    ref.abgeleitet.appendChild(el('span', { class: 'chip', text: 'Deutschland (DE)' }));
+    ref.abgeleitet.appendChild(el('span', { class: 'chip chip-abgeleitet', text: 'Deutschland (DE)' }));
   }
 
   var letzteEntfernung = null;
@@ -1687,7 +1693,7 @@
     var chips = knoten[feld.key].chips;
     chips.textContent = '';
     laender.forEach(function (land) {
-      chips.appendChild(el('li', { class: 'chip', text: land.value + ' ' + land.label }));
+      chips.appendChild(el('li', { class: 'chip chip-abgeleitet', text: land.value + ' ' + land.label }));
     });
     knoten[feld.key].leerHinweis.hidden = laender.length > 0;
   }
