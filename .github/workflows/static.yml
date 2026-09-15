@@ -36,8 +36,9 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
-          path: '.'
+          # Nur den Klickdummy veröffentlichen: Er liegt damit unter der
+          # Wurzel der Pages-Adresse und ist per Link teilbar.
+          path: './prototype'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5

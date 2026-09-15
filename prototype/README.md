@@ -20,6 +20,11 @@ einfaches Textfeld mit Musterprüfung zurück.
 Für eine Bildschirmfreigabe eignet sich ein Fenster ab etwa 1200 px Breite.
 Darunter rücken Formular und Vorschau untereinander.
 
+Zum Verschicken an die Teilnehmenden: Der Workflow `.github/workflows/static.yml`
+veröffentlicht diesen Ordner als Wurzel der GitHub-Pages-Adresse des
+Repositoriums. Der Dummy ist damit ohne Unterpfad erreichbar; die übrigen
+Repositoriumsdateien erscheinen dort nicht.
+
 ## Aufbau
 
 | Datei | Inhalt |
