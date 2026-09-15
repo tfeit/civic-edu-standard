@@ -1,0 +1,313 @@
+/*
+ * Räume für das Trichterprinzip
+ * Keine vollständige Raumgliederung, sondern Demonstrationsmaterial für die Erprobung des Trichterprinzips im Workshop. Vollständig sind nur die 16 Länder; die Gemeinden sind eine Auswahl und tragen demonstration=true. Kein externer Dienst, damit der Prototyp offline lauffähig bleibt.
+ *
+ * Erzeugt aus raumgliederung.json durch tools/vokabular-einbetten.mjs.
+ * Nicht von Hand aendern — Aenderungen gehoeren in die JSON-Datei.
+ */
+
+EduVocab.register({
+  "id": "raumgliederung",
+  "label": "Räume für das Trichterprinzip",
+  "version": "0.1.0",
+  "status": "arbeitsstand",
+  "quelle": {
+    "bezeichnung": "Amtlicher Gemeindeschlüssel (AGS). Die 16 Länderschlüssel stammen aus vocab/bundeslaender.json; die Gemeindeschlüssel sind recherchiert und nicht gegen das amtliche Verzeichnis abgeglichen.",
+    "url": "https://www.destatis.de/DE/Themen/Laender-Regionen/Regionales/Gemeindeverzeichnis/_inhalt.html",
+    "abgerufen": "2026-09-15",
+    "pruefstand": "recherchiert",
+    "pruefstandDetail": "Abrufversuch am 15.09.2026 von der Egress-Richtlinie dieser Umgebung mit 403 abgelehnt. Nicht geraten, sondern als unbestätigt gekennzeichnet."
+  },
+  "hinweis": "Keine vollständige Raumgliederung, sondern Demonstrationsmaterial für die Erprobung des Trichterprinzips im Workshop. Vollständig sind nur die 16 Länder; die Gemeinden sind eine Auswahl und tragen demonstration=true. Kein externer Dienst, damit der Prototyp offline lauffähig bleibt.",
+  "mehrfachauswahl": true,
+  "concepts": [
+    {
+      "key": "01",
+      "label": "Schleswig-Holstein",
+      "ebene": "bundesland",
+      "uebergeordnet": "DE",
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "02",
+      "label": "Hamburg",
+      "ebene": "bundesland",
+      "uebergeordnet": "DE",
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "03",
+      "label": "Niedersachsen",
+      "ebene": "bundesland",
+      "uebergeordnet": "DE",
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "04",
+      "label": "Bremen",
+      "ebene": "bundesland",
+      "uebergeordnet": "DE",
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "05",
+      "label": "Nordrhein-Westfalen",
+      "ebene": "bundesland",
+      "uebergeordnet": "DE",
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "06",
+      "label": "Hessen",
+      "ebene": "bundesland",
+      "uebergeordnet": "DE",
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "07",
+      "label": "Rheinland-Pfalz",
+      "ebene": "bundesland",
+      "uebergeordnet": "DE",
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "08",
+      "label": "Baden-Württemberg",
+      "ebene": "bundesland",
+      "uebergeordnet": "DE",
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "09",
+      "label": "Bayern",
+      "ebene": "bundesland",
+      "uebergeordnet": "DE",
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "10",
+      "label": "Saarland",
+      "ebene": "bundesland",
+      "uebergeordnet": "DE",
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "11",
+      "label": "Berlin",
+      "ebene": "bundesland",
+      "uebergeordnet": "DE",
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "12",
+      "label": "Brandenburg",
+      "ebene": "bundesland",
+      "uebergeordnet": "DE",
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "13",
+      "label": "Mecklenburg-Vorpommern",
+      "ebene": "bundesland",
+      "uebergeordnet": "DE",
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "14",
+      "label": "Sachsen",
+      "ebene": "bundesland",
+      "uebergeordnet": "DE",
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "15",
+      "label": "Sachsen-Anhalt",
+      "ebene": "bundesland",
+      "uebergeordnet": "DE",
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "16",
+      "label": "Thüringen",
+      "ebene": "bundesland",
+      "uebergeordnet": "DE",
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "01001",
+      "label": "Flensburg",
+      "ebene": "gemeinde",
+      "art": "kreisfreie Stadt",
+      "uebergeordnet": "01",
+      "demonstration": true,
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "01002",
+      "label": "Kiel",
+      "ebene": "gemeinde",
+      "art": "kreisfreie Stadt",
+      "uebergeordnet": "01",
+      "demonstration": true,
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "01003",
+      "label": "Lübeck",
+      "ebene": "gemeinde",
+      "art": "kreisfreie Stadt",
+      "uebergeordnet": "01",
+      "demonstration": true,
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "02000",
+      "label": "Hamburg",
+      "ebene": "gemeinde",
+      "art": "kreisfreie Stadt",
+      "uebergeordnet": "02",
+      "demonstration": true,
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "04011",
+      "label": "Bremen",
+      "ebene": "gemeinde",
+      "art": "kreisfreie Stadt",
+      "uebergeordnet": "04",
+      "demonstration": true,
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "05113",
+      "label": "Essen",
+      "ebene": "gemeinde",
+      "art": "kreisfreie Stadt",
+      "uebergeordnet": "05",
+      "demonstration": true,
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "05314",
+      "label": "Bonn",
+      "ebene": "gemeinde",
+      "art": "kreisfreie Stadt",
+      "uebergeordnet": "05",
+      "demonstration": true,
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "05315",
+      "label": "Köln",
+      "ebene": "gemeinde",
+      "art": "kreisfreie Stadt",
+      "uebergeordnet": "05",
+      "demonstration": true,
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "06412",
+      "label": "Frankfurt am Main",
+      "ebene": "gemeinde",
+      "art": "kreisfreie Stadt",
+      "uebergeordnet": "06",
+      "demonstration": true,
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "08111",
+      "label": "Stuttgart",
+      "ebene": "gemeinde",
+      "art": "kreisfreie Stadt",
+      "uebergeordnet": "08",
+      "demonstration": true,
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "09162",
+      "label": "München",
+      "ebene": "gemeinde",
+      "art": "kreisfreie Stadt",
+      "uebergeordnet": "09",
+      "demonstration": true,
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "11000",
+      "label": "Berlin",
+      "ebene": "gemeinde",
+      "art": "kreisfreie Stadt",
+      "uebergeordnet": "11",
+      "demonstration": true,
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "12051",
+      "label": "Brandenburg an der Havel",
+      "ebene": "gemeinde",
+      "art": "kreisfreie Stadt",
+      "uebergeordnet": "12",
+      "demonstration": true,
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "13003",
+      "label": "Rostock",
+      "ebene": "gemeinde",
+      "art": "kreisfreie Stadt",
+      "uebergeordnet": "13",
+      "demonstration": true,
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "14713",
+      "label": "Leipzig",
+      "ebene": "gemeinde",
+      "art": "kreisfreie Stadt",
+      "uebergeordnet": "14",
+      "demonstration": true,
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "16051",
+      "label": "Erfurt",
+      "ebene": "gemeinde",
+      "art": "kreisfreie Stadt",
+      "uebergeordnet": "16",
+      "demonstration": true,
+      "deprecated": false,
+      "ersetztDurch": null
+    }
+  ]
+});

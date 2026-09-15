@@ -67,6 +67,8 @@
   var SICHTBARKEIT = vok('sichtbarkeit');
   var REICHWEITEN = vok('reichweite');
   var HERKUNFTSQUELLEN = vok('herkunftsquellen');
+  var REICHWEITE_GROB = vok('reichweite-grob');
+  var RAUMGLIEDERUNG = vok('raumgliederung');
 
   // Registerart je Rechtsform: steht als Attribut am jeweiligen Begriff.
   var REGISTERART_JE_RECHTSFORM = {};
@@ -467,18 +469,69 @@
         id: 'D',
         title: 'D · Wirkungsraum',
         intro: 'Wo wirkt die Organisation — getrennt von der Frage, wo sie ansässig ist.',
+
+        /*
+         * Workshop 4 hat die geografische Aufloesung bewusst nicht entschieden,
+         * sondern beschlossen, die Varianten am Formular zu pruefen. Der Wahl
+         * hier gilt nur der Erprobung: Er steht fuer die Arbeitsgruppe da und
+         * hat auf den Datensatz keine Wirkung ausser der, welche Felder
+         * ausgefuellt werden.
+         */
+        varianten: {
+          hinweis: 'Drei Varianten stehen zur Erprobung. Welche in Version 1.0 gilt, ist offen.',
+          werte: [
+            { id: 1, label: 'Trichterprinzip', beschreibung: 'Nur den präzisesten Raum angeben; die übergeordneten Ebenen ergeben sich daraus.' },
+            { id: 2, label: 'Stufe plus Gebiet', beschreibung: 'Reichweitenstufe und Gebietsliste getrennt.' },
+            { id: 3, label: 'grobe Stufe', beschreibung: 'Vier Werte, keine Gebietsangabe.' }
+          ],
+          bewertung: {
+            frage: 'Wie war diese Variante auszufüllen?',
+            optionen: [
+              { value: 'verstaendlich', label: 'verständlich' },
+              { value: 'unklar', label: 'unklar' },
+              { value: 'zu_aufwendig', label: 'zu aufwendig' }
+            ]
+          }
+        },
         fields: [
+          {
+            key: 'spatialFunnel',
+            vokabular: 'raumgliederung',
+            label: 'Wo wirkt die Organisation?',
+            type: 'funnel',
+            requirement: 'P',
+            variante: 1,
+            help: 'Den präzisesten Raum eingeben — Land, Kreis oder Gemeinde. Die übergeordneten Ebenen ergeben sich daraus.',
+            note: 'Demonstrationsmaterial: alle 16 Länder, dazu eine Auswahl an Gemeinden. '
+              + 'Keine vollständige Raumgliederung, kein externer Dienst.',
+            options: RAUMGLIEDERUNG,
+            placeholder: 'Bonn, Sachsen, 05315 …'
+          },
           {
             key: 'scope',
             vokabular: 'reichweite',
             label: 'Reichweite',
             type: 'select',
             requirement: 'P',
+            variante: 2,
             help: 'Wie weit reicht die Arbeit räumlich?',
+            note: 'Gebiet und Reichweite sind nicht dasselbe: Wer in Bonn tätig ist, ist nicht automatisch landesweit tätig.',
             options: REICHWEITEN
           },
           {
+            key: 'scopeCoarse',
+            vokabular: 'reichweite-grob',
+            label: 'Reichweite',
+            type: 'select',
+            requirement: 'P',
+            variante: 3,
+            help: 'Wie weit reicht die Arbeit räumlich?',
+            note: 'Diese Variante erhebt kein Gebiet. Sie prüft, ob Einfachheit die Ausfüllquote erhöht.',
+            options: REICHWEITE_GROB
+          },
+          {
             key: 'areasOfActivity',
+            variante: 2,
             label: 'Wirkungsgebiete',
             type: 'repeatable',
             requirement: 'E',
@@ -512,6 +565,7 @@
             label: 'Aktiv in (Bundesland)',
             type: 'computedChips',
             requirement: 'B',
+            variante: 2,
             help: 'Wird aus den ersten zwei Stellen der Wirkungsgebiete berechnet — ohne Gebiete bleibt das Feld leer.',
             computedFrom: 'areasOfActivity',
             emptyHint: 'Noch keine Wirkungsgebiete erfasst.'
@@ -667,6 +721,8 @@
     verwirklichung: VERWIRKLICHUNG,
     sichtbarkeit: SICHTBARKEIT,
     reichweiten: REICHWEITEN,
+    reichweiteGrob: REICHWEITE_GROB,
+    raumgliederung: RAUMGLIEDERUNG,
     herkunftsquellen: HERKUNFTSQUELLEN,
     reichweitenMitGebieten: REICHWEITEN_MIT_GEBIETEN
   };

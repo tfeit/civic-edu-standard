@@ -83,6 +83,13 @@
   var knoten = {};         // Feldschlüssel -> DOM-Referenzen
   var wikidataAus = false; // Autosuggest nicht erreichbar
 
+  // Zu welchem Block gehoert ein Feld? Fuer die Variantenpruefung noetig.
+  var BLOCK_JE_FELD = {};
+
+  function blockVon(feld) {
+    return BLOCK_JE_FELD[feld.key] || { id: '', varianten: null };
+  }
+
   function alleFelder() {
     var liste = [];
     MODELL.blocks.forEach(function (block) {
@@ -110,6 +117,9 @@
           zustand[feld.key] = { value: '', visibility: feld.visibilityDefault || 'public' };
           break;
         case 'computedChips':
+          zustand[feld.key] = [];
+          break;
+        case 'funnel':
           zustand[feld.key] = [];
           break;
         case 'stageModel':
@@ -911,6 +921,258 @@
     });
   }
 
+
+  /* ------------------------------------------ Geografie-Varianten (WS 4) */
+
+  /*
+   * Die Arbeitsgruppe hat die geografische Aufloesung nicht entschieden. Statt
+   * eine Variante zu setzen, stehen drei zur Wahl und werden am Formular
+   * geprueft. Der Variantenwaehler ist ein Werkzeug fuer die Arbeitsgruppe, kein
+   * Teil des Ausfuellwegs — er sitzt deshalb am Blockkopf, nicht im Feld.
+   */
+  var aktiveVarianten = {};    // Block-Id -> gewaehlte Variante
+  var bewertungen = {};        // Block-Id -> { variante: { urteil, notiz } }
+
+  function varianteVon(block) {
+    if (!block || !block.varianten) { return null; }
+    return aktiveVarianten[block.id] || block.varianten.werte[0].id;
+  }
+
+  function variantenWaehler(block) {
+    var name = 'variante-' + block.id;
+    var gruppe = el('div', { class: 'variantenwaehler', role: 'radiogroup', 'aria-label': 'Variante der Geografie-Erfassung' });
+
+    block.varianten.werte.forEach(function (v) {
+      var knopfId = name + '-' + v.id;
+      var box = el('input', { type: 'radio', name: name, id: knopfId, value: String(v.id) });
+      box.checked = v.id === varianteVon(block);
+      box.addEventListener('change', function () {
+        if (!box.checked) { return; }
+        aktiveVarianten[block.id] = v.id;
+        aktualisiere();
+        zeigeBewertung(block);
+      });
+      gruppe.appendChild(el('label', { class: 'variantenoption', for: knopfId, title: v.beschreibung },
+        [box, el('span', { text: 'Variante ' + v.id + ': ' + v.label })]));
+    });
+
+    var beschreibung = el('p', { class: 'hilfe variantenbeschreibung' });
+    var kasten = el('div', { class: 'variantenblock' }, [
+      el('p', { class: 'variantenhinweis', text: block.varianten.hinweis }),
+      gruppe,
+      beschreibung,
+      bewertungsFeld(block)
+    ]);
+    variantenKnoten[block.id] = { beschreibung: beschreibung };
+    return kasten;
+  }
+
+  var variantenKnoten = {};
+
+  /*
+   * Bewertung je Variante. Sie sammelt sich unter _test und wird beim Kopieren
+   * ausgeschlossen: Der Formulartest soll sich auswerten lassen, ohne dass ein
+   * Testartefakt in einen Beispieldatensatz geraet.
+   */
+  function bewertungsFeld(block) {
+    var bew = block.varianten.bewertung;
+    var name = 'bewertung-' + block.id;
+    var knoepfe = el('div', { class: 'bewertungsknoepfe', role: 'radiogroup', 'aria-label': bew.frage });
+
+    bew.optionen.forEach(function (o) {
+      var knopfId = name + '-' + o.value;
+      var box = el('input', { type: 'radio', name: name, id: knopfId, value: o.value });
+      box.addEventListener('change', function () {
+        if (box.checked) { setzeBewertung(block, { urteil: o.value }); }
+      });
+      knoepfe.appendChild(el('label', { class: 'bewertungsoption', for: knopfId },
+        [box, el('span', { text: o.label })]));
+    });
+
+    var notizId = name + '-notiz';
+    var notiz = el('textarea', { id: notizId, rows: '2', placeholder: 'Notiz zur Variante (optional)' });
+    notiz.addEventListener('input', function () { setzeBewertung(block, { notiz: notiz.value }); });
+
+    variantenBewertung[block.id] = { knoepfe: knoepfe, notiz: notiz };
+
+    return el('details', { class: 'bewertung' }, [
+      el('summary', { text: bew.frage }),
+      knoepfe,
+      el('label', { class: 'bewertungsnotiz', for: notizId, text: 'Notiz' }),
+      notiz
+    ]);
+  }
+
+  var variantenBewertung = {};
+
+  function setzeBewertung(block, teil) {
+    var v = varianteVon(block);
+    bewertungen[block.id] = bewertungen[block.id] || {};
+    var eintrag = bewertungen[block.id][v] || {};
+    if (teil.urteil !== undefined) { eintrag.urteil = teil.urteil; }
+    if (teil.notiz !== undefined) { eintrag.notiz = teil.notiz; }
+    bewertungen[block.id][v] = eintrag;
+    aktualisiereVorschau();
+  }
+
+  // Beim Variantenwechsel zeigt das Bewertungsfeld, was zu dieser Variante
+  // bereits notiert wurde — sonst ueberschreibt man unbemerkt die vorige.
+  function zeigeBewertung(block) {
+    var v = varianteVon(block);
+    var eintrag = (bewertungen[block.id] || {})[v] || {};
+    var ref = variantenBewertung[block.id];
+    if (!ref) { return; }
+    ref.knoepfe.querySelectorAll('input').forEach(function (box) {
+      box.checked = box.value === eintrag.urteil;
+    });
+    ref.notiz.value = eintrag.notiz || '';
+
+    var beschreibung = (variantenKnoten[block.id] || {}).beschreibung;
+    if (beschreibung) {
+      var gewaehlt = null;
+      block.varianten.werte.forEach(function (w) { if (w.id === v) { gewaehlt = w; } });
+      beschreibung.textContent = gewaehlt ? gewaehlt.beschreibung : '';
+    }
+  }
+
+  function testBlock() {
+    var ausgabe = {};
+    Object.keys(bewertungen).forEach(function (blockId) {
+      Object.keys(bewertungen[blockId]).forEach(function (variante) {
+        var e = bewertungen[blockId][variante];
+        if (!e.urteil && !(e.notiz || '').trim()) { return; }
+        ausgabe[blockId + '.variante' + variante] = {
+          urteil: e.urteil || null,
+          notiz: (e.notiz || '').trim() || null
+        };
+      });
+    });
+    return Object.keys(ausgabe).length ? ausgabe : null;
+  }
+
+  /* ------------------------------------------------ Trichter (Variante 1) */
+
+  /*
+   * Man gibt den praezisesten Raum an; die uebergeordneten Ebenen ergeben sich
+   * daraus und erscheinen als abgeleitete Chips. Ohne eingebettete Liste
+   * braeuchte das einen externen Dienst — und damit waere die Offline-
+   * Tauglichkeit dahin.
+   */
+  renderer.funnel = function (feld) {
+    var id = 'fld-' + feld.key;
+    var listenId = id + '-liste';
+
+    var eingabe = el('input', {
+      type: 'text', id: id, placeholder: feld.placeholder || '',
+      autocomplete: 'off', list: listenId
+    });
+    var datalist = el('datalist', { id: listenId });
+    feld.options.forEach(function (o) {
+      datalist.appendChild(el('option', {
+        value: o.label + ' (' + o.value + ')',
+        label: o.ebene === 'bundesland' ? 'Land' : 'Gemeinde'
+      }));
+    });
+
+    var hinzufuegen = el('button', { type: 'button', class: 'leise', text: 'Übernehmen' });
+    var zeile = el('div', { class: 'trichter-eingabe' }, [eingabe, hinzufuegen, datalist]);
+
+    var gewaehlt = el('ul', { class: 'trichter-auswahl' });
+    var abgeleitet = el('p', { class: 'chips trichter-abgeleitet' });
+    var meldung = el('p', { class: 'feld-fehler', role: 'status' });
+
+    function uebernehmen() {
+      var treffer = findeRaum(feld, eingabe.value);
+      if (!treffer) {
+        meldung.textContent = eingabe.value.trim()
+          ? 'Kein Raum mit dieser Bezeichnung in der eingebetteten Liste.'
+          : '';
+        return;
+      }
+      if (zustand[feld.key].indexOf(treffer.value) === -1) {
+        zustand[feld.key].push(treffer.value);
+      }
+      eingabe.value = '';
+      meldung.textContent = '';
+      aktualisiere();
+    }
+
+    hinzufuegen.addEventListener('click', uebernehmen);
+    eingabe.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); uebernehmen(); }
+    });
+
+    var huelle = el('div', {}, [zeile, meldung, gewaehlt, abgeleitet]);
+    var wrapper = feldRahmen(feld, huelle);
+    setzeBeschreibung(feld, eingabe);
+    knoten[feld.key].eingabe = eingabe;
+    knoten[feld.key].gewaehlt = gewaehlt;
+    knoten[feld.key].abgeleitet = abgeleitet;
+    knoten[feld.key].meldung = meldung;
+    return wrapper;
+  };
+
+  function findeRaum(feld, text) {
+    var gesucht = (text || '').trim().toLowerCase();
+    if (!gesucht) { return null; }
+    // "Bonn (05314)" ebenso zulassen wie "Bonn" oder "05314".
+    var inKlammern = gesucht.match(/\(([^)]+)\)\s*$/);
+    if (inKlammern) { gesucht = inKlammern[1].trim(); }
+    var treffer = null;
+    feld.options.forEach(function (o) {
+      if (treffer) { return; }
+      if (o.value === gesucht || o.label.toLowerCase() === gesucht) { treffer = o; }
+    });
+    return treffer;
+  }
+
+  function raumBegriff(schluessel) {
+    return window.EduVocab.begriff('raumgliederung', schluessel);
+  }
+
+  function aktualisiereTrichter(feld) {
+    var ref = knoten[feld.key];
+    var werte = zustand[feld.key];
+
+    ref.gewaehlt.textContent = '';
+    werte.forEach(function (schluessel) {
+      var b = raumBegriff(schluessel);
+      var text = (b ? b.label : schluessel) + ' · ' + schluessel;
+      var zeile = el('li', {}, [el('span', { text: text })]);
+      var weg = el('button', { type: 'button', class: 'leise', text: 'Entfernen' });
+      weg.addEventListener('click', function () {
+        var pos = zustand[feld.key].indexOf(schluessel);
+        if (pos !== -1) { zustand[feld.key].splice(pos, 1); }
+        aktualisiere();
+      });
+      zeile.appendChild(weg);
+      ref.gewaehlt.appendChild(zeile);
+    });
+
+    /* Die uebergeordneten Ebenen ergeben sich — sie werden nicht gepflegt. */
+    var laender = [];
+    werte.forEach(function (schluessel) {
+      var b = raumBegriff(schluessel);
+      if (!b) { return; }
+      var land = b.ebene === 'bundesland' ? b.key : b.uebergeordnet;
+      if (land && laender.indexOf(land) === -1) { laender.push(land); }
+    });
+    laender.sort();
+
+    ref.abgeleitet.textContent = '';
+    if (!werte.length) {
+      ref.abgeleitet.appendChild(el('span', { class: 'chips-leer', text: 'Noch kein Raum angegeben.' }));
+      return;
+    }
+    ref.abgeleitet.appendChild(el('span', { class: 'chips-titel', text: 'Ergibt sich daraus: ' }));
+    laender.forEach(function (land) {
+      ref.abgeleitet.appendChild(el('span', {
+        class: 'chip', text: window.EduVocab.beschriftung('bundeslaender', land) + ' (' + land + ')'
+      }));
+    });
+    ref.abgeleitet.appendChild(el('span', { class: 'chip', text: 'Deutschland (DE)' }));
+  }
+
   var letzteEntfernung = null;
 
   function merkeEntfernung(feld, index, eintrag) {
@@ -1212,18 +1474,24 @@
         legende,
         el('p', { class: 'abschnitt-intro', text: block.intro })
       ]);
+      if (block.varianten) { abschnitt.appendChild(variantenWaehler(block)); }
       block.fields.forEach(function (feld) {
+        BLOCK_JE_FELD[feld.key] = block;
         var fn = renderer[feld.type];
         if (!fn) { return; }
         abschnitt.appendChild(fn(feld));
       });
       ziel.appendChild(abschnitt);
+      if (block.varianten) { zeigeBewertung(block); }
     });
   }
 
   /* --------------------------------------------------- Sichtbarkeitsregeln */
 
   function istSichtbar(feld) {
+    // Variantenfelder sind nur in ihrer Variante sichtbar. Sie bleiben im
+    // Modell stehen, damit sich die Varianten im Gespraech vergleichen lassen.
+    if (feld.variante && feld.variante !== varianteVon(blockVon(feld))) { return false; }
     if (!feld.visibleWhen) { return true; }
     var wert = zustand[feld.visibleWhen.field];
     if (feld.visibleWhen.in) {
@@ -1602,6 +1870,12 @@
         case 'checkboxes':
           wert = zustand[feld.key].slice();
           break;
+        case 'funnel':
+          wert = zustand[feld.key].map(function (schluessel) {
+            var b = raumBegriff(schluessel);
+            return { key: schluessel, label: b ? b.label : schluessel, ebene: b ? b.ebene : null };
+          });
+          break;
         case 'stageModel':
           wert = zustand[feld.key].werte.length
             ? {
@@ -1742,7 +2016,13 @@
 
   function aktualisiereVorschau() {
     var datensatz = baueDatensatz();
+    // Was kopiert wird, ist der Datensatz — ohne die Bewertungen aus dem
+    // Formulartest. Sie gehoeren in die Auswertung des Workshops, nicht in
+    // einen Beispieldatensatz.
     letzterJsonText = JSON.stringify(datensatz, null, 2);
+
+    var test = testBlock();
+    if (test) { datensatz._test = test; }
     document.getElementById('json-vorschau').innerHTML = vorschauHtml(datensatz);
     hebeFeldHervor();
   }
@@ -1803,6 +2083,9 @@
     if (feld.type === 'stageModel') {
       return wert.werte.length >= (feld.min || 1);
     }
+    if (feld.type === 'funnel') {
+      return wert.length >= (feld.min || 1);
+    }
     return !leer((wert || '').toString().trim());
   }
 
@@ -1849,6 +2132,9 @@
         case 'stageModel':
           aktualisiereStufen(feld);
           break;
+        case 'funnel':
+          aktualisiereTrichter(feld);
+          break;
         case 'repeatable':
           aktualisiereEintragsFehler(feld);
           if (feld.key === 'areasOfActivity') { aktualisiereGebietsWarnungen(feld); }
@@ -1878,6 +2164,16 @@
 
       if (feld.type === 'wikidata' && ref.gewaehlt && !wikidataAus) {
         ref.gewaehlt.textContent = ref.label ? 'Gewählt: ' + ref.label : '';
+      }
+
+      /*
+       * Zuletzt: Gehoert das Feld zu einer Variante, entscheidet die Variante.
+       * Sie hat Vorrang vor allem, was die Typbehandlung gesetzt hat — sonst
+       * blendet etwa die Gebietswarnung ein Feld wieder ein, das gar nicht
+       * zur laufenden Variante gehoert.
+       */
+      if (feld.variante) {
+        ref.wrapper.hidden = feld.variante !== varianteVon(blockVon(feld));
       }
     });
 

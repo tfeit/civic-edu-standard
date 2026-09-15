@@ -1587,3 +1587,133 @@ pre.json .j-block[data-schluessel="activeInStates"].hervorgehoben {
 .weiche-grenze[hidden] {
   display: none;
 }
+
+/* --------------------------------------- Geografie-Varianten (Workshop 4) */
+
+.variantenblock {
+  margin: 0 0 1.1rem;
+  padding: .7rem .85rem;
+  border: 1px dashed var(--linie-kraeftig);
+  border-radius: 6px;
+  background: #FAFAFB;
+}
+
+.variantenhinweis {
+  margin: 0 0 .5rem;
+  font-size: .88rem;
+  color: var(--text-leise, #555);
+}
+
+.variantenwaehler {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+}
+
+.variantenoption {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .3rem .6rem;
+  border: 1px solid var(--linie);
+  border-radius: 999px;
+  background: #fff;
+  cursor: pointer;
+  font-size: .9rem;
+}
+
+.variantenoption:has(input:checked) {
+  border-color: var(--akzent);
+  background: var(--akzent-hell);
+  font-weight: 600;
+}
+
+.variantenoption:focus-within,
+.bewertungsoption:focus-within {
+  outline: 2px solid var(--akzent);
+  outline-offset: 2px;
+}
+
+.variantenbeschreibung {
+  margin: .45rem 0 0;
+}
+
+.bewertung {
+  margin-top: .6rem;
+  font-size: .9rem;
+}
+
+.bewertung > summary {
+  cursor: pointer;
+}
+
+.bewertungsknoepfe {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin: .5rem 0;
+}
+
+.bewertungsoption {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .28rem .55rem;
+  border: 1px solid var(--linie);
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.bewertungsoption:has(input:checked) {
+  border-color: var(--akzent);
+  background: var(--akzent-hell);
+}
+
+.bewertungsnotiz {
+  display: block;
+  margin-bottom: .2rem;
+}
+
+.bewertung textarea {
+  width: 100%;
+}
+
+/* ------------------------------------------------ Trichter (Variante 1) */
+
+.trichter-eingabe {
+  display: flex;
+  gap: .4rem;
+  align-items: stretch;
+}
+
+.trichter-eingabe input {
+  flex: 1 1 auto;
+}
+
+.trichter-auswahl {
+  list-style: none;
+  margin: .5rem 0 0;
+  padding: 0;
+}
+
+.trichter-auswahl li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  padding: .3rem .5rem;
+  border: 1px solid var(--linie);
+  border-radius: 4px;
+  margin-bottom: .3rem;
+  background: #fff;
+}
+
+.trichter-abgeleitet {
+  margin-top: .5rem;
+}
+
+.trichter-abgeleitet .chips-titel {
+  font-size: .88rem;
+  margin-right: .35rem;
+}
