@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Akteursprofil — Klickdummy (EduStandard)</title>
+<meta name="description" content="Klickbare Eingabemaske zum Datenschema Akteursprofil. Arbeitsstand für Workshop 4.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<a class="sprunglink" href="#formular">Zum Formular springen</a>
+
+<p class="banner" role="note">Prototyp · Arbeitsstand · Vokabulare in Konsolidierung</p>
+
+<header class="kopf">
+  <div>
+    <h1>Akteursprofil</h1>
+    <p>
+      Eingabemaske zum gemeinsamen Datenschema für Organisationsprofile.
+      Die Maske dient dem Durchspielen der Felder aus Sicht einer ausfüllenden
+      Organisation. Es werden keine Daten übertragen oder gespeichert.
+    </p>
+  </div>
+  <div class="timer" role="timer" aria-live="off">
+    <span class="nur-sr">Bearbeitungsdauer</span>
+    <span class="timer-wert" id="timer-wert">00:00</span>
+    <span id="timer-hinweis">startet bei der ersten Eingabe</span>
+  </div>
+</header>
+
+<main class="layout">
+
+  <div id="formular"></div>
+
+  <aside class="seitenspalte" aria-label="Auswertung">
+
+    <section class="karte" aria-labelledby="zaehler-titel">
+      <h2 id="zaehler-titel">Pflichtfelder</h2>
+      <p class="zaehler-wert" id="zaehler-wert" aria-live="polite">0 von 0 Pflichtfeldern ausgefüllt</p>
+      <div class="zaehler-balken" aria-hidden="true"><span id="zaehler-balken"></span></div>
+      <p class="zaehler-offen" id="zaehler-offen"></p>
+    </section>
+
+    <section class="karte" aria-labelledby="vorschau-titel">
+      <div class="vorschau-kopf">
+        <h2 id="vorschau-titel">Austauschformat (v0-Arbeitsstand)</h2>
+        <button type="button" class="primaer" id="json-kopieren">JSON kopieren</button>
+      </div>
+      <p class="kopier-rueckmeldung" id="kopier-rueckmeldung" role="status"></p>
+      <pre class="json" id="json-vorschau" tabindex="0" aria-label="Live-Vorschau des Datensatzes im JSON-Format">{}</pre>
+      <p class="vorschau-fuss">
+        Hinter dem Formular steht ein maschinenlesbarer Datensatz. Leere Felder
+        werden ausgelassen. Feldmodell: <span id="modell-version">—</span>.
+      </p>
+    </section>
+
+  </aside>
+
+</main>
+
+<footer class="fuss">
+  <p>
+    Feldnamen, Vokabulare und Verbindlichkeiten sind Arbeitsstand und stehen in
+    Abstimmung. Felder mit dem Kennzeichen „zur Entscheidung in WS 4“ werden im
+    vierten Workshop entschieden.
+  </p>
+</footer>
+
+<script src="fields.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
