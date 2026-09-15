@@ -223,7 +223,7 @@
   var KENNZEICHEN = {
     P: { text: 'Pflicht', klasse: 'kennzeichen pflicht', stern: true },
     E: { text: 'empfohlen', klasse: 'kennzeichen', stern: false },
-    O: { text: 'optional', klasse: 'kennzeichen', stern: false },
+    O: { text: 'optional', klasse: 'kennzeichen optional', stern: false },
     B: { text: 'berechnet', klasse: 'kennzeichen', stern: false }
   };
 
@@ -2223,6 +2223,36 @@
 
   /* -------------------------------------------------------------- Kopieren */
 
+  /*
+   * Export als Datei. Das ist der Weg, auf dem aus dem Prototyp erzeugte
+   * Beispiele in die weitere Arbeit gelangen — ohne Backend, ohne Upload.
+   * Der Dateiname traegt den Organisationsnamen, damit mehrere Exporte in
+   * einem Download-Ordner unterscheidbar bleiben.
+   */
+  function exportiereJson() {
+    var rueckmeldung = document.getElementById('kopier-rueckmeldung');
+    var name = (zustand.name || 'akteursprofil').toString().trim()
+      .toLowerCase()
+      .replace(/[äöüß]/g, function (z) {
+        return { 'ä': 'ae', 'ö': 'oe', 'ü': 'ue', 'ß': 'ss' }[z];
+      })
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 60) || 'akteursprofil';
+
+    var blob = new Blob([letzterJsonText], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = el('a', { href: url, download: name + '.json' });
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    // Der Browser braucht den Verweis noch einen Moment.
+    window.setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+
+    rueckmeldung.textContent = 'Als ' + name + '.json gespeichert.';
+    window.setTimeout(function () { rueckmeldung.textContent = ''; }, 4000);
+  }
+
   function kopiereJson() {
     var rueckmeldung = document.getElementById('kopier-rueckmeldung');
 
@@ -2503,6 +2533,7 @@
     });
 
     document.getElementById('json-kopieren').addEventListener('click', kopiereJson);
+    document.getElementById('json-export').addEventListener('click', exportiereJson);
     document.getElementById('formular-leeren').addEventListener('click', leereFormular);
     document.getElementById('speicher-verwerfen').addEventListener('click', verwirfZwischenstand);
     document.getElementById('modell-version').textContent = MODELL.version;

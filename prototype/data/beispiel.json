@@ -1,0 +1,679 @@
+{
+  "hinweis": "Frei erfundene Organisationen. Kein Bezug zu realen Trägern: Namen sind aus festen Bausteinen zusammengesetzt, Merkmale deterministisch erzeugt. Dieser Datensatz wird später durch reale Organisationsdaten ersetzt.",
+  "stand": "2026-09-15",
+  "feldmodell": "v0-Arbeitsstand",
+  "akteure": [
+    {
+      "id": "a01",
+      "name": "Denkraum Elbe e. V.",
+      "legalForm": "registeredAssociation",
+      "status": "aktiv",
+      "fieldsOfAction": [
+        "sprachbildung"
+      ],
+      "primaryFieldOfAction": "sprachbildung",
+      "educationStages": {
+        "modell": "bildungsstruktur-bereiche",
+        "werte": [
+          "primarstufe"
+        ],
+        "quelle": "abgeleitet"
+      },
+      "targetGroups": [
+        {
+          "role": "multipliers",
+          "label": "—"
+        }
+      ],
+      "implementation": {
+        "value": "funding",
+        "visibility": "public"
+      },
+      "scope": "local",
+      "areasOfActivity": [
+        {
+          "key": "06752",
+          "label": "Hessen (Kreis)"
+        }
+      ],
+      "activeInStates": [
+        {
+          "key": "06",
+          "label": "Hessen"
+        }
+      ]
+    },
+    {
+      "id": "a03",
+      "name": "Talentschmiede Lahn",
+      "legalForm": "UG",
+      "status": "aktiv",
+      "fieldsOfAction": [
+        "politische_bildung"
+      ],
+      "primaryFieldOfAction": "politische_bildung",
+      "educationStages": {
+        "modell": "bildungsstruktur-bereiche",
+        "werte": [
+          "quartaerbereich",
+          "sekundarstufe_1"
+        ],
+        "quelle": "abgeleitet"
+      },
+      "targetGroups": [
+        {
+          "role": "multipliers",
+          "label": "—"
+        }
+      ],
+      "implementation": {
+        "value": "both",
+        "visibility": "public"
+      },
+      "scope": "regional",
+      "areasOfActivity": [
+        {
+          "key": "08571",
+          "label": "Baden-Württemberg (Kreis)"
+        }
+      ],
+      "activeInStates": [
+        {
+          "key": "08",
+          "label": "Baden-Württemberg"
+        }
+      ]
+    },
+    {
+      "id": "a05",
+      "name": "Zukunftswerkstatt Donau",
+      "legalForm": "eGbR",
+      "status": "aktiv",
+      "fieldsOfAction": [
+        "mint_bildung"
+      ],
+      "primaryFieldOfAction": "mint_bildung",
+      "educationStages": {
+        "modell": "bildungsstruktur-bereiche",
+        "werte": [
+          "primarstufe",
+          "sekundarstufe_2",
+          "sekundarstufe_1"
+        ],
+        "quelle": "abgeleitet"
+      },
+      "targetGroups": [
+        {
+          "role": "institutions",
+          "label": "—"
+        },
+        {
+          "role": "institutions",
+          "label": "—"
+        }
+      ],
+      "implementation": {
+        "value": "funding",
+        "visibility": "public"
+      },
+      "scope": "state",
+      "areasOfActivity": [
+        {
+          "key": "04",
+          "label": "Bremen"
+        }
+      ],
+      "activeInStates": [
+        {
+          "key": "04",
+          "label": "Bremen"
+        }
+      ]
+    },
+    {
+      "id": "a07",
+      "name": "Lernlotsen Ruhr",
+      "legalForm": "publicLawCorporation",
+      "status": "aktiv",
+      "fieldsOfAction": [
+        "bne",
+        "interkulturelle_bildung",
+        "mint_bildung"
+      ],
+      "primaryFieldOfAction": "bne",
+      "educationStages": {
+        "modell": "bildungsstruktur-bereiche",
+        "werte": [
+          "sekundarstufe_2",
+          "primarstufe"
+        ],
+        "quelle": "abgeleitet"
+      },
+      "targetGroups": [
+        {
+          "role": "institutions",
+          "label": "—"
+        },
+        {
+          "role": "institutions",
+          "label": "—"
+        }
+      ],
+      "implementation": {
+        "value": "operational",
+        "visibility": "public"
+      },
+      "scope": "regional",
+      "areasOfActivity": [
+        {
+          "key": "08866",
+          "label": "Baden-Württemberg (Kreis)"
+        },
+        {
+          "key": "01992",
+          "label": "Schleswig-Holstein (Kreis)"
+        }
+      ],
+      "activeInStates": [
+        {
+          "key": "01",
+          "label": "Schleswig-Holstein"
+        },
+        {
+          "key": "08",
+          "label": "Baden-Württemberg"
+        }
+      ]
+    },
+    {
+      "id": "a09",
+      "name": "Brückenschlag Donau gGmbH",
+      "legalForm": "gGmbH",
+      "status": "aktiv",
+      "fieldsOfAction": [
+        "interkulturelle_bildung"
+      ],
+      "primaryFieldOfAction": "interkulturelle_bildung",
+      "educationStages": {
+        "modell": "bildungsstruktur-bereiche",
+        "werte": [
+          "primarstufe",
+          "quartaerbereich"
+        ],
+        "quelle": "abgeleitet"
+      },
+      "targetGroups": [
+        {
+          "role": "beneficiaries",
+          "label": "—"
+        }
+      ],
+      "implementation": {
+        "value": "both",
+        "visibility": "public"
+      },
+      "scope": "regional",
+      "areasOfActivity": [
+        {
+          "key": "05621",
+          "label": "Nordrhein-Westfalen (Kreis)"
+        }
+      ],
+      "activeInStates": [
+        {
+          "key": "05",
+          "label": "Nordrhein-Westfalen"
+        }
+      ]
+    },
+    {
+      "id": "a11",
+      "name": "Stiftung Mitmachwerk Donau",
+      "legalForm": "foundation",
+      "status": "aktiv",
+      "fieldsOfAction": [
+        "politische_bildung"
+      ],
+      "primaryFieldOfAction": "politische_bildung",
+      "educationStages": {
+        "modell": "bildungsstruktur-bereiche",
+        "werte": [
+          "sekundarstufe_2"
+        ],
+        "quelle": "abgeleitet"
+      },
+      "targetGroups": [
+        {
+          "role": "beneficiaries",
+          "label": "—"
+        }
+      ],
+      "implementation": {
+        "value": "operational",
+        "visibility": "public"
+      },
+      "scope": "local",
+      "areasOfActivity": [
+        {
+          "key": "09305",
+          "label": "Bayern (Kreis)"
+        }
+      ],
+      "activeInStates": [
+        {
+          "key": "09",
+          "label": "Bayern"
+        }
+      ]
+    },
+    {
+      "id": "a13",
+      "name": "Bildungsanker Havel",
+      "legalForm": "UG",
+      "status": "aktiv",
+      "fieldsOfAction": [
+        "politische_bildung",
+        "wirtschaft"
+      ],
+      "primaryFieldOfAction": "politische_bildung",
+      "educationStages": {
+        "modell": "bildungsstruktur-bereiche",
+        "werte": [
+          "sekundarstufe_2"
+        ],
+        "quelle": "abgeleitet"
+      },
+      "targetGroups": [
+        {
+          "role": "institutions",
+          "label": "—"
+        }
+      ],
+      "implementation": {
+        "value": "operational",
+        "visibility": "public"
+      },
+      "scope": "regional",
+      "areasOfActivity": [
+        {
+          "key": "04703",
+          "label": "Bremen (Kreis)"
+        },
+        {
+          "key": "11728",
+          "label": "Berlin (Kreis)"
+        },
+        {
+          "key": "10116",
+          "label": "Saarland (Kreis)"
+        }
+      ],
+      "activeInStates": [
+        {
+          "key": "04",
+          "label": "Bremen"
+        },
+        {
+          "key": "10",
+          "label": "Saarland"
+        },
+        {
+          "key": "11",
+          "label": "Berlin"
+        }
+      ]
+    },
+    {
+      "id": "a15",
+      "name": "Wegmarke Nord e. V.",
+      "legalForm": "registeredAssociation",
+      "status": "aktiv",
+      "fieldsOfAction": [
+        "mint_bildung",
+        "diversitaet"
+      ],
+      "primaryFieldOfAction": "mint_bildung",
+      "educationStages": {
+        "modell": "bildungsstruktur-bereiche",
+        "werte": [
+          "sekundarstufe_2",
+          "primarstufe",
+          "quartaerbereich"
+        ],
+        "quelle": "abgeleitet"
+      },
+      "targetGroups": [
+        {
+          "role": "institutions",
+          "label": "—"
+        },
+        {
+          "role": "beneficiaries",
+          "label": "—"
+        }
+      ],
+      "implementation": {
+        "value": "operational",
+        "visibility": "public"
+      },
+      "scope": "state",
+      "areasOfActivity": [
+        {
+          "key": "01",
+          "label": "Schleswig-Holstein"
+        },
+        {
+          "key": "08",
+          "label": "Baden-Württemberg"
+        }
+      ],
+      "activeInStates": [
+        {
+          "key": "01",
+          "label": "Schleswig-Holstein"
+        },
+        {
+          "key": "08",
+          "label": "Baden-Württemberg"
+        }
+      ]
+    },
+    {
+      "id": "a17",
+      "name": "Brückenschlag Main",
+      "legalForm": "eGbR",
+      "status": "ruhend",
+      "fieldsOfAction": [
+        "gesundheit_praevention",
+        "interkulturelle_bildung"
+      ],
+      "primaryFieldOfAction": "gesundheit_praevention",
+      "educationStages": {
+        "modell": "bildungsstruktur-bereiche",
+        "werte": [
+          "sekundarstufe_1",
+          "quartaerbereich"
+        ],
+        "quelle": "abgeleitet"
+      },
+      "targetGroups": [
+        {
+          "role": "beneficiaries",
+          "label": "—"
+        }
+      ],
+      "implementation": {
+        "value": "both",
+        "visibility": "public"
+      },
+      "scope": "national",
+      "areasOfActivity": [],
+      "activeInStates": []
+    },
+    {
+      "id": "a19",
+      "name": "Stiftung Perspektivwerk Lahn",
+      "legalForm": "foundation",
+      "status": "aktiv",
+      "fieldsOfAction": [
+        "familienbildung",
+        "persoenlichkeitsentwicklung",
+        "engagementfoerderung"
+      ],
+      "primaryFieldOfAction": "familienbildung",
+      "educationStages": {
+        "modell": "bildungsstruktur-bereiche",
+        "werte": [
+          "sekundarstufe_2",
+          "sekundarstufe_1",
+          "quartaerbereich"
+        ],
+        "quelle": "abgeleitet"
+      },
+      "targetGroups": [
+        {
+          "role": "beneficiaries",
+          "label": "—"
+        },
+        {
+          "role": "institutions",
+          "label": "—"
+        }
+      ],
+      "implementation": {
+        "value": "operational",
+        "visibility": "public"
+      },
+      "scope": "regional",
+      "areasOfActivity": [
+        {
+          "key": "11948",
+          "label": "Berlin (Kreis)"
+        },
+        {
+          "key": "16723",
+          "label": "Thüringen (Kreis)"
+        },
+        {
+          "key": "04487",
+          "label": "Bremen (Kreis)"
+        }
+      ],
+      "activeInStates": [
+        {
+          "key": "04",
+          "label": "Bremen"
+        },
+        {
+          "key": "11",
+          "label": "Berlin"
+        },
+        {
+          "key": "16",
+          "label": "Thüringen"
+        }
+      ]
+    },
+    {
+      "id": "a21",
+      "name": "Stiftung Zukunftswerkstatt Main",
+      "legalForm": "foundation",
+      "status": "aktiv",
+      "fieldsOfAction": [
+        "bne",
+        "politische_bildung",
+        "persoenlichkeitsentwicklung"
+      ],
+      "primaryFieldOfAction": "bne",
+      "educationStages": {
+        "modell": "bildungsstruktur-bereiche",
+        "werte": [
+          "sekundarstufe_1",
+          "sekundarstufe_2"
+        ],
+        "quelle": "abgeleitet"
+      },
+      "targetGroups": [
+        {
+          "role": "institutions",
+          "label": "—"
+        }
+      ],
+      "implementation": {
+        "value": "both",
+        "visibility": "public"
+      },
+      "scope": "regional",
+      "areasOfActivity": [
+        {
+          "key": "06384",
+          "label": "Hessen (Kreis)"
+        }
+      ],
+      "activeInStates": [
+        {
+          "key": "06",
+          "label": "Hessen"
+        }
+      ]
+    },
+    {
+      "id": "a23",
+      "name": "Impulswerk Saar e. V.",
+      "legalForm": "registeredAssociation",
+      "status": "aktiv",
+      "fieldsOfAction": [
+        "persoenlichkeitsentwicklung",
+        "mint_bildung",
+        "digitale_transformation"
+      ],
+      "primaryFieldOfAction": "persoenlichkeitsentwicklung",
+      "educationStages": {
+        "modell": "bildungsstruktur-bereiche",
+        "werte": [
+          "sekundarstufe_2"
+        ],
+        "quelle": "abgeleitet"
+      },
+      "targetGroups": [
+        {
+          "role": "multipliers",
+          "label": "—"
+        },
+        {
+          "role": "institutions",
+          "label": "—"
+        }
+      ],
+      "implementation": {
+        "value": "operational",
+        "visibility": "public"
+      },
+      "scope": "regional",
+      "areasOfActivity": [
+        {
+          "key": "01135",
+          "label": "Schleswig-Holstein (Kreis)"
+        },
+        {
+          "key": "06961",
+          "label": "Hessen (Kreis)"
+        },
+        {
+          "key": "08591",
+          "label": "Baden-Württemberg (Kreis)"
+        }
+      ],
+      "activeInStates": [
+        {
+          "key": "01",
+          "label": "Schleswig-Holstein"
+        },
+        {
+          "key": "06",
+          "label": "Hessen"
+        },
+        {
+          "key": "08",
+          "label": "Baden-Württemberg"
+        }
+      ]
+    },
+    {
+      "id": "a25",
+      "name": "Bildungsanker Main e. V.",
+      "legalForm": "registeredAssociation",
+      "status": "aktiv",
+      "fieldsOfAction": [
+        "interkulturelle_bildung",
+        "engagementfoerderung",
+        "kulturelle_bildung"
+      ],
+      "primaryFieldOfAction": "interkulturelle_bildung",
+      "educationStages": {
+        "modell": "bildungsstruktur-bereiche",
+        "werte": [
+          "primarstufe",
+          "quartaerbereich"
+        ],
+        "quelle": "abgeleitet"
+      },
+      "targetGroups": [
+        {
+          "role": "multipliers",
+          "label": "—"
+        }
+      ],
+      "implementation": {
+        "value": "operational",
+        "visibility": "public"
+      },
+      "scope": "national",
+      "areasOfActivity": [],
+      "activeInStates": []
+    },
+    {
+      "id": "a27",
+      "name": "Bildungsanker Ost",
+      "legalForm": "cooperative",
+      "status": "aktiv",
+      "fieldsOfAction": [
+        "mint_bildung",
+        "sprachbildung"
+      ],
+      "primaryFieldOfAction": "mint_bildung",
+      "educationStages": {
+        "modell": "bildungsstruktur-bereiche",
+        "werte": [
+          "sekundarstufe_1",
+          "sekundarstufe_2",
+          "primarstufe"
+        ],
+        "quelle": "abgeleitet"
+      },
+      "targetGroups": [
+        {
+          "role": "institutions",
+          "label": "—"
+        },
+        {
+          "role": "institutions",
+          "label": "—"
+        }
+      ],
+      "implementation": {
+        "value": "funding",
+        "visibility": "public"
+      },
+      "scope": "regional",
+      "areasOfActivity": [
+        {
+          "key": "04101",
+          "label": "Bremen (Kreis)"
+        },
+        {
+          "key": "05818",
+          "label": "Nordrhein-Westfalen (Kreis)"
+        },
+        {
+          "key": "16796",
+          "label": "Thüringen (Kreis)"
+        }
+      ],
+      "activeInStates": [
+        {
+          "key": "04",
+          "label": "Bremen"
+        },
+        {
+          "key": "05",
+          "label": "Nordrhein-Westfalen"
+        },
+        {
+          "key": "16",
+          "label": "Thüringen"
+        }
+      ]
+    }
+  ]
+}
