@@ -1,0 +1,48 @@
+/*
+ * Organisationsstatus — ist der Akteur derzeit handlungsfaehig?
+ */
+
+EduVocab.register({
+    "id": "organisationsstatus",
+    "label": "Status",
+    "version": "0.1.0",
+    "status": "arbeitsstand",
+    "quelle": {
+      "bezeichnung": "Festlegung der Arbeitsgruppe KKAB",
+      "url": null,
+      "abgerufen": "2026-09-15",
+      "pruefstand": "unbestaetigt"
+    },
+    "concepts": [
+      {
+        "key": "founding",
+        "label": "in Gründung",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "active",
+        "label": "aktiv",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "dormant",
+        "label": "ruhend",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "dissolving",
+        "label": "in Auflösung",
+        "deprecated": false,
+        "ersetztDurch": null
+      },
+      {
+        "key": "ended",
+        "label": "beendet",
+        "deprecated": false,
+        "ersetztDurch": null
+      }
+    ]
+  });
