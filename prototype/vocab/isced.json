@@ -1,12 +1,4 @@
-/*
- * ISCED 2011
- * Die deutschen Stufenbezeichnungen konnten nicht gegen das Eurostat-Vokabular geprueft werden — der Abruf war aus der Arbeitsumgebung nicht moeglich (siehe VOKABULARSTAND.md). Die Stufenkennungen ED0 bis ED8 sind unstrittig.
- *
- * Erzeugt aus isced2011.json durch tools/vokabular-einbetten.mjs.
- * Nicht von Hand aendern — Aenderungen gehoeren in die JSON-Datei.
- */
-
-EduVocab.register({
+{
   "id": "isced2011",
   "label": "ISCED 2011",
   "version": "1.0.0",
@@ -83,4 +75,4 @@ EduVocab.register({
       "ersetztDurch": null
     }
   ]
-});
+}

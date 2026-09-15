@@ -1,12 +1,4 @@
-/*
- * Herkunft der Angabe
- * Vorschlag aus der Recherche, nicht beschlossen.
- *
- * Erzeugt aus herkunftsquellen.json durch tools/vokabular-einbetten.mjs.
- * Nicht von Hand aendern — Aenderungen gehoeren in die JSON-Datei.
- */
-
-EduVocab.register({
+{
   "id": "herkunftsquellen",
   "label": "Herkunft der Angabe",
   "version": "0.1.0",
@@ -48,4 +40,4 @@ EduVocab.register({
       "ersetztDurch": null
     }
   ]
-});
+}

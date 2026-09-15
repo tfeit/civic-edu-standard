@@ -1,12 +1,4 @@
-/*
- * Lernform / Schulform
- * Vorschlag aus der Recherche, nicht beschlossen. Diese vier Konzepte sind in educationalContext enthalten, sind aber keine Bildungsphasen und wuerden die Phasenachse verunreinigen.
- *
- * Erzeugt aus lernformen.json durch tools/vokabular-einbetten.mjs.
- * Nicht von Hand aendern — Aenderungen gehoeren in die JSON-Datei.
- */
-
-EduVocab.register({
+{
   "id": "lernformen",
   "label": "Lernform / Schulform",
   "version": "0.1.0",
@@ -52,4 +44,4 @@ EduVocab.register({
       "ersetztDurch": null
     }
   ]
-});
+}

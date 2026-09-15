@@ -1,12 +1,4 @@
-/*
- * Handlungsfelder
- * Nicht abgestimmt. Konsolidierung folgt aus dem Hausaufgabenformat der Arbeitsgruppe. Die Zahl der KKAB-Handlungsfelder ist offen (23 oder 24).
- *
- * Erzeugt aus handlungsfelder.json durch tools/vokabular-einbetten.mjs.
- * Nicht von Hand aendern — Aenderungen gehoeren in die JSON-Datei.
- */
-
-EduVocab.register({
+{
   "id": "handlungsfelder",
   "label": "Handlungsfelder",
   "version": "0.2.0",
@@ -236,4 +228,4 @@ EduVocab.register({
       "ersetztDurch": null
     }
   ]
-});
+}

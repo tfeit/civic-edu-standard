@@ -1,11 +1,4 @@
-/*
- * Reichweite
- *
- * Erzeugt aus reichweite.json durch tools/vokabular-einbetten.mjs.
- * Nicht von Hand aendern — Aenderungen gehoeren in die JSON-Datei.
- */
-
-EduVocab.register({
+{
   "id": "reichweite",
   "label": "Reichweite",
   "version": "0.1.0",
@@ -58,4 +51,4 @@ EduVocab.register({
       "ersetztDurch": null
     }
   ]
-});
+}

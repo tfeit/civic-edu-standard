@@ -1,12 +1,4 @@
-/*
- * Nachhaltigkeitsziele (SDGs)
- * Zu pruefen nach dem SDG-Gipfel September 2027 (Post-2030-Agenda).
- *
- * Erzeugt aus sdg.json durch tools/vokabular-einbetten.mjs.
- * Nicht von Hand aendern — Aenderungen gehoeren in die JSON-Datei.
- */
-
-EduVocab.register({
+{
   "id": "sdg",
   "label": "Nachhaltigkeitsziele (SDGs)",
   "version": "1.0.0",
@@ -139,4 +131,4 @@ EduVocab.register({
       "ersetztDurch": null
     }
   ]
-});
+}

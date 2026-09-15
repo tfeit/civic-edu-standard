@@ -1,12 +1,4 @@
-/*
- * Bundesländer
- * Zu pruefen bei Gebietsreformen.
- *
- * Erzeugt aus bundeslaender.json durch tools/vokabular-einbetten.mjs.
- * Nicht von Hand aendern — Aenderungen gehoeren in die JSON-Datei.
- */
-
-EduVocab.register({
+{
   "id": "bundeslaender",
   "label": "Bundesländer",
   "version": "1.0.0",
@@ -116,4 +108,4 @@ EduVocab.register({
       "ersetztDurch": null
     }
   ]
-});
+}

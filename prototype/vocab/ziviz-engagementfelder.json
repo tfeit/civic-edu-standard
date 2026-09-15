@@ -1,12 +1,4 @@
-/*
- * ZiviZ-Engagementfelder
- * Aggregationsachse, wird nicht erfasst. Als bestaetigt uebernommen aus der Vokabularrecherche der Arbeitsgruppe; ein eigener Gegenprueflauf war nicht moeglich (siehe VOKABULARSTAND.md).
- *
- * Erzeugt aus zivizEngagementfelder.json durch tools/vokabular-einbetten.mjs.
- * Nicht von Hand aendern — Aenderungen gehoeren in die JSON-Datei.
- */
-
-EduVocab.register({
+{
   "id": "zivizEngagementfelder",
   "label": "ZiviZ-Engagementfelder",
   "version": "1.0.0",
@@ -132,4 +124,4 @@ EduVocab.register({
       "ersetztDurch": null
     }
   ]
-});
+}

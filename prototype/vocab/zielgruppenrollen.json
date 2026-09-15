@@ -1,13 +1,6 @@
-/*
- * Adresstypen
- *
- * Erzeugt aus adresstypen.json durch tools/vokabular-einbetten.mjs.
- * Nicht von Hand aendern — Aenderungen gehoeren in die JSON-Datei.
- */
-
-EduVocab.register({
-  "id": "adresstypen",
-  "label": "Adresstypen",
+{
+  "id": "zielgruppenrollen",
+  "label": "Zielgruppenrollen",
   "version": "0.2.0",
   "status": "arbeitsstand",
   "quelle": {
@@ -18,28 +11,34 @@ EduVocab.register({
   },
   "concepts": [
     {
-      "key": "headquarters",
-      "label": "Sitz",
+      "key": "beneficiaries",
+      "label": "Endbegünstigte",
       "deprecated": false,
       "ersetztDurch": null
     },
     {
-      "key": "office",
-      "label": "Geschäftsstelle",
+      "key": "multipliers",
+      "label": "Multiplikator:innen/Fachkräfte",
       "deprecated": false,
       "ersetztDurch": null
     },
     {
-      "key": "branch",
-      "label": "weiterer Standort",
+      "key": "institutions",
+      "label": "Institutionen",
       "deprecated": false,
       "ersetztDurch": null
     },
     {
-      "key": "postalAddress",
-      "label": "Postanschrift",
+      "key": "policyMakers",
+      "label": "politische Entscheidungsträger:innen",
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "funders",
+      "label": "Fördergebende",
       "deprecated": false,
       "ersetztDurch": null
     }
   ]
-});
+}

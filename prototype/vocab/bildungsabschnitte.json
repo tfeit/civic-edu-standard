@@ -1,12 +1,4 @@
-/*
- * Bildungsabschnitte
- * Unveraendert aus Auftrag 1. Der Crosswalk nach ISCED und educationalContext steht in crosswalks.js, die Qualitaet der Zuordnung je Abschnitt dort vermerkt.
- *
- * Erzeugt aus bildungsabschnitte.json durch tools/vokabular-einbetten.mjs.
- * Nicht von Hand aendern — Aenderungen gehoeren in die JSON-Datei.
- */
-
-EduVocab.register({
+{
   "id": "bildungsabschnitte",
   "label": "Bildungsabschnitte",
   "version": "0.2.0",
@@ -76,4 +68,4 @@ EduVocab.register({
       "ersetztDurch": null
     }
   ]
-});
+}

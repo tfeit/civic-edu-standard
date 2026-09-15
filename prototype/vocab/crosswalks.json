@@ -1,12 +1,4 @@
-/*
- * Zuordnungen zwischen Vokabularen
- * Die Zuordnung der Handlungsfelder zu ZiviZ und ICNPO ist eine Setzung der Arbeitsgruppe und nicht extern belegt. Der Bildungs-Crosswalk traegt je Abschnitt einen Qualitaetsvermerk.
- *
- * Erzeugt aus crosswalks.json durch tools/vokabular-einbetten.mjs.
- * Nicht von Hand aendern — Aenderungen gehoeren in die JSON-Datei.
- */
-
-EduVocab.register({
+{
   "id": "crosswalks",
   "label": "Zuordnungen zwischen Vokabularen",
   "version": "0.1.0",
@@ -367,4 +359,4 @@ EduVocab.register({
       "ersetztDurch": null
     }
   ]
-});
+}

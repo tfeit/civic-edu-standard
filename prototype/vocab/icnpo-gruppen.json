@@ -1,12 +1,4 @@
-/*
- * ICNPO-Gruppen
- * Aggregationsachse, wird nicht erfasst. Deutsche Bezeichnungen sind Arbeitsuebersetzungen; massgeblich ist label_en.
- *
- * Erzeugt aus icnpoGruppen.json durch tools/vokabular-einbetten.mjs.
- * Nicht von Hand aendern — Aenderungen gehoeren in die JSON-Datei.
- */
-
-EduVocab.register({
+{
   "id": "icnpoGruppen",
   "label": "ICNPO-Gruppen",
   "version": "1.0.0",
@@ -148,4 +140,4 @@ EduVocab.register({
       "ersetztDurch": null
     }
   ]
-});
+}

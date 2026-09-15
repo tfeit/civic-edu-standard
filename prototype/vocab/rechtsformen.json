@@ -1,12 +1,4 @@
-/*
- * Rechtsformen
- * Zur Entscheidung in WS 4: Mit dem bundesweiten Stiftungsregister fuehren rechtsfaehige Stiftungen eine Registerkennung. Die Vorgabe fuer diesen Arbeitsstand lautet "Stiftung: kein Registerfeld"; ob das Schema die Kennung erfasst, entscheidet die Arbeitsgruppe.
- *
- * Erzeugt aus rechtsformen.json durch tools/vokabular-einbetten.mjs.
- * Nicht von Hand aendern — Aenderungen gehoeren in die JSON-Datei.
- */
-
-EduVocab.register({
+{
   "id": "rechtsformen",
   "label": "Rechtsformen",
   "version": "0.3.0",
@@ -146,4 +138,4 @@ EduVocab.register({
       "ersetztDurch": null
     }
   ]
-});
+}

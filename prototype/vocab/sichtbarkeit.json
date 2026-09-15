@@ -1,11 +1,4 @@
-/*
- * Sichtbarkeit
- *
- * Erzeugt aus sichtbarkeit.json durch tools/vokabular-einbetten.mjs.
- * Nicht von Hand aendern — Aenderungen gehoeren in die JSON-Datei.
- */
-
-EduVocab.register({
+{
   "id": "sichtbarkeit",
   "label": "Sichtbarkeit",
   "version": "0.1.0",
@@ -30,4 +23,4 @@ EduVocab.register({
       "ersetztDurch": null
     }
   ]
-});
+}
