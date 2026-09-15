@@ -40,6 +40,30 @@
       <p class="zaehler-wert" id="zaehler-wert" aria-live="polite">0 von 0 Pflichtfeldern ausgefüllt</p>
       <div class="zaehler-balken" aria-hidden="true"><span id="zaehler-balken"></span></div>
       <p class="zaehler-offen" id="zaehler-offen"></p>
+
+      <nav aria-labelledby="navigation-titel">
+        <h3 id="navigation-titel" class="karte-untertitel">Abschnitte</h3>
+        <ul class="navigation" id="abschnitt-navigation"></ul>
+      </nav>
+    </section>
+
+    <section class="karte" aria-labelledby="beispiel-titel">
+      <h2 id="beispiel-titel">Beispieldaten</h2>
+      <details id="beispiel-auswahl">
+        <summary>Beispieldaten einfügen</summary>
+        <ul class="beispiel-liste" id="beispiel-liste"></ul>
+      </details>
+      <div class="karte-aktionen">
+        <button type="button" class="leise" id="formular-leeren">Formular leeren</button>
+        <button type="button" class="leise" id="speicher-verwerfen" hidden>Zwischenstand verwerfen</button>
+      </div>
+      <p class="karte-hinweis" id="beispiel-rueckmeldung" role="status"></p>
+      <p class="karte-hinweis" id="speicher-hinweis"></p>
+      <p class="karte-hinweis">
+        Beispieldaten und Leeren setzen den Timer zurück — gemessen wird die
+        Eingabe von Hand. Eingaben bleiben im Browser erhalten und verlassen
+        das Gerät nicht.
+      </p>
     </section>
 
     <section class="karte" aria-labelledby="vorschau-titel">
@@ -48,6 +72,7 @@
         <button type="button" class="primaer" id="json-kopieren">JSON kopieren</button>
       </div>
       <p class="kopier-rueckmeldung" id="kopier-rueckmeldung" role="status"></p>
+      <p class="vorschau-fokus" id="vorschau-fokus" aria-live="polite"></p>
       <pre class="json" id="json-vorschau" tabindex="0" aria-label="Live-Vorschau des Datensatzes im JSON-Format">{}</pre>
       <p class="vorschau-fuss">
         Hinter dem Formular steht ein maschinenlesbarer Datensatz. Leere Felder

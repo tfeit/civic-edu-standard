@@ -417,26 +417,86 @@
 
   renderer.repeatable = function (feld) {
     var eintraege = el('div', { class: 'eintraege' });
-    var leerHinweis = el('p', { class: 'leer-hinweis', text: 'Noch kein Eintrag.' });
-    var hinzu = el('button', { type: 'button', class: 'leise', text: '+ ' + feld.addLabel });
+    var leerHinweis = el('p', {
+      class: 'leer-hinweis',
+      text: 'Noch kein Eintrag — über den Knopf darunter hinzufügen.'
+    });
+    var hinzu = el('button', {
+      type: 'button',
+      class: 'leise',
+      text: '+ ' + feld.addLabel,
+      title: 'Auch mit Strg + Eingabetaste aus einem Feld dieser Gruppe'
+    });
+    var rueckgaengig = el('div', { class: 'rueckgaengig', hidden: true });
     var warnungen = el('div', {});
 
-    hinzu.addEventListener('click', function () {
+    function ergaenzeEintrag() {
+      verwirfRueckgaengig(feld);
       zustand[feld.key].push(neuerEintrag(feld));
       zeichneEintraege(feld, true);
       aktualisiere();
+    }
+
+    hinzu.addEventListener('click', ergaenzeEintrag);
+
+    // Strg/Cmd + Eingabetaste innerhalb der Gruppe legt einen Eintrag an.
+    eintraege.addEventListener('keydown', function (ereignis) {
+      if (ereignis.key === 'Enter' && (ereignis.ctrlKey || ereignis.metaKey)) {
+        ereignis.preventDefault();
+        ergaenzeEintrag();
+      }
     });
 
-    var huelle = el('div', {}, [eintraege, leerHinweis, hinzu, warnungen]);
+    var huelle = el('div', {}, [eintraege, leerHinweis, hinzu, rueckgaengig, warnungen]);
     var wrapper = feldRahmen(feld, huelle, { gruppenLabel: true });
 
     knoten[feld.key].eintraege = eintraege;
     knoten[feld.key].leerHinweis = leerHinweis;
     knoten[feld.key].warnungen = warnungen;
     knoten[feld.key].hinzuKnopf = hinzu;
+    knoten[feld.key].rueckgaengig = rueckgaengig;
     zeichneEintraege(feld, false);
     return wrapper;
   };
+
+  /* --------------------------------------------- Entfernen rueckgaengig machen */
+
+  var letzteEntfernung = null;
+
+  function merkeEntfernung(feld, index, eintrag) {
+    letzteEntfernung = { feldKey: feld.key, index: index, eintrag: eintrag };
+    zeigeRueckgaengig(feld);
+  }
+
+  function zeigeRueckgaengig(feld) {
+    var behaelter = knoten[feld.key].rueckgaengig;
+    if (!behaelter) { return; }
+    behaelter.textContent = '';
+    if (!letzteEntfernung || letzteEntfernung.feldKey !== feld.key) {
+      behaelter.hidden = true;
+      return;
+    }
+    var knopf = el('button', { type: 'button', class: 'leise', text: 'Rückgängig' });
+    knopf.addEventListener('click', function () {
+      var gemerkt = letzteEntfernung;
+      letzteEntfernung = null;
+      zustand[gemerkt.feldKey].splice(gemerkt.index, 0, gemerkt.eintrag);
+      zeichneEintraege(feld, false);
+      aktualisiere();
+      if (knoten[feld.key].hinzuKnopf) { knoten[feld.key].hinzuKnopf.focus(); }
+    });
+    behaelter.appendChild(el('span', { text: feld.entryLabel + ' entfernt. ' }));
+    behaelter.appendChild(knopf);
+    behaelter.hidden = false;
+  }
+
+  function verwirfRueckgaengig(feld) {
+    letzteEntfernung = null;
+    if (knoten[feld.key] && knoten[feld.key].rueckgaengig) {
+      knoten[feld.key].rueckgaengig.hidden = true;
+      knoten[feld.key].rueckgaengig.textContent = '';
+    }
+  }
 
   function zeichneEintraege(feld, fokusLetzten) {
     var behaelter = knoten[feld.key].eintraege;
@@ -489,13 +549,18 @@
         'aria-label': feld.entryLabel + ' ' + (index + 1) + ' entfernen'
       });
       entfernen.addEventListener('click', function () {
-        zustand[feld.key].splice(index, 1);
+        var entfernter = zustand[feld.key].splice(index, 1)[0];
         zeichneEintraege(feld, false);
+        merkeEntfernung(feld, index, entfernter);
         aktualisiere();
+        if (knoten[feld.key].hinzuKnopf) { knoten[feld.key].hinzuKnopf.focus(); }
       });
 
       var kopf = el('div', { class: 'eintrag-kopf' }, [
-        el('span', { class: 'eintrag-nummer', text: feld.entryLabel + ' ' + (index + 1) }),
+        el('span', { class: 'eintrag-nummer' }, [
+          document.createTextNode(feld.entryLabel + ' ' + (index + 1)),
+          el('span', { class: 'eintrag-zusammenfassung', text: eintragsZusammenfassung(feld, eintrag) })
+        ]),
         entfernen
       ]);
 
@@ -510,6 +575,18 @@
         if (ziel) { ziel.focus(); }
       }
     }
+  }
+
+  // Kurzfassung eines Eintrags fuer den Kopf der Karte, damit bei mehreren
+  // Eintraegen erkennbar bleibt, welcher welcher ist.
+  function eintragsZusammenfassung(feld, eintrag) {
+    var teile = [];
+    feld.subfields.forEach(function (teil) {
+      var wert = (eintrag[teil.key] || '').trim();
+      if (!wert) { return; }
+      teile.push(teil.type === 'select' ? beschriftung(teil.options, wert) : wert);
+    });
+    return teile.length ? ' · ' + teile.join(' · ') : '';
   }
 
   function ergaenzeBundeslandLabel(feld, eintrag, index) {
@@ -660,7 +737,12 @@
     var ziel = document.getElementById('formular');
     MODELL.blocks.forEach(function (block) {
       var legende = el('legend', { text: block.title });
-      var abschnitt = el('fieldset', { class: 'abschnitt' }, [
+      var abschnitt = el('fieldset', {
+        class: 'abschnitt',
+        id: 'abschnitt-' + block.id,
+        'data-block': block.id,
+        tabindex: '-1'
+      }, [
         legende,
         el('p', { class: 'abschnitt-intro', text: block.intro })
       ]);
@@ -718,6 +800,12 @@
       var eintrag = zustand[feld.key][index];
       var fehlerKnoten = box.querySelector('.feld-fehler');
       if (!eintrag || !fehlerKnoten) { return; }
+
+      var zusammenfassung = box.querySelector('.eintrag-zusammenfassung');
+      if (zusammenfassung) {
+        zusammenfassung.textContent = eintragsZusammenfassung(feld, eintrag);
+      }
+
       var texte = [];
 
       feld.subfields.forEach(function (teil) {
@@ -1005,10 +1093,71 @@
   }
 
   var letzterJsonText = '{}';
+  var aktivesFeld = '';
+
+  // Baut dieselbe Ausgabe wie JSON.stringify(datensatz, null, 2), umschliesst
+  // aber jeden Eintrag der obersten Ebene, damit das gerade bearbeitete Feld
+  // hervorgehoben werden kann.
+  function vorschauHtml(datensatz) {
+    var schluessel = Object.keys(datensatz);
+    if (!schluessel.length) { return '{}'; }
+    // Die Blockelemente erzeugen die Zeilenumbrueche selbst; zusaetzliche
+    // Trennzeichen wuerden Leerzeilen ergeben.
+    var zeilen = schluessel.map(function (name, index) {
+      var wert = JSON.stringify(datensatz[name], null, 2).split('\n').join('\n  ');
+      var text = '  ' + JSON.stringify(name) + ': ' + wert + (index < schluessel.length - 1 ? ',' : '');
+      return '<span class="j-block" data-schluessel="' + name + '">' + faerbeJson(text) + '</span>';
+    });
+    return '{' + zeilen.join('') + '}';
+  }
 
   function aktualisiereVorschau() {
-    letzterJsonText = JSON.stringify(baueDatensatz(), null, 2);
-    document.getElementById('json-vorschau').innerHTML = faerbeJson(letzterJsonText);
+    var datensatz = baueDatensatz();
+    letzterJsonText = JSON.stringify(datensatz, null, 2);
+    document.getElementById('json-vorschau').innerHTML = vorschauHtml(datensatz);
+    hebeFeldHervor();
+  }
+
+  /* --------------------------------------------- Hervorhebung in der Vorschau */
+
+  function feldLabel(schluessel) {
+    var gefunden = '';
+    alleFelder().forEach(function (feld) {
+      if (feld.key === schluessel) { gefunden = feld.label; }
+    });
+    return gefunden;
+  }
+
+  function hebeFeldHervor() {
+    var vorschau = document.getElementById('json-vorschau');
+    var hinweis = document.getElementById('vorschau-fokus');
+    Array.prototype.forEach.call(vorschau.querySelectorAll('.j-block'), function (block) {
+      block.classList.remove('hervorgehoben');
+    });
+    if (!aktivesFeld) { hinweis.textContent = ''; return; }
+
+    var ziel = vorschau.querySelector('.j-block[data-schluessel="' + aktivesFeld + '"]');
+    if (!ziel) {
+      hinweis.textContent = feldLabel(aktivesFeld) + ' — noch leer, erscheint mit der ersten Eingabe.';
+      return;
+    }
+    ziel.classList.add('hervorgehoben');
+    hinweis.textContent = feldLabel(aktivesFeld) + ' — im Datensatz als „' + aktivesFeld + '“.';
+
+    // Innerhalb der Vorschau scrollen, nie die Seite bewegen.
+    var oben = ziel.offsetTop - vorschau.offsetTop;
+    var unten = oben + ziel.offsetHeight;
+    if (oben < vorschau.scrollTop) {
+      vorschau.scrollTop = Math.max(0, oben - 8);
+    } else if (unten > vorschau.scrollTop + vorschau.clientHeight) {
+      vorschau.scrollTop = unten - vorschau.clientHeight + 8;
+    }
+  }
+
+  function setzeAktivesFeld(schluessel) {
+    if (aktivesFeld === schluessel) { return; }
+    aktivesFeld = schluessel || '';
+    hebeFeldHervor();
   }
 
   /* ------------------------------------------------------ Pflichtfeldzähler */
@@ -1069,6 +1218,13 @@
           aktualisiereEintragsFehler(feld);
           if (feld.key === 'areasOfActivity') { aktualisiereGebietsWarnungen(feld); }
           if (feld.key === 'addresses') { aktualisiereAdressWarnungen(feld); }
+          // Die Rueckgaengig-Zeile baut merkeEntfernung auf; hier wird sie nur
+          // abgeraeumt, sobald sie nicht mehr gilt — das erhaelt den Fokus.
+          if (ref.rueckgaengig && !ref.rueckgaengig.hidden &&
+              (!letzteEntfernung || letzteEntfernung.feldKey !== feld.key)) {
+            ref.rueckgaengig.hidden = true;
+            ref.rueckgaengig.textContent = '';
+          }
           break;
         case 'textarea':
           aktualisiereZeichenzaehler(feld);
@@ -1091,7 +1247,9 @@
     });
 
     aktualisiereZaehler();
+    aktualisiereNavigation();
     aktualisiereVorschau();
+    speichere();
   }
 
   function aktualisiereZeichenzaehler(feld) {
@@ -1107,18 +1265,29 @@
 
   var timerLaeuft = false;
   var timerStart = null;
+  var timerTakt = null;
 
   function starteTimer() {
     if (timerLaeuft) { return; }
     timerLaeuft = true;
     timerStart = Date.now();
-    window.setInterval(function () {
+    timerTakt = window.setInterval(function () {
       var sekunden = Math.floor((Date.now() - timerStart) / 1000);
       var mm = String(Math.floor(sekunden / 60)).padStart(2, '0');
       var ss = String(sekunden % 60).padStart(2, '0');
       document.getElementById('timer-wert').textContent = mm + ':' + ss;
     }, 1000);
     document.getElementById('timer-hinweis').textContent = 'läuft seit der ersten Eingabe';
+  }
+
+  // Beispieldaten und Zuruecksetzen sind keine manuelle Eingabe: der Timer
+  // misst die Zehn-Minuten-Frage und beginnt dafuer wieder bei null.
+  function setzeTimerZurueck() {
+    if (timerTakt) { window.clearInterval(timerTakt); timerTakt = null; }
+    timerLaeuft = false;
+    timerStart = null;
+    document.getElementById('timer-wert').textContent = '00:00';
+    document.getElementById('timer-hinweis').textContent = 'startet bei der ersten Eingabe';
   }
 
   /* -------------------------------------------------------------- Kopieren */
@@ -1154,18 +1323,254 @@
     melde(geglueckt ? 'In die Zwischenablage kopiert.' : 'Kopieren nicht möglich — bitte manuell markieren.');
   }
 
+  /* ------------------------------------------- Werte ins Formular schreiben */
+
+  // Gegenrichtung zum Tippen: schreibt den Zustand in die Eingabefelder.
+  // Wird nur bei Beispieldaten, Zuruecksetzen und beim Laden eines
+  // Zwischenstands aufgerufen, nie waehrend einer laufenden Eingabe.
+  function zeichneWerte() {
+    alleFelder().forEach(function (feld) {
+      var ref = knoten[feld.key];
+      if (!ref) { return; }
+      switch (feld.type) {
+        case 'repeatable':
+          zeichneEintraege(feld, false);
+          break;
+        case 'conditionalGroup':
+          feld.subfields.forEach(function (teil) {
+            if (ref[teil.key]) { ref[teil.key].value = zustand[feld.key][teil.key] || ''; }
+          });
+          break;
+        case 'radioWithVisibility':
+          ref.wrapper.querySelectorAll('input[type="radio"]').forEach(function (radio) {
+            var istSicht = radio.name.indexOf('-sicht') !== -1;
+            radio.checked = radio.value === (istSicht ? zustand[feld.key].visibility : zustand[feld.key].value);
+          });
+          break;
+        case 'checkboxes':
+        case 'computedChips':
+        case 'derivedSelect':
+          break; // werden von aktualisiere() aus dem Zustand nachgezogen
+        default:
+          if (ref.eingabe) { ref.eingabe.value = zustand[feld.key] || ''; }
+          // Die gemerkte Wikidata-Beschriftung gehoert zum alten Wert.
+          if (feld.type === 'wikidata') { ref.label = ''; }
+      }
+    });
+  }
+
+  /* ------------------------------------------------------------ Beispieldaten */
+
+  function uebernehmeBeispiel(beispiel) {
+    initZustand();
+    Object.keys(beispiel.data).forEach(function (schluessel) {
+      var wert = beispiel.data[schluessel];
+      // Tiefe Kopie, damit das Beispiel beim Bearbeiten unveraendert bleibt.
+      zustand[schluessel] = JSON.parse(JSON.stringify(wert));
+    });
+    nachSprung(beispiel.label + ' eingefügt. Timer zurückgesetzt.');
+  }
+
+  function leereFormular() {
+    initZustand();
+    nachSprung('Formular geleert.');
+  }
+
+  function nachSprung(meldung) {
+    letzteEntfernung = null;
+    zeichneWerte();
+    setzeTimerZurueck();
+    aktualisiere();
+    document.getElementById('beispiel-rueckmeldung').textContent = meldung;
+    window.setTimeout(function () {
+      var knoten = document.getElementById('beispiel-rueckmeldung');
+      if (knoten.textContent === meldung) { knoten.textContent = ''; }
+    }, 6000);
+  }
+
+  function baueBeispielKnoepfe() {
+    var liste = document.getElementById('beispiel-liste');
+    (window.EduStandard.beispiele || []).forEach(function (beispiel) {
+      var knopf = el('button', { type: 'button', class: 'leise beispiel-knopf' }, [
+        el('span', { class: 'beispiel-name', text: beispiel.label }),
+        el('span', { class: 'beispiel-summary', text: beispiel.summary })
+      ]);
+      knopf.addEventListener('click', function () {
+        uebernehmeBeispiel(beispiel);
+        document.getElementById('beispiel-auswahl').open = false;
+      });
+      liste.appendChild(el('li', {}, [knopf]));
+    });
+  }
+
+  /* --------------------------------------------- Zwischenspeicher im Browser */
+
+  var SPEICHER_SCHLUESSEL = 'edustandard.akteursprofil.v0';
+  var speicherVerfuegbar = true;
+
+  function speichere() {
+    if (!speicherVerfuegbar) { return; }
+    try {
+      window.localStorage.setItem(SPEICHER_SCHLUESSEL, JSON.stringify(zustand));
+    } catch (fehler) {
+      // Privates Fenster, gesperrte Website-Daten, file:// mit strenger
+      // Richtlinie: die Maske funktioniert ohne Zwischenspeicher weiter.
+      speicherVerfuegbar = false;
+      setzeSpeicherHinweis('Zwischenspeichern in diesem Browser nicht möglich — die Eingaben gehen beim Neuladen verloren.');
+    }
+  }
+
+  function ladeZwischenstand() {
+    var roh;
+    try {
+      roh = window.localStorage.getItem(SPEICHER_SCHLUESSEL);
+    } catch (fehler) {
+      speicherVerfuegbar = false;
+      return false;
+    }
+    if (!roh) { return false; }
+
+    var gespeichert;
+    try { gespeichert = JSON.parse(roh); } catch (fehler) { return false; }
+    if (!gespeichert || typeof gespeichert !== 'object') { return false; }
+
+    // Defensiv zusammenfuehren: Ein Zwischenstand kann aus einer Fassung des
+    // Feldmodells stammen, die Felder kannte, die es nicht mehr gibt.
+    var frisch = JSON.parse(JSON.stringify(zustand));
+    alleFelder().forEach(function (feld) {
+      if (!Object.prototype.hasOwnProperty.call(gespeichert, feld.key)) { return; }
+      var wert = gespeichert[feld.key];
+      var passt =
+        (feld.type === 'checkboxes' || feld.type === 'repeatable' || feld.type === 'computedChips')
+          ? Array.isArray(wert)
+          : (feld.type === 'conditionalGroup' || feld.type === 'radioWithVisibility')
+            ? (wert && typeof wert === 'object' && !Array.isArray(wert))
+            : typeof wert === 'string';
+      if (!passt) { return; }
+      zustand[feld.key] = wert;
+    });
+
+    // Ein Zwischenstand, der sich nur in der vergebenen ID vom frischen
+    // Formular unterscheidet, ist nichts, worauf hinzuweisen waere.
+    var nennenswert = alleFelder().some(function (feld) {
+      if (feld.type === 'uuid') { return false; }
+      return JSON.stringify(zustand[feld.key]) !== JSON.stringify(frisch[feld.key]);
+    });
+    return nennenswert;
+  }
+
+  function setzeSpeicherHinweis(text) {
+    var knoten = document.getElementById('speicher-hinweis');
+    if (knoten) { knoten.textContent = text; }
+  }
+
+  function verwirfZwischenstand() {
+    try { window.localStorage.removeItem(SPEICHER_SCHLUESSEL); } catch (fehler) { /* still */ }
+    leereFormular();
+    setzeSpeicherHinweis('');
+    document.getElementById('speicher-verwerfen').hidden = true;
+  }
+
+  /* ------------------------------------------------- Abschnittsnavigation */
+
+  function baueNavigation() {
+    var liste = document.getElementById('abschnitt-navigation');
+    MODELL.blocks.forEach(function (block) {
+      var verweis = el('a', { href: '#abschnitt-' + block.id, class: 'nav-verweis' }, [
+        el('span', { class: 'nav-titel', text: block.title }),
+        el('span', { class: 'nav-stand', id: 'nav-stand-' + block.id })
+      ]);
+      liste.appendChild(el('li', {}, [verweis]));
+      navVerweise[block.id] = verweis;
+    });
+
+    if (!window.IntersectionObserver) { return; }
+    var beobachter = new window.IntersectionObserver(function (eintraege) {
+      eintraege.forEach(function (eintrag) {
+        if (!eintrag.isIntersecting) { return; }
+        var id = eintrag.target.getAttribute('data-block');
+        Object.keys(navVerweise).forEach(function (schluessel) {
+          var aktiv = schluessel === id;
+          navVerweise[schluessel].classList.toggle('aktiv', aktiv);
+          if (aktiv) {
+            navVerweise[schluessel].setAttribute('aria-current', 'true');
+          } else {
+            navVerweise[schluessel].removeAttribute('aria-current');
+          }
+        });
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+
+    MODELL.blocks.forEach(function (block) {
+      var abschnitt = document.getElementById('abschnitt-' + block.id);
+      if (abschnitt) { beobachter.observe(abschnitt); }
+    });
+  }
+
+  var navVerweise = {};
+
+  function feldIstBefuellt(feld) {
+    var wert = zustand[feld.key];
+    if (feld.type === 'radioWithVisibility') { return !!wert.value; }
+    if (feld.type === 'conditionalGroup') {
+      return feld.subfields.some(function (teil) {
+        return !teil.derived && (wert[teil.key] || '').trim() !== '';
+      });
+    }
+    if (feld.type === 'repeatable') {
+      return wert.some(function (eintrag) { return eintragIstBefuellt(feld, eintrag); });
+    }
+    if (Array.isArray(wert)) { return wert.length > 0; }
+    return (wert || '').toString().trim() !== '';
+  }
+
+  function aktualisiereNavigation() {
+    MODELL.blocks.forEach(function (block) {
+      var sichtbare = block.fields.filter(istSichtbar);
+      var befuellte = sichtbare.filter(feldIstBefuellt);
+      var stand = document.getElementById('nav-stand-' + block.id);
+      if (stand) {
+        stand.textContent = befuellte.length + ' von ' + sichtbare.length + ' Feldern befüllt';
+      }
+    });
+  }
+
   /* ------------------------------------------------------------------ Start */
 
   function start() {
     initZustand();
     zeichneFormular();
+    baueNavigation();
+    baueBeispielKnoepfe();
 
     var formular = document.getElementById('formular');
     formular.addEventListener('input', starteTimer, true);
     formular.addEventListener('change', starteTimer, true);
 
+    // Das gerade bearbeitete Feld in der JSON-Vorschau hervorheben.
+    formular.addEventListener('focusin', function (ereignis) {
+      var feldKnoten = ereignis.target.closest('.feld');
+      setzeAktivesFeld(feldKnoten ? feldKnoten.getAttribute('data-feld') : '');
+    });
+    formular.addEventListener('focusout', function () {
+      window.setTimeout(function () {
+        if (!formular.contains(document.activeElement)) { setzeAktivesFeld(''); }
+      }, 0);
+    });
+
     document.getElementById('json-kopieren').addEventListener('click', kopiereJson);
+    document.getElementById('formular-leeren').addEventListener('click', leereFormular);
+    document.getElementById('speicher-verwerfen').addEventListener('click', verwirfZwischenstand);
     document.getElementById('modell-version').textContent = MODELL.version;
+
+    var wiederhergestellt = ladeZwischenstand();
+    if (wiederhergestellt) {
+      zeichneWerte();
+      setzeSpeicherHinweis('Zwischenstand aus diesem Browser geladen.');
+      document.getElementById('speicher-verwerfen').hidden = false;
+    } else if (!speicherVerfuegbar) {
+      setzeSpeicherHinweis('Zwischenspeichern in diesem Browser nicht möglich — die Eingaben gehen beim Neuladen verloren.');
+    }
 
     aktualisiere();
   }
