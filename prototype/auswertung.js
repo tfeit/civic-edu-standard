@@ -107,12 +107,31 @@
     ]);
   }
 
-  function abschnitt(titel, erlaeuterung, inhalt) {
-    return el('section', { class: 'auswertungsblock' }, [
+  function abschnitt(titel, erlaeuterung, inhalt, achse) {
+    var kinder = [
       el('h2', { text: titel }),
-      el('p', { class: 'auswertung-lesehilfe', text: erlaeuterung }),
-      inhalt
-    ]);
+      el('p', { class: 'auswertung-lesehilfe', text: erlaeuterung })
+    ];
+    luecken(achse).forEach(function (l) { kinder.push(l); });
+    kinder.push(inhalt);
+    return el('section', { class: 'auswertungsblock' }, kinder);
+  }
+
+  /*
+   * Eine leere Zeile ist normalerweise der interessante Befund. Wo sie aber
+   * daher ruehrt, wie die Beispieldaten entstanden sind, waere genau diese
+   * Lesart falsch. Solche Stellen stehen in beispiel.json unter luecken und
+   * werden hier ausgewiesen — nicht im Code benannt, damit der Hinweis mit
+   * den Daten verschwindet, sobald echte Daten einziehen.
+   */
+  function luecken(achse) {
+    if (!achse) { return []; }
+    return (DATEN.luecken || []).filter(function (l) { return l.achse === achse; })
+      .map(function (l) {
+        var name = V.beschriftung(l.achse, l.wert);
+        return el('p', { class: 'auswertung-luecke', role: 'note' },
+          [el('strong', { text: name + ' steht auf null. ' }), document.createTextNode(l.grund)]);
+      });
   }
 
   /* ----------------------------------------------------------- Karte */
@@ -124,12 +143,12 @@
    * ohne den Anschein kartografischer Genauigkeit.
    */
   var LAENDER_RASTER = [
-    ['',   '01', '02', ''  ],
-    ['04', '03', '13', ''  ],
-    ['05', '15', '12', '11'],
-    ['06', '16', '14', ''  ],
-    ['07', '08', '09', ''  ],
-    ['10', '',   '',   ''  ]
+    ['',   '01', '02', ''  ],   // Schleswig-Holstein, Hamburg
+    ['04', '03', '13', ''  ],   // Bremen, Niedersachsen, Mecklenburg-Vorpommern
+    ['05', '15', '12', '11'],   // Nordrhein-Westfalen, Sachsen-Anhalt, Brandenburg, Berlin
+    ['06', '16', '14', ''  ],   // Hessen, Thüringen, Sachsen
+    ['10', '07', '',   ''  ],   // Saarland, Rheinland-Pfalz
+    ['',   '08', '09', ''  ]    // Baden-Württemberg, Bayern
   ];
 
   function laenderraster(zeilen) {
@@ -205,8 +224,9 @@
     ziel.appendChild(abschnitt(
       'Wo wird gearbeitet',
       'Ohne gemeinsame Struktur lässt sich diese Frage über Plattformgrenzen '
-        + 'hinweg nicht beantworten. Leere Felder sind die aussagekräftigen: '
-        + 'Sie zeigen, wo im Bestand nichts liegt.',
+        + 'hinweg nicht beantworten. Leere Felder sind hier die aussagekräftigen: '
+        + 'Sie zeigen, wo im Bestand nichts liegt. Eine Organisation kann in '
+        + 'mehreren Ländern wirken und dann mehrfach gezählt werden.',
       laenderraster(zaehle('bundeslaender', function (a) {
         return (a.activeInStates || []).map(function (s) { return s.key; });
       }))
@@ -223,10 +243,12 @@
     ziel.appendChild(abschnitt(
       'In welchen Bildungsbereichen',
       'Maßgeblich ist die Primärzielgruppe: in welcher Bildungsphase die '
-        + 'Menschen stehen, die unmittelbar teilnehmen.',
+        + 'Menschen stehen, die unmittelbar teilnehmen. Mehrfachnennung ist '
+        + 'möglich, die Summe übersteigt deshalb die Zahl der Organisationen.',
       balken(zaehle('bildungsstruktur-bereiche', function (a) {
         return (a.educationStages || {}).werte;
-      }), { achse: 'Bildungsbereich', beschriftung: 'Organisationen je Bildungsbereich' })
+      }), { achse: 'Bildungsbereich', beschriftung: 'Organisationen je Bildungsbereich' }),
+      'bildungsstruktur-bereiche'
     ));
 
     ziel.appendChild(abschnitt(
@@ -249,7 +271,9 @@
       'Und was sich daraus ergibt, ohne dass es jemand ausfüllt',
       'Die Einordnung in die Sektorstatistik wird aus den Handlungsfeldern '
         + 'abgeleitet. Genau das ist der Punkt der Zweistufigkeit: '
-        + 'bildungsspezifisch erfassen, sektorweit vergleichbar herausgeben.',
+        + 'bildungsspezifisch erfassen, sektorweit vergleichbar herausgeben. '
+        + 'Mehrfachnennung schlägt durch: Mehrere Handlungsfelder können auf verschiedene Engagementfelder führen, '
+        + 'die Summe übersteigt deshalb die Zahl der Organisationen.',
       balken(engagementfelder(), {
         achse: 'Engagementfeld', beschriftung: 'Organisationen je Engagementfeld, abgeleitet'
       })

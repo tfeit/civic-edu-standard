@@ -236,8 +236,14 @@
     return el('span', { class: k.klasse, text: text });
   }
 
+  /*
+   * Kennzeichen fuer Felder, deren Aufnahme oder Ausgestaltung nicht
+   * entschieden ist. Frueher stand hier "zur Entscheidung in WS 4" — seit
+   * Workshop 4 stattgefunden hat, waere das eine falsche Datierung: Die
+   * Felder sind weiterhin offen, nur nicht mehr auf diesen Termin bezogen.
+   */
   function badgeWs4() {
-    return el('span', { class: 'badge-ws4', text: 'zur Entscheidung in WS 4' });
+    return el('span', { class: 'badge-ws4', text: 'Entscheidung offen' });
   }
 
   // Felder aus der Vokabularrecherche: als Vorschlag kenntlich, nicht als
@@ -1945,21 +1951,33 @@
      */
     var stufen = datensatz.educationStages;
     if (stufen && stufen.modell === 'bildungsstruktur-bereiche' && stufen.werte.length) {
-      var isced = [], stufenQualitaet = [];
+      var isced = [], stufenQualitaet = [], ohneEntsprechung = [];
       stufen.werte.forEach(function (bereich) {
         var e = bereichsEintrag(bereich);
         if (!e) { return; }
+        if (!e.isced.length) { ohneEntsprechung.push(bereich); return; }
         e.isced.forEach(function (k) { if (isced.indexOf(k) === -1) { isced.push(k); } });
         if (stufenQualitaet.indexOf(e.iscedQualitaet) === -1) {
           stufenQualitaet.push(e.iscedQualitaet);
         }
       });
       isced.sort();
-      if (isced.length || stufenQualitaet.length) {
+      if (isced.length || ohneEntsprechung.length) {
         abgeleitet.isced = isced;
-        // Mehrere Bereiche koennen unterschiedlich gut uebersetzbar sein.
-        // Ausgegeben wird die schlechteste Stufe — sie begrenzt die Aussage.
-        abgeleitet.iscedQualitaet = schlechtesteQualitaet(stufenQualitaet);
+        /*
+         * Die Qualitaetsstufe bewertet die Bereiche, die tatsaechlich
+         * uebersetzt wurden — bei mehreren die schlechteste, denn sie begrenzt
+         * die Aussage. Bereiche ohne Entsprechung stehen daneben und nicht in
+         * der Qualitaetsstufe: Sonst stuende bei "Primarstufe und
+         * Quartaerbereich" die Angabe keine_entsprechung neben einem
+         * ausgewiesenen ED1 — und das waere schlicht falsch.
+         */
+        abgeleitet.iscedQualitaet = isced.length
+          ? schlechtesteQualitaet(stufenQualitaet)
+          : 'keine_entsprechung';
+        if (ohneEntsprechung.length) {
+          abgeleitet.iscedOhneEntsprechung = ohneEntsprechung;
+        }
         etwas = true;
       }
     }
