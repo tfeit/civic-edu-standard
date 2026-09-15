@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verschneidung — Akteursprofil (EduStandard)</title>
+<meta name="description" content="Zwei Merkmale des Datenschemas gegeneinander gelegt: Anzahl der Akteure je Kombination, als Kreuztabelle.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="seite-simulation">
+
+<a class="sprunglink" href="#matrix-bereich">Zur Tabelle springen</a>
+
+<p class="banner" role="note">Prototyp · Arbeitsstand · Vokabulare in Konsolidierung</p>
+
+<header class="kopf">
+  <div>
+    <h1>Verschneidung</h1>
+    <p>
+      Was wird möglich, wenn Verbände nach gemeinsamem Schema veröffentlichen?
+      Zwei Merkmale gegeneinander gelegt, die Zahl der Akteure je Kombination.
+      Solche Auswertungen sind ohne gemeinsame Felder nicht zu haben.
+    </p>
+  </div>
+  <nav class="seitennavigation" aria-label="Seiten des Prototyps">
+    <a href="index.html">Formular</a>
+    <a href="schema.html">Datenmodell</a>
+    <a href="simulation.html" aria-current="page">Verschneidung</a>
+  </nav>
+</header>
+
+<div class="steuerzeile" role="group" aria-label="Achsen und Filter">
+  <div class="steuerfeld">
+    <label for="achse-zeile">Zeilen</label>
+    <select id="achse-zeile"></select>
+  </div>
+  <div class="steuerfeld">
+    <label for="achse-spalte">Spalten</label>
+    <select id="achse-spalte"></select>
+  </div>
+  <button type="button" class="leise" id="achse-tauschen" title="Zeilen und Spalten vertauschen">Achsen tauschen</button>
+
+  <div class="steuer-trenner" aria-hidden="true"></div>
+
+  <div class="steuerfeld">
+    <label for="filter-reichweite">Filter: Reichweite</label>
+    <select id="filter-reichweite"><option value="">alle</option></select>
+  </div>
+  <div class="steuerfeld">
+    <label for="filter-verwirklichung">Filter: Verwirklichung</label>
+    <select id="filter-verwirklichung"><option value="">alle</option></select>
+  </div>
+  <div class="steuerfeld">
+    <label for="sortierung">Reihenfolge</label>
+    <select id="sortierung">
+      <option value="menge">nach Menge</option>
+      <option value="vokabular">wie im Vokabular</option>
+    </select>
+  </div>
+  <button type="button" class="leise" id="filter-zuruecksetzen">Filter zurücksetzen</button>
+</div>
+
+<main class="matrix-layout">
+
+  <section class="matrix-bereich" id="matrix-bereich" aria-labelledby="matrix-titel">
+    <div class="matrix-kopf">
+      <h2 id="matrix-titel">Kreuztabelle</h2>
+      <p class="kennzahl" id="kennzahl-ausschnitt"></p>
+      <div class="skala" id="skala" aria-hidden="true"></div>
+    </div>
+
+    <div class="matrix-huelle">
+      <div id="matrix"></div>
+    </div>
+
+    <p class="matrix-fuss" id="mehrfach-hinweis"></p>
+    <p class="matrix-fuss">
+      Jede Zelle trägt ihre Zahl im Text; die Farbe wiederholt sie nur. Die
+      Darstellung bleibt damit ohne Farbwahrnehmung lesbar. Ein Punkt steht
+      für eine leere Kombination.
+    </p>
+  </section>
+
+  <aside class="detail-spalte" aria-labelledby="auswahl-titel-sr">
+    <h2 id="auswahl-titel-sr" class="nur-sr">Akteure der gewählten Zelle</h2>
+    <div class="karte" id="auswahl" aria-live="polite"></div>
+    <p class="karte-hinweis">
+      Der Bestand ist erfunden und dient der Veranschaulichung. Die Auswertung
+      selbst rechnet auf denselben Feldern, die das Formular erhebt.
+    </p>
+  </aside>
+
+</main>
+
+<footer class="fuss">
+  <p>
+    36 erfundene Organisationen, schemakonform nach <code>fields.js</code>.
+    Namen aus festen Bausteinen zusammengesetzt; ein Bezug zu realen
+    Organisationen besteht nicht.
+  </p>
+</footer>
+
+<script src="fields.js"></script>
+<script src="akteure.js"></script>
+<script src="simulation.js"></script>
+</body>
+</html>
