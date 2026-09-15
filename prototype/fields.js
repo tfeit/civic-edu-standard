@@ -37,7 +37,29 @@
   var STATUS = vok('organisationsstatus');
   var ADRESSTYPEN = vok('adresstypen');
   var HANDLUNGSFELDER = vok('handlungsfelder');
-  var BILDUNGSABSCHNITTE = vok('bildungsabschnitte');
+
+  /*
+   * Bildungsabschnitte: Nach Workshop 4 stehen zwei Systematiken zur
+   * Entscheidung. Beide sind hier hinterlegt, damit sie im Formular
+   * gegeneinander ausprobiert werden koennen. Welche in Version 1.0 gilt,
+   * ist nicht entschieden.
+   */
+  var BILDUNGSMODELLE = [
+    {
+      id: 'bildungsstruktur-bereiche',
+      label: (V.vokabular('bildungsstruktur-bereiche') || {}).label || 'Bildungsbereiche',
+      kurz: 'Bildungsbereiche',
+      options: vok('bildungsstruktur-bereiche'),
+      mitUebergaengen: true
+    },
+    {
+      id: 'bildungsabschnitte-lebenslang',
+      label: (V.vokabular('bildungsabschnitte-lebenslang') || {}).label || 'Bildungsabschnitte',
+      kurz: 'Bildungsabschnitte (lebenslanges Lernen)',
+      options: vok('bildungsabschnitte-lebenslang'),
+      mitUebergaengen: false
+    }
+  ];
   var LERNFORMEN = vok('lernformen');
   var ZIELGRUPPENROLLEN = vok('zielgruppenrollen');
   var SDGS = vok('sdg');
@@ -51,6 +73,29 @@
   (V.vokabular('rechtsformen') || { concepts: [] }).concepts.forEach(function (b) {
     if (b.registerart) { REGISTERART_JE_RECHTSFORM[b.key] = b.registerart; }
   });
+
+  /*
+   * Aggregationshinweise zu den Handlungsfeldern.
+   *
+   * Der Crosswalk ordnet jedes Handlungsfeld einem Engagementfeld der
+   * Zivilgesellschaftsstatistik und einer ICNPO-Gruppe zu. Wo diese Zuordnung
+   * unsicher ist, gehoert der Grund an den Wert — sonst bleibt die offene
+   * Stelle im Gespraech unsichtbar.
+   */
+  var HF_ZUORDNUNG = {};
+  ((V.vokabular('crosswalk-handlungsfelder') || {}).eintraege || []).forEach(function (e) {
+    HF_ZUORDNUNG[e.handlungsfeld] = e;
+  });
+
+  function handlungsfeldHinweise(option) {
+    var e = HF_ZUORDNUNG[option.value];
+    if (!e) { return []; }
+    var zeilen = ['Wird aggregiert zu: ' + e.engagementfeld + ' (ICNPO ' + e.icnpo + ').'];
+    if (e.sicherheit === 'niedrig' && e.hinweis) {
+      zeilen.push('Zuordnung unsicher: ' + e.hinweis);
+    }
+    return zeilen;
+  }
 
   // Reichweiten, bei denen eine Gebietsliste erfasst wird.
   var REICHWEITEN_MIT_GEBIETEN = ['local', 'regional', 'state'];
@@ -223,8 +268,9 @@
             type: 'select',
             requirement: 'P',
             help: 'Ist dieser Akteur derzeit handlungsfähig?',
+            note: 'Beendete Organisationen bleiben im Bestand — nur so bleiben vergangene Kooperationen nachvollziehbar.',
             options: STATUS,
-            default: 'active',
+            default: 'aktiv',
             allowEmpty: false
           },
           {
@@ -249,7 +295,7 @@
             label: 'Cover',
             type: 'url',
             requirement: 'O',
-            help: 'Querformatiges Titelbild (URL).',
+            help: 'Bannerbild, wie man es von Profilseiten kennt. Viele Organisationen haben keines — das Feld darf leer bleiben.',
             placeholder: 'https://www.beispiel.de/titelbild.jpg'
           },
           {
@@ -310,11 +356,16 @@
             label: 'Handlungsfelder',
             type: 'checkboxes',
             requirement: 'P',
-            help: 'In welchen Feldern ist die Organisation tätig? Mindestens eines, höchstens fünf.',
+            help: 'In welchen Feldern ist die Organisation tätig?',
             options: HANDLUNGSFELDER,
+            optionHinweise: handlungsfeldHinweise,
             min: 1,
-            max: 5,
-            placeholderList: true
+            // Weiche Grenze: Die Obergrenze von fünf ist ein Vorschlag aus der
+            // Vokabulararbeit, kein Beschluss. Eine Sperre wuerde im Workshop
+            // als Entscheidung missverstanden. Ab der sechsten Nennung
+            // erscheint deshalb nur ein Hinweis.
+            softMax: 5,
+            softMaxHinweis: 'Je mehr Felder, desto weniger sagt die Angabe aus.'
           },
           {
             key: 'primaryFieldOfAction',
@@ -327,20 +378,26 @@
           },
           {
             key: 'educationStages',
-            vokabular: 'bildungsabschnitte',
             label: 'Bildungsabschnitte',
-            type: 'checkboxes',
+            type: 'stageModel',
             requirement: 'E',
-            help: 'In welcher Bildungsphase stehen die Menschen, die unmittelbar teilnehmen? Beispiel: Lehrkräftefortbildung = Erwachsenen- und Weiterbildung.',
-            options: BILDUNGSABSCHNITTE
+            pending: true,
+            help: 'In welcher Bildungsphase stehen die Menschen, die unmittelbar an euren Angeboten teilnehmen?',
+            note: 'Eine Organisation, die Lehrkräfte fortbildet, wählt Quartärbereich — nicht Schulbildung. '
+              + 'Die Schülerinnen und Schüler erscheinen im Zielgruppenfeld.',
+            modelle: BILDUNGSMODELLE,
+            modellHinweis: 'Zwei Systematiken stehen zur Entscheidung. Hier lassen sich beide ausprobieren.',
+            crosswalk: 'crosswalk-bildungsabschnitte',
+            min: 1
           },
           {
             key: 'targetGroups',
-            label: 'Zielgruppen',
+            label: 'Wer nimmt an euren Angeboten teil?',
             type: 'repeatable',
             requirement: 'E',
-            help: 'Wen erreicht die Organisation unmittelbar?',
-            note: 'Rollen nicht mischen — „Lehrkräfte und Kinder“ sind zwei Einträge.',
+            help: 'Erfasst wird die Primärzielgruppe: wer unmittelbar beteiligt ist, nicht wo mittelbar Wirkung entsteht.',
+            note: 'Eine Person kann mehrere Rollen haben. Maßgeblich ist, in welcher Rolle sie an eurem '
+              + 'Angebot teilnimmt — „Lehrkräfte und Kinder“ sind zwei Einträge.',
             entryLabel: 'Zielgruppe',
             addLabel: 'Zielgruppe hinzufügen',
             subfields: [
@@ -365,10 +422,22 @@
             label: 'Nachhaltigkeitsziele (SDGs)',
             type: 'checkboxes',
             requirement: 'O',
-            help: 'Auf welche der 17 Ziele zahlt die Arbeit am deutlichsten ein? Höchstens drei.',
+            help: 'Auf welche der 17 Ziele zahlt die Arbeit am deutlichsten ein?',
             options: SDGS,
-            max: 3,
+            // Wie bei den Handlungsfeldern: keine Sperre, weil keine Obergrenze
+            // beschlossen ist. Stattdessen die Frage nach dem primaeren Ziel.
+            softMax: 3,
+            softMaxHinweis: 'Je mehr Ziele, desto weniger sagt die Angabe aus. Welches ist das primäre?',
             columns: 1
+          },
+          {
+            key: 'primarySdg',
+            label: 'Primäres Nachhaltigkeitsziel',
+            type: 'derivedSelect',
+            requirement: 'O',
+            help: 'Auf welches der gewählten Ziele zahlt die Arbeit am deutlichsten ein?',
+            optionsFrom: 'sdgs',
+            emptyHint: 'Bitte zuerst Nachhaltigkeitsziele auswählen.'
           },
           {
             key: 'learningFormats',
@@ -478,11 +547,15 @@
           { type: 'headquarters', streetAddress: '', postalCode: '12679', addressLocality: 'Berlin' }
         ],
         legalForm: 'informalGroup',
-        status: 'active',
+        status: 'aktiv',
         description: 'Die Lesebrücke Marzahn bringt ehrenamtliche Lesepat:innen mit Grundschulkindern zusammen, die zu Hause wenig Gelegenheit zum Lesen haben. Einmal wöchentlich wird in kleinen Gruppen an zwei Schulen im Bezirk gelesen. Die Initiative arbeitet ohne feste Stellen und finanziert sich aus Spenden und einer Bezirksförderung.',
-        fieldsOfAction: ['languageAndLiteracy', 'mentoring'],
-        primaryFieldOfAction: 'languageAndLiteracy',
-        educationStages: ['primary'],
+        fieldsOfAction: ['sprachbildung', 'persoenlichkeitsentwicklung'],
+        primaryFieldOfAction: 'sprachbildung',
+        educationStages: {
+          modell: 'bildungsstruktur-bereiche',
+          werte: ['primarstufe'],
+          quelle: 'selbstauskunft'
+        },
         targetGroups: [
           { role: 'beneficiaries', label: 'Kinder der Jahrgangsstufen 1 bis 4' },
           { role: 'multipliers', label: 'Ehrenamtliche Lesepat:innen' }
@@ -509,11 +582,18 @@
         ],
         legalForm: 'registeredAssociation',
         registerIds: { registerNumber: '6742', registerCourt: 'Amtsgericht Kiel' },
-        status: 'active',
+        status: 'aktiv',
         description: 'Lernraum Nord begleitet Schulen in Schleswig-Holstein bei der Demokratiebildung. Der Verein qualifiziert Lehrkräfte, moderiert Klassenrats- und Beteiligungsprozesse und stellt frei nutzbare Materialien bereit. Ziel ist, dass Jugendliche Aushandlung und Mitbestimmung im Schulalltag praktisch erfahren und nicht nur als Unterrichtsthema kennenlernen. Getragen wird die Arbeit von 14 Hauptamtlichen und rund 60 Ehrenamtlichen.',
-        fieldsOfAction: ['democracyEducation', 'civicEducation'],
-        primaryFieldOfAction: 'democracyEducation',
-        educationStages: ['lowerSecondary', 'upperSecondary', 'adultEducation'],
+        fieldsOfAction: ['politische_bildung', 'lehrkraeftebildung'],
+        primaryFieldOfAction: 'politische_bildung',
+        // Der Verein qualifiziert Lehrkraefte und arbeitet mit Schulklassen:
+        // beide Bereiche stehen nebeneinander, dazu der Uebergang dazwischen.
+        educationStages: {
+          modell: 'bildungsstruktur-bereiche',
+          werte: ['sekundarstufe_1', 'sekundarstufe_2', 'quartaerbereich'],
+          uebergaenge: ['sek1_sek2'],
+          quelle: 'selbstauskunft'
+        },
         targetGroups: [
           { role: 'multipliers', label: 'Lehrkräfte Sekundarstufe I' },
           { role: 'beneficiaries', label: 'Schülerinnen und Schüler der Jahrgänge 7 bis 10' }
@@ -539,16 +619,24 @@
           { type: 'postalAddress', streetAddress: 'Postfach 90 01 21', postalCode: '60441', addressLocality: 'Frankfurt am Main' }
         ],
         legalForm: 'foundation',
-        status: 'active',
+        status: 'aktiv',
         description: 'Die Stiftung Bildungschancen fördert gemeinnützige Träger, die Jugendliche beim Übergang von der Schule in Ausbildung und Beruf begleiten. Sie vergibt Projektmittel, finanziert Qualifizierung in den geförderten Organisationen und wertet die Ergebnisse gemeinsam mit ihnen aus. Eigene Angebote führt die Stiftung nicht durch; sie versteht sich als Ko-Finanziererin und Lernpartnerin der Trägerlandschaft.',
-        fieldsOfAction: ['careerOrientation', 'stemEducation', 'digitalEducation'],
-        primaryFieldOfAction: 'careerOrientation',
-        educationStages: ['lowerSecondary', 'upperSecondary', 'vocational'],
+        fieldsOfAction: ['wirtschaft', 'mint_bildung', 'digitale_transformation'],
+        primaryFieldOfAction: 'wirtschaft',
+        // Berufsorientierung ist in der neuen Liste kein Handlungsfeld mehr,
+        // sondern erscheint ueber den Bildungsbereich und den Uebergang.
+        educationStages: {
+          modell: 'bildungsstruktur-bereiche',
+          werte: ['sekundarstufe_1', 'sekundarstufe_2'],
+          uebergaenge: ['sek1_sek2', 'sek2_erwerbstaetigkeit'],
+          quelle: 'selbstauskunft'
+        },
         targetGroups: [
           { role: 'institutions', label: 'Gemeinnützige Bildungsträger' },
-          { role: 'policyMakers', label: 'Bildungsverwaltungen der Länder' }
+          { role: 'institutions', label: 'Bildungsverwaltungen der Länder' }
         ],
         sdgs: ['4', '8', '10'],
+        primarySdg: '4',
         implementation: { value: 'funding', visibility: 'network' },
         scope: 'national'
       }
@@ -569,7 +657,10 @@
     status: STATUS,
     adresstypen: ADRESSTYPEN,
     handlungsfelder: HANDLUNGSFELDER,
-    bildungsabschnitte: BILDUNGSABSCHNITTE,
+    bildungsmodelle: BILDUNGSMODELLE,
+    // Auswertungsachse: die Bildungsbereiche. Sie sind die Leitachse des
+    // Crosswalks und tragen als einzige eine ISCED-Entsprechung.
+    bildungsbereiche: BILDUNGSMODELLE[0].options,
     lernformen: LERNFORMEN,
     zielgruppenrollen: ZIELGRUPPENROLLEN,
     sdgs: SDGS,

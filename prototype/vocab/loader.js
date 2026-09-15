@@ -128,7 +128,8 @@
         return {
           value: c.key, label: c.label, hint: c.hint || null,
           definition: c.definition || null, beispiele: c.beispiele || null,
-          negativbeispiel: c.negativbeispiel || null, tooltip: c.tooltip || null
+          negativbeispiel: c.negativbeispiel || null, tooltip: c.tooltip || null,
+          zusatz: c.zusatz || null, definitionStatus: c.definitionStatus || null
         };
       });
   }

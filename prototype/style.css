@@ -1512,3 +1512,78 @@ pre.json .j-block[data-schluessel="activeInStates"].hervorgehoben {
 }
 
 .veraltet-wert { color: var(--text-leise); }
+
+
+/* ---------------------------------------- Bildungsabschnitte (Workshop 4) */
+
+.modellschalter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-bottom: .5rem;
+}
+
+.modelloption {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .35rem .6rem;
+  border: 1px solid var(--linie);
+  border-radius: 999px;
+  background: #fff;
+  cursor: pointer;
+  font-size: .92rem;
+}
+
+.modelloption:has(input:checked) {
+  border-color: var(--akzent);
+  background: var(--akzent-hell);
+  font-weight: 600;
+}
+
+/* :has() ist nicht ueberall vorhanden — der Fokusring darf davon nicht
+   abhaengen, sonst ist die Tastaturbedienung nicht erkennbar. */
+.modelloption:focus-within {
+  outline: 2px solid var(--akzent);
+  outline-offset: 2px;
+}
+
+.wechselhinweis {
+  margin: .5rem 0;
+  padding: .6rem .75rem;
+  border-left: 3px solid var(--akzent);
+  background: var(--akzent-hell);
+  font-size: .88rem;
+  line-height: 1.5;
+}
+
+.wechselhinweis strong,
+.wechselhinweis .wechselzeile {
+  display: block;
+}
+
+.wechselhinweis .wechselzeile {
+  margin-top: .3rem;
+}
+
+.uebergangsblock {
+  margin-top: .9rem;
+  padding-top: .7rem;
+  border-top: 1px dashed var(--linie);
+}
+
+.uebergangsblock[hidden] {
+  display: none;
+}
+
+.weiche-grenze {
+  margin: .4rem 0 0;
+  padding: .45rem .6rem;
+  border-left: 3px solid #B58900;
+  background: #FDF6E3;
+  font-size: .88rem;
+}
+
+.weiche-grenze[hidden] {
+  display: none;
+}
