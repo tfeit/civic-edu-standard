@@ -683,5 +683,12 @@ window.EduStandard.beispieldaten = {
         }
       ]
     }
+  ],
+  "luecken": [
+    {
+      "achse": "bildungsstruktur-bereiche",
+      "wert": "tertiaerbereich",
+      "grund": "Der fiktive Bestand wurde vor der Umstellung auf die Bildungsbereiche erzeugt und enthielt nie einen Wert, der auf den Tertiärbereich führt. Die leere Zeile ist ein Artefakt der Datenerzeugung, keine Aussage über den Sektor. Sie wird nicht nachträglich gefüllt, weil erfundene Einträge die Auswertung unehrlich machen würden."
+    }
   ]
 };

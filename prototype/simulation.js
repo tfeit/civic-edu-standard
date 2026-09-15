@@ -175,7 +175,7 @@
         el('span', { class: 'kopf-text', text: s.label })
       ]));
     });
-    kopfZeile.appendChild(el('th', { scope: 'col', class: 'summe-kopf', text: 'Summe' }));
+    kopfZeile.appendChild(el('th', { scope: 'col', class: 'summe-kopf', text: 'Akteure' }));
     tabelle.appendChild(el('thead', {}, [kopfZeile]));
 
     var tbody = el('tbody', {});
@@ -212,7 +212,7 @@
     });
     tabelle.appendChild(tbody);
 
-    var fussZeile = el('tr', {}, [el('th', { scope: 'row', class: 'kopf-zeile summe-kopf', text: 'Summe' })]);
+    var fussZeile = el('tr', {}, [el('th', { scope: 'row', class: 'kopf-zeile summe-kopf', text: 'Akteure' })]);
     m.spalten.forEach(function (s) {
       fussZeile.appendChild(el('td', { class: 'summe', text: String(m.spaltenSumme[s.value] || 0) }));
     });
@@ -288,9 +288,19 @@
     var mehrfach = [];
     if (m.dZeile.mehrwertig) { mehrfach.push(m.dZeile.label); }
     if (m.dSpalte.mehrwertig) { mehrfach.push(m.dSpalte.label); }
+    /*
+     * Die Randwerte zaehlen Akteure, nicht Zellen. Ein Akteur mit mehreren
+     * Werten auf der anderen Achse steht in mehreren Zellen, am Rand aber nur
+     * einmal; ein Akteur ohne Wert auf der anderen Achse steht am Rand, aber
+     * in keiner Zelle. Beides laesst Zellen und Rand auseinandergehen — in
+     * beide Richtungen. Wer das nicht weiss, haelt die Tabelle fuer falsch.
+     */
     document.getElementById('mehrfach-hinweis').textContent = mehrfach.length
-      ? 'Mehrfachnennungen bei: ' + mehrfach.join(' und ') + '. Ein Akteur zählt dann in mehreren Zellen; die Summen übersteigen die Zahl der Akteure.'
-      : 'Jeder Akteur zählt in genau einer Zelle.';
+      ? 'Mehrfachnennungen bei: ' + mehrfach.join(' und ') + '. Die Randwerte zählen '
+        + 'Akteure, nicht Zellen: Wer mehrere Werte angibt, steht in mehreren Zellen, '
+        + 'am Rand aber nur einmal. Wer auf der anderen Achse nichts angibt, steht am '
+        + 'Rand, aber in keiner Zelle. Zellen und Rand summieren sich deshalb nicht auf.'
+      : 'Jeder Akteur zählt in genau einer Zelle; die Randwerte sind die Zeilen- und Spaltensummen.';
   }
 
   /* --------------------------------------------------------- Bedienung */

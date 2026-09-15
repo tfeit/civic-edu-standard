@@ -1910,3 +1910,13 @@ pre.json .j-block[data-schluessel="activeInStates"].hervorgehoben {
   color: var(--text-leise);
   line-height: 1.45;
 }
+
+.auswertung-luecke {
+  margin: 0 0 .7rem;
+  padding: .5rem .7rem;
+  border-left: 3px solid #B58900;
+  background: #FDF6E3;
+  font-size: .86rem;
+  line-height: 1.5;
+  max-width: 44rem;
+}

@@ -395,6 +395,10 @@
           {
             key: 'targetGroups',
             label: 'Wer nimmt an euren Angeboten teil?',
+            // Im Formular steht die Leitfrage, weil sie das Feld erhebbar
+            // macht. In der Netzdarstellung waere eine Frage als Knotenname
+            // unbrauchbar — dort gilt der Feldname.
+            kurz: 'Zielgruppen',
             type: 'repeatable',
             requirement: 'E',
             help: 'Erfasst wird die Primärzielgruppe: wer unmittelbar beteiligt ist, nicht wo mittelbar Wirkung entsteht.',

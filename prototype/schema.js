@@ -42,6 +42,18 @@
 
   // Leitet die Abhaengigkeiten aus dem Feldmodell ab — nichts ist hier
   // fest verdrahtet, eine Aenderung in fields.js schlaegt durch.
+  /*
+   * Im Formular ist immer nur eine Variante sichtbar; dort genuegt die
+   * schlichte Beschriftung. Das Netz zeigt dagegen das ganze Schema — und
+   * darin gibt es die konkurrierenden Felder nebeneinander. Ohne den Zusatz
+   * stuenden zwei Knoten namens "Reichweite" nebeneinander und saehen wie ein
+   * Fehler aus, statt wie die offene Entscheidung, die sie abbilden.
+   */
+  function feldBeschriftung(feld) {
+    var name = feld.kurz || feld.label;
+    return feld.variante ? name + ' (Variante ' + feld.variante + ')' : name;
+  }
+
   function schemaNetz() {
     var knoten = [], kanten = [], gesehen = {};
     var anker = {
@@ -69,15 +81,16 @@
 
     alleFelder().forEach(function (eintrag) {
       var feld = eintrag.feld, block = eintrag.block;
+      var beschriftung = feldBeschriftung(feld);
       knoten.push({
         id: feld.key,
-        label: feld.label,
+        label: beschriftung,
         gruppe: GRUPPE_JE_BLOCK[block.id] || 'a',
         radius: feld.requirement === 'P' ? 8 : feld.requirement === 'E' ? 6.5 : 5.5,
         art: 'feld',
         feld: feld,
         block: block,
-        ariaLabel: feld.label + ', Block ' + block.title + ', ' +
+        ariaLabel: beschriftung + ', Block ' + block.title + ', ' +
           ({ P: 'Pflicht', E: 'empfohlen', O: 'optional', B: 'berechnet' }[feld.requirement] || '')
       });
       // Grosse Bloecke brauchen einen weiteren Ring, sonst draengen sich
@@ -221,14 +234,14 @@
 
     if (knoten.art === 'feld') {
       var f = knoten.feld;
-      kopf.textContent = f.label;
+      kopf.textContent = feldBeschriftung(f);
       liste.appendChild(zeile('Block', knoten.block.title));
       liste.appendChild(zeile('JSON-Schlüssel', f.key));
       liste.appendChild(zeile('Typ', f.type));
       liste.appendChild(zeile('Verbindlichkeit',
         { P: 'Pflicht', E: 'empfohlen', O: 'optional', B: 'berechnet' }[f.requirement] || '—'));
       if (f.options) { liste.appendChild(zeile('Vokabular', f.options.length + ' Werte')); }
-      if (f.pending) { liste.appendChild(zeile('Status', 'zur Entscheidung in WS 4')); }
+      if (f.pending) { liste.appendChild(zeile('Status', 'Entscheidung offen')); }
       ziel.appendChild(kopf);
       if (f.help) { ziel.appendChild(el('p', { class: 'detail-hilfe', text: f.help })); }
       ziel.appendChild(liste);

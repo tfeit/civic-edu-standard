@@ -7,6 +7,56 @@ Format: Datum · Datei · Änderung · Quelle.
 
 ---
 
+## 2026-09-15 · Durchsicht der veröffentlichten Seiten
+
+Prüfung der vier Seiten auf Darstellungsfehler und der Inhalte auf innere
+Stimmigkeit. Sechs Befunde, alle behoben.
+
+- **Netzdarstellung** · Zwei Knoten trugen die Beschriftung „Reichweite" —
+  die Reichweitenfelder der Varianten 2 und 3. Im Netz sah das wie ein Fehler
+  aus statt wie die offene Entscheidung, die es abbildet. Variantenfelder
+  tragen dort jetzt den Zusatz „(Variante N)". Das Formular bleibt unverändert:
+  dort ist immer nur eine Variante sichtbar.
+- **Netzdarstellung** · Das Zielgruppenfeld erschien als Frage („Wer nimmt an
+  euren Angeboten teil?"). Im Formular ist die Leitfrage richtig, als
+  Knotenname war sie unbrauchbar. Das Feld trägt jetzt zusätzlich `kurz`.
+- **Kreuztabelle** · Die Randspalte hieß „Summe", war aber keine: Sie zählt
+  Akteure. Bei Mehrfachnennung auf der anderen Achse liegen die Zellen höher,
+  bei Akteuren ohne Wert auf der anderen Achse liegt der Rand höher. Beides
+  kam in den Beispieldaten vor — 8 der 36 Akteure haben kein Bundesland.
+  Die Beschriftung lautet jetzt „Akteure", die Fußnote erklärt beide
+  Richtungen; zuvor behauptete sie nur eine.
+- **Auswertung** · Drei von sechs Blöcken zählten mehrfach, ohne es zu sagen.
+  Der Hinweis fehlte bei Bundesland, Bildungsbereich und der abgeleiteten
+  Aggregation. Ergänzt.
+- **Auswertung** · Das Bundeslandraster führte das Saarland allein unter
+  Bayern. Neu geordnet, sodass die Anordnung grob der Geografie folgt.
+- **ISCED-Ableitung** · Bei gemischter Auswahl stand die Qualitätsstufe
+  `keine_entsprechung` neben einem ausgewiesenen ISCED-Wert — etwa bei
+  „Primarstufe und Quartärbereich". Die Qualitätsstufe bewertet jetzt die
+  Bereiche, die tatsächlich übersetzt wurden; Bereiche ohne Entsprechung
+  stehen daneben unter `iscedOhneEntsprechung`.
+
+### Eine Lücke, die nicht gefüllt wird
+
+- **data/beispiel.json** · Der Tertiärbereich steht in der Auswertung auf
+  null. Der fiktive Akteursbestand wurde vor der Umstellung auf die
+  Bildungsbereiche erzeugt und enthielt nie einen Wert, der dorthin führt —
+  ein Artefakt der Datenerzeugung, keine Aussage über den Sektor. Weil die
+  Auswertungsseite leere Zeilen ausdrücklich als Befund liest, wäre das
+  irreführend. Der Fall steht jetzt unter `luecken` in der Datendatei und
+  wird an der betroffenen Achse ausgewiesen. Nachträglich gefüllt wird er
+  nicht: erfundene Einträge machten die Auswertung unehrlich.
+
+### Datierung
+
+- **Kennzeichen** · „zur Entscheidung in WS 4" hieß es an fünf Feldern und im
+  Fußtext. Workshop 4 hat stattgefunden; die Felder sind laut Sachstand
+  weiterhin offen, aber nicht mehr auf diesen Termin bezogen. Jetzt:
+  „Entscheidung offen".
+
+---
+
 ## 2026-09-15 · nach Workshop 4
 
 ### Bildungsabschnitte: aus einer Liste werden zwei Modelle
