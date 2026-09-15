@@ -1,36 +1,39 @@
 /*
- * Verwirklichung — setzt die Organisation selbst um oder foerdert sie?
+ * Verwirklichung
+ *
+ * Erzeugt aus verwirklichung.json durch tools/vokabular-einbetten.mjs.
+ * Nicht von Hand aendern — Aenderungen gehoeren in die JSON-Datei.
  */
 
 EduVocab.register({
-    "id": "verwirklichung",
-    "label": "Verwirklichung",
-    "version": "0.1.0",
-    "status": "arbeitsstand",
-    "quelle": {
-      "bezeichnung": "Festlegung der Arbeitsgruppe KKAB",
-      "url": null,
-      "abgerufen": "2026-09-15",
-      "pruefstand": "unbestaetigt"
+  "id": "verwirklichung",
+  "label": "Verwirklichung",
+  "version": "0.1.0",
+  "status": "arbeitsstand",
+  "quelle": {
+    "bezeichnung": "Festlegung der Arbeitsgruppe KKAB",
+    "url": null,
+    "abgerufen": "2026-09-15",
+    "pruefstand": "unbestaetigt"
+  },
+  "concepts": [
+    {
+      "key": "operational",
+      "label": "operativ",
+      "deprecated": false,
+      "ersetztDurch": null
     },
-    "concepts": [
-      {
-        "key": "operational",
-        "label": "operativ",
-        "deprecated": false,
-        "ersetztDurch": null
-      },
-      {
-        "key": "funding",
-        "label": "fördernd",
-        "deprecated": false,
-        "ersetztDurch": null
-      },
-      {
-        "key": "both",
-        "label": "beides",
-        "deprecated": false,
-        "ersetztDurch": null
-      }
-    ]
-  });
+    {
+      "key": "funding",
+      "label": "fördernd",
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "both",
+      "label": "beides",
+      "deprecated": false,
+      "ersetztDurch": null
+    }
+  ]
+});

@@ -245,8 +245,8 @@
       liste.appendChild(zeile('Handlungsfelder', a.fieldsOfAction.map(function (v) {
         return beschriftung(VOK.handlungsfelder, v);
       }).join(' · ')));
-      liste.appendChild(zeile('Bildungsabschnitte', a.educationStages.map(function (v) {
-        return beschriftung(VOK.bildungsabschnitte, v);
+      liste.appendChild(zeile('Bildungsbereiche', a.educationStages.werte.map(function (v) {
+        return beschriftung(VOK.bildungsbereiche, v);
       }).join(' · ')));
       liste.appendChild(zeile('Aktiv in', a.activeInStates.length
         ? a.activeInStates.map(function (s) { return s.label; }).join(' · ') : '—'));

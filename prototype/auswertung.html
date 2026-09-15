@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auswertung — Akteursprofil (EduStandard)</title>
+<meta name="description" content="Was sichtbar wird, wenn Organisationsdaten einer gemeinsamen Struktur folgen. Beispieldaten, frei erfunden.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="seite-auswertung">
+
+<a class="sprunglink" href="#auswertung">Zur Auswertung springen</a>
+
+<p class="banner" role="note">Prototyp · Arbeitsstand · Beispieldaten, frei erfunden</p>
+
+<header class="kopf">
+  <div>
+    <h1>Auswertung</h1>
+    <p>
+      Was sichtbar wird, wenn Organisationsdaten einer gemeinsamen Struktur
+      folgen. Beispieldaten, frei erfunden.
+    </p>
+  </div>
+  <div class="kopf-rechts">
+    <nav class="seitennavigation" aria-label="Seiten des Prototyps">
+      <a href="index.html">Formular</a>
+      <a href="schema.html">Datenmodell</a>
+      <a href="simulation.html">Verschneidung</a>
+      <a href="auswertung.html" aria-current="page">Auswertung</a>
+    </nav>
+    <p class="druckhinweis">
+      Diese Seite ist für den Ausdruck auf A4 eingerichtet.
+    </p>
+  </div>
+</header>
+
+<main id="auswertung" class="auswertung" tabindex="-1">
+  <p class="auswertung-quelle" id="auswertung-quelle"></p>
+  <div id="auswertung-inhalt"></div>
+</main>
+
+<footer class="fuss">
+  <p>
+    Grundlage ist <code>data/beispiel.json</code>. Der Datensatz wird später
+    durch reale Organisationsdaten ersetzt; die Ansicht rechnet ausschließlich
+    aus dieser Datei, es stehen keine Zahlen in der Seite.
+  </p>
+</footer>
+
+<script src="vocab/loader.js"></script>
+<script src="vocab/handlungsfelder.js"></script>
+<script src="vocab/engagementfelder.js"></script>
+<script src="vocab/icnpo-gruppen.js"></script>
+<script src="vocab/bildungsstruktur-bereiche.js"></script>
+<script src="vocab/bildungsabschnitte-lebenslang.js"></script>
+<script src="vocab/lernformen.js"></script>
+<script src="vocab/isced-2011.js"></script>
+<script src="vocab/reichweite.js"></script>
+<script src="vocab/reichweite-grob.js"></script>
+<script src="vocab/raumgliederung.js"></script>
+<script src="vocab/rechtsformen.js"></script>
+<script src="vocab/organisationsstatus.js"></script>
+<script src="vocab/zielgruppenrollen.js"></script>
+<script src="vocab/sdg.js"></script>
+<script src="vocab/adresstypen.js"></script>
+<script src="vocab/verwirklichung.js"></script>
+<script src="vocab/sichtbarkeit.js"></script>
+<script src="vocab/bundeslaender.js"></script>
+<script src="vocab/herkunftsquellen.js"></script>
+<script src="vocab/crosswalk-bildungsabschnitte.js"></script>
+<script src="vocab/crosswalk-handlungsfelder.js"></script>
+<script src="data/beispiel.js"></script>
+<script src="auswertung.js"></script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/tfeit/civic-edu-standard/schema/bildungsabschnitt.schema.json",
+  "title": "Bildungsabschnitt im Akteursprofil",
+  "description": "Feld educationStages des Akteursprofils. Arbeitsstand v0.1. Zwei Modelle stehen zur Wahl; welches in Version 1.0 gilt, ist nicht entschieden. Das Feld trägt deshalb einen Modell-Diskriminator, damit beide Varianten parallel erfasst und über den Crosswalk übersetzt werden können.",
+  "type": "object",
+  "required": [
+    "modell",
+    "werte"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "modell": {
+      "description": "Welche Systematik die Werte verwenden.",
+      "type": "string",
+      "enum": [
+        "bildungsstruktur-bereiche",
+        "bildungsabschnitte-lebenslang"
+      ]
+    },
+    "werte": {
+      "description": "Ausgewählte Bildungsabschnitte. Maßgeblich ist die Primärzielgruppe: in welcher Bildungsphase stehen die Menschen, die unmittelbar an den Angeboten teilnehmen. Nicht, wo mittelbar Wirkung entsteht.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "uebergaenge": {
+      "description": "Optionale Zusatzangabe. Nur zulässig bei modell=bildungsstruktur-bereiche. Ein Übergang setzt voraus, dass die angrenzenden Bereiche in werte enthalten sind; diese Bedingung ist von der Anwendung zu prüfen und nicht im Schema abgebildet.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/definitions/uebergangKey"
+      }
+    },
+    "quelle": {
+      "description": "Optionale Herkunftsangabe, falls die Zuordnung nicht von der Organisation selbst stammt.",
+      "type": "string",
+      "enum": [
+        "selbstauskunft",
+        "redaktion",
+        "abgeleitet"
+      ]
+    },
+    "sonstigesFreitext": {
+      "description": "Pflichtangabe, wenn werte den Auffangwert sonstiges enthält (Modell A). Verhindert, dass der Auffangwert zum Abladeplatz wird. Vorschlag zur Entscheidung.",
+      "type": "string",
+      "minLength": 3
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "modell": {
+            "const": "bildungsstruktur-bereiche"
+          }
+        },
+        "required": [
+          "modell"
+        ]
+      },
+      "then": {
+        "properties": {
+          "werte": {
+            "items": {
+              "$ref": "#/definitions/bereichKey"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "modell": {
+            "const": "bildungsabschnitte-lebenslang"
+          }
+        },
+        "required": [
+          "modell"
+        ]
+      },
+      "then": {
+        "properties": {
+          "werte": {
+            "items": {
+              "$ref": "#/definitions/abschnittKey"
+            }
+          },
+          "uebergaenge": {
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  ],
+  "definitions": {
+    "bereichKey": {
+      "description": "Werte aus vocab/bildungsstruktur-bereiche.json",
+      "type": "string",
+      "enum": [
+        "elementarbereich",
+        "primarstufe",
+        "sekundarstufe_1",
+        "sekundarstufe_2",
+        "tertiaerbereich",
+        "quartaerbereich"
+      ]
+    },
+    "abschnittKey": {
+      "description": "Werte aus vocab/bildungsabschnitte-lebenslang.json (kanonische Liste, Stand 2026-09-15)",
+      "type": "string",
+      "enum": [
+        "fruehkindliche_bildung",
+        "kita",
+        "uebergang_kita_schule",
+        "schulische_bildung",
+        "uebergang_schule_beruf",
+        "berufliche_erstausbildung",
+        "hochschule",
+        "berufsbezogene_bildung",
+        "nebenberufliche_bildung",
+        "nachberufliche_bildung",
+        "sonstiges"
+      ]
+    },
+    "uebergangKey": {
+      "description": "Werte aus dem Abschnitt uebergaenge in vocab/crosswalk-bildungsabschnitte.json",
+      "type": "string",
+      "enum": [
+        "elementar_primar",
+        "primar_sek1",
+        "sek1_sek2",
+        "sek2_tertiaer",
+        "sek2_erwerbstaetigkeit"
+      ]
+    }
+  },
+  "examples": [
+    {
+      "modell": "bildungsstruktur-bereiche",
+      "werte": [
+        "sekundarstufe_1",
+        "sekundarstufe_2"
+      ],
+      "uebergaenge": [
+        "sek1_sek2"
+      ],
+      "quelle": "selbstauskunft"
+    },
+    {
+      "modell": "bildungsstruktur-bereiche",
+      "werte": [
+        "quartaerbereich"
+      ],
+      "quelle": "selbstauskunft"
+    },
+    {
+      "modell": "bildungsabschnitte-lebenslang",
+      "werte": [
+        "schulische_bildung",
+        "uebergang_schule_beruf"
+      ],
+      "quelle": "selbstauskunft"
+    }
+  ]
+}

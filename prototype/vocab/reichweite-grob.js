@@ -1,0 +1,52 @@
+/*
+ * Reichweite (grobe Stufe)
+ * Minimalvariante ohne Gebietsangabe. Sie prüft, ob Einfachheit die Ausfüllquote erhöht.
+ *
+ * Erzeugt aus reichweite-grob.json durch tools/vokabular-einbetten.mjs.
+ * Nicht von Hand aendern — Aenderungen gehoeren in die JSON-Datei.
+ */
+
+EduVocab.register({
+  "id": "reichweite-grob",
+  "label": "Reichweite (grobe Stufe)",
+  "version": "0.1.0",
+  "status": "arbeitsstand",
+  "quelle": {
+    "bezeichnung": "Variante 3 des Formulartests aus Workshop 4; Setzung der Arbeitsgruppe",
+    "url": null,
+    "abgerufen": "2026-09-15",
+    "pruefstand": "unbestaetigt"
+  },
+  "hinweis": "Minimalvariante ohne Gebietsangabe. Sie prüft, ob Einfachheit die Ausfüllquote erhöht.",
+  "mehrfachauswahl": false,
+  "concepts": [
+    {
+      "key": "lokal",
+      "label": "lokal",
+      "hint": "Ein Ort oder Stadtteil.",
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "regional",
+      "label": "regional",
+      "hint": "Mehrere Orte, ein Kreis oder eine Region.",
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "national",
+      "label": "national",
+      "hint": "Bundesweit.",
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "supranational",
+      "label": "supranational",
+      "hint": "Über Staatsgrenzen hinweg.",
+      "deprecated": false,
+      "ersetztDurch": null
+    }
+  ]
+});

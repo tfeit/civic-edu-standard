@@ -83,6 +83,13 @@
   var knoten = {};         // Feldschlüssel -> DOM-Referenzen
   var wikidataAus = false; // Autosuggest nicht erreichbar
 
+  // Zu welchem Block gehoert ein Feld? Fuer die Variantenpruefung noetig.
+  var BLOCK_JE_FELD = {};
+
+  function blockVon(feld) {
+    return BLOCK_JE_FELD[feld.key] || { id: '', varianten: null };
+  }
+
   function alleFelder() {
     var liste = [];
     MODELL.blocks.forEach(function (block) {
@@ -111,6 +118,17 @@
           break;
         case 'computedChips':
           zustand[feld.key] = [];
+          break;
+        case 'funnel':
+          zustand[feld.key] = [];
+          break;
+        case 'stageModel':
+          zustand[feld.key] = {
+            modell: feld.modelle[0].id,
+            werte: [],
+            uebergaenge: [],
+            quelle: 'selbstauskunft'
+          };
           break;
         case 'date':
           zustand[feld.key] = feld.defaultToday ? heute() : (feld.default || '');
@@ -205,7 +223,7 @@
   var KENNZEICHEN = {
     P: { text: 'Pflicht', klasse: 'kennzeichen pflicht', stern: true },
     E: { text: 'empfohlen', klasse: 'kennzeichen', stern: false },
-    O: { text: 'optional', klasse: 'kennzeichen', stern: false },
+    O: { text: 'optional', klasse: 'kennzeichen optional', stern: false },
     B: { text: 'berechnet', klasse: 'kennzeichen', stern: false }
   };
 
@@ -226,6 +244,32 @@
   // beschlossener Bestandteil des Schemas.
   function badgeVorschlag() {
     return el('span', { class: 'badge-vorschlag', text: 'Vorschlag aus Recherche — nicht beschlossen' });
+  }
+
+  /*
+   * Tooltip zu einem Auswahlwert.
+   *
+   * Die Vokabulare tragen Definition, Beispiele und ein Negativbeispiel. Sie
+   * gehoeren an den Wert selbst, weil im Gespraech genau dort die Frage
+   * auftaucht, was noch dazugehoert und was nicht. Zusaetze aus der Quelle
+   * stehen ebenfalls hier und nicht im Label, sonst wird die Liste unlesbar.
+   *
+   * Definitionen, die noch nicht abgestimmt sind, werden als solche benannt.
+   * Ein Wert ohne jede Angabe bekommt keinen leeren Tooltip.
+   */
+  function optionTitel(option, zusatzZeilen) {
+    var zeilen = [];
+    if (option.zusatz) { zeilen.push(option.zusatz); }
+    if (option.definition) { zeilen.push(option.definition); }
+    if (option.hint && !option.definition) { zeilen.push(option.hint); }
+    if (option.beispiele && option.beispiele.length) {
+      zeilen.push('Beispiele: ' + option.beispiele.join(' · '));
+    }
+    if (option.negativbeispiel) { zeilen.push('Nicht hierher: ' + option.negativbeispiel); }
+    (zusatzZeilen || []).forEach(function (z) { if (z) { zeilen.push(z); } });
+    if (option.definitionStatus === 'entwurf') { zeilen.push('Definition im Entwurf.'); }
+    if (option.tooltip && zeilen.indexOf(option.tooltip) === -1) { zeilen.unshift(option.tooltip); }
+    return zeilen.length ? zeilen.join('\n') : null;
   }
 
   /* ------------------------------------------------------ Feld-Grundgerüst */
@@ -395,15 +439,16 @@
       var boxId = 'fld-' + feld.key + '-' + index;
       var box = el('input', { type: 'checkbox', id: boxId, value: option.value });
       var optionsKinder = [box, el('span', { text: option.label })];
-      if (option.tooltip) {
+      var randnotiz = feld.optionZusatz ? feld.optionZusatz(option) : option.tooltip;
+      if (randnotiz) {
         // Die ISCED-Entsprechung steht am Begriff selbst; sie ist im Workshop
         // die entscheidende Information und darf nicht nur im Tooltip stecken.
-        optionsKinder.push(el('span', { class: 'option-zusatz', text: option.tooltip }));
+        optionsKinder.push(el('span', { class: 'option-zusatz', text: randnotiz }));
       }
       var beschriftungsKnoten = el('label', {
-        class: 'option' + (option.tooltip ? ' option-mit-zusatz' : ''),
+        class: 'option' + (randnotiz ? ' option-mit-zusatz' : ''),
         for: boxId,
-        title: option.tooltip || null
+        title: optionTitel(option, feld.optionHinweise ? feld.optionHinweise(option) : null)
       }, optionsKinder);
       box.addEventListener('change', function () {
         var werte = zustand[feld.key];
@@ -422,12 +467,14 @@
 
     var zaehler = el('p', { class: 'auswahlzaehler', 'aria-live': 'polite' });
     var veraltet = el('ul', { class: 'veraltete-werte', hidden: true });
-    var huelle = el('div', {}, [liste, veraltet, zaehler]);
+    var weicheGrenze = el('p', { class: 'weiche-grenze', role: 'status', hidden: true });
+    var huelle = el('div', {}, [liste, veraltet, weicheGrenze, zaehler]);
     var wrapper = feldRahmen(feld, huelle, { gruppenLabel: true });
     liste.setAttribute('aria-describedby', knoten[feld.key].beschrieben);
     knoten[feld.key].kaestchen = kaestchen;
     knoten[feld.key].zaehler = zaehler;
     knoten[feld.key].veraltet = veraltet;
+    knoten[feld.key].weicheGrenze = weicheGrenze;
     return wrapper;
   };
 
@@ -555,6 +602,576 @@
   };
 
   /* --------------------------------------------- Entfernen rueckgaengig machen */
+
+
+  /* ------------------------------------------- Bildungsabschnitte (WS 4) */
+
+  /*
+   * Zwei Systematiken stehen zur Entscheidung. Statt eine zu setzen, bietet
+   * das Formular beide an und laesst sie umschalten.
+   *
+   * Beim Wechsel wird die Auswahl verworfen, nicht uebersetzt. Das ist
+   * Absicht: Aus "Schulische Bildung" laesst sich die Stufe nicht
+   * rekonstruieren, eine automatische Umrechnung erzeugte also falsche
+   * Sicherheit. Genau dieser Punkt soll im Gespraech sichtbar werden — der
+   * Hinweis nach dem Wechsel sagt deshalb, was eine Uebersetzung geleistet
+   * haette und wo sie bricht.
+   */
+  function crosswalkBildung() {
+    return window.EduVocab.vokabular('crosswalk-bildungsabschnitte');
+  }
+
+  function bereichsEintrag(bereichKey) {
+    var cw = crosswalkBildung();
+    if (!cw) { return null; }
+    for (var i = 0; i < cw.eintraege.length; i++) {
+      if (cw.eintraege[i].bereich === bereichKey) { return cw.eintraege[i]; }
+    }
+    return null;
+  }
+
+  function uebergangsWerte() {
+    var cw = crosswalkBildung();
+    return (cw && cw.uebergaenge && cw.uebergaenge.werte) || [];
+  }
+
+  function modellVon(feld, id) {
+    var treffer = null;
+    feld.modelle.forEach(function (m) { if (m.id === id) { treffer = m; } });
+    return treffer || feld.modelle[0];
+  }
+
+  // Randnotiz am Wert: die ISCED-Entsprechung. Sie ist im Workshop das
+  // Argument dafuer, dass der Standard international anschlussfaehig ist.
+  function iscedRandnotiz(bereichKey) {
+    var e = bereichsEintrag(bereichKey);
+    if (!e) { return null; }
+    if (!e.isced.length) { return 'kein ISCED-Äquivalent'; }
+    return e.isced.length === 1 ? e.isced[0] : e.isced[0] + '–' + e.isced[e.isced.length - 1];
+  }
+
+  function bereichsHinweise(bereichKey) {
+    var e = bereichsEintrag(bereichKey);
+    if (!e) { return []; }
+    if (!e.isced.length) {
+      return ['Kein internationales Äquivalent — eigenes Konzept der Arbeitsgruppe.'];
+    }
+    return ['ISCED: ' + e.isced.join(', ') + ' (' + e.iscedQualitaet + ').'];
+  }
+
+  renderer.stageModel = function (feld) {
+    var ref = (knoten[feld.key] = knoten[feld.key] || {});
+    var id = 'fld-' + feld.key;
+
+    /* Umschalter */
+    var schalter = el('div', {
+      class: 'modellschalter',
+      role: 'radiogroup',
+      'aria-label': 'Systematik für die Bildungsabschnitte'
+    });
+    ref.modellKnoepfe = [];
+    feld.modelle.forEach(function (modell, i) {
+      var knopfId = id + '-modell-' + i;
+      var box = el('input', { type: 'radio', name: id + '-modell', id: knopfId, value: modell.id });
+      box.addEventListener('change', function () {
+        if (box.checked) { wechsleModell(feld, modell.id); }
+      });
+      var huelle = el('label', { class: 'modelloption', for: knopfId, title: modell.label },
+        [box, el('span', { text: modell.kurz })]);
+      schalter.appendChild(huelle);
+      ref.modellKnoepfe.push({ box: box, id: modell.id });
+    });
+
+    var schalterHinweis = el('p', { class: 'hilfe', text: feld.modellHinweis || '' });
+    var wechselHinweis = el('p', { class: 'wechselhinweis', role: 'status', hidden: true });
+
+    /* Werteliste — wird bei jedem Modellwechsel neu gezeichnet */
+    var werteListe = el('div', { class: 'optionsliste', role: 'group', 'aria-labelledby': id + '-label' });
+    var zaehler = el('p', { class: 'auswahlzaehler', 'aria-live': 'polite' });
+
+    /* Übergänge — nur bei Modell B */
+    var uebergangsTitel = el('span', { class: 'gruppen-label', id: id + '-ueb-label' }, [
+      document.createTextNode('Übergänge '),
+      el('span', { class: 'badge-vorschlag', text: 'Vorschlag aus Workshop 4 — nicht beschlossen' })
+    ]);
+    var uebergangsListe = el('div', {
+      class: 'optionsliste einspaltig',
+      role: 'group',
+      'aria-labelledby': id + '-ueb-label'
+    });
+    var uebergangsHinweis = el('p', { class: 'hinweis' });
+    var uebergangsBlock = el('div', { class: 'uebergangsblock' },
+      [uebergangsTitel, uebergangsHinweis, uebergangsListe]);
+
+    var huelle = el('div', {}, [
+      schalter, schalterHinweis, wechselHinweis, werteListe, zaehler, uebergangsBlock
+    ]);
+    var wrapper = feldRahmen(feld, huelle, { gruppenLabel: true });
+    werteListe.setAttribute('aria-describedby', knoten[feld.key].beschrieben);
+
+    ref.werteListe = werteListe;
+    ref.zaehler = zaehler;
+    ref.uebergangsBlock = uebergangsBlock;
+    ref.uebergangsListe = uebergangsListe;
+    ref.uebergangsHinweis = uebergangsHinweis;
+    ref.wechselHinweis = wechselHinweis;
+
+    zeichneStufen(feld);
+    return wrapper;
+  };
+
+  /*
+   * Modellwechsel. Die Auswahl wird verworfen — vorher wird gefragt, weil
+   * sonst unbemerkt Arbeit verlorenginge.
+   */
+  function wechsleModell(feld, neuesModell) {
+    var wert = zustand[feld.key];
+    if (wert.modell === neuesModell) { return; }
+
+    if (wert.werte.length) {
+      var altesModell = modellVon(feld, wert.modell);
+      var frage = 'Die Systematik wechselt von „' + altesModell.kurz + '“ zu „'
+        + modellVon(feld, neuesModell).kurz + '“.\n\n'
+        + 'Die bisherige Auswahl (' + wert.werte.length + ') wird dabei verworfen und '
+        + 'nicht übersetzt. Fortfahren?';
+      if (!window.confirm(frage)) {
+        setzeModellKnoepfe(feld);
+        return;
+      }
+    }
+
+    var vorher = { modell: wert.modell, werte: wert.werte.slice() };
+    wert.modell = neuesModell;
+    wert.werte = [];
+    wert.uebergaenge = [];
+    zeigeWechselHinweis(feld, vorher);
+    zeichneStufen(feld);
+    aktualisiere();
+  }
+
+  /*
+   * Was haette eine Uebersetzung geleistet — und wo bricht sie? Der Hinweis
+   * stammt aus dem Crosswalk, nicht aus dem Code.
+   */
+  function zeigeWechselHinweis(feld, vorher) {
+    var kasten = knoten[feld.key].wechselHinweis;
+    var cw = crosswalkBildung();
+    if (!kasten) { return; }
+    if (!vorher.werte.length || !cw) { kasten.hidden = true; kasten.textContent = ''; return; }
+
+    var zeilen = ['Die Auswahl wurde verworfen, nicht übersetzt. Was eine Übersetzung geleistet hätte:'];
+    var nachB = vorher.modell === 'bildungsabschnitte-lebenslang';
+
+    vorher.werte.forEach(function (key) {
+      if (nachB) {
+        cw.eintraege.forEach(function (e) {
+          if (e.lebenslang.indexOf(key) === -1) { return; }
+          var name = window.EduVocab.beschriftung('bildungsabschnitte-lebenslang', key);
+          var ziel = window.EduVocab.beschriftung('bildungsstruktur-bereiche', e.bereich);
+          if (e.lebenslangQualitaet === 'nur_mit_zusatz') {
+            zeilen.push('„' + name + '“ → ' + ziel + ' — nur mit dem Zusatz „' + e.zusatz
+              + '“. Die Stufe steckt nicht im Wert selbst.');
+          } else {
+            zeilen.push('„' + name + '“ → ' + ziel + '.');
+          }
+        });
+      } else {
+        var e2 = bereichsEintrag(key);
+        if (!e2) { return; }
+        var name2 = window.EduVocab.beschriftung('bildungsstruktur-bereiche', key);
+        var ziele = e2.lebenslang.map(function (k) {
+          return window.EduVocab.beschriftung('bildungsabschnitte-lebenslang', k);
+        });
+        zeilen.push('„' + name2 + '“ → ' + ziele.join(', ')
+          + (e2.lebenslangQualitaet === 'aggregiert' ? ' — mehrdeutig.' : '.'));
+      }
+    });
+
+    kasten.textContent = '';
+    zeilen.forEach(function (z, i) {
+      kasten.appendChild(el(i === 0 ? 'strong' : 'span', { class: 'wechselzeile', text: z }));
+    });
+    kasten.hidden = false;
+  }
+
+  function setzeModellKnoepfe(feld) {
+    var wert = zustand[feld.key];
+    (knoten[feld.key].modellKnoepfe || []).forEach(function (k) {
+      k.box.checked = k.id === wert.modell;
+    });
+  }
+
+  /* Werteliste des aktiven Modells neu aufbauen. */
+  function zeichneStufen(feld) {
+    var ref = knoten[feld.key];
+    var wert = zustand[feld.key];
+    var modell = modellVon(feld, wert.modell);
+    var id = 'fld-' + feld.key;
+
+    setzeModellKnoepfe(feld);
+    ref.werteListe.textContent = '';
+    ref.stufenKaestchen = [];
+
+    modell.options.forEach(function (option, i) {
+      var boxId = id + '-stufe-' + i;
+      var box = el('input', { type: 'checkbox', id: boxId, value: option.value });
+      var notiz = modell.mitUebergaengen ? iscedRandnotiz(option.value) : null;
+      var kinder = [box, el('span', { text: option.label })];
+      if (notiz) { kinder.push(el('span', { class: 'option-zusatz', text: notiz })); }
+      var huelle = el('label', {
+        class: 'option' + (notiz ? ' option-mit-zusatz' : ''),
+        for: boxId,
+        title: optionTitel(option, modell.mitUebergaengen ? bereichsHinweise(option.value) : null)
+      }, kinder);
+      box.addEventListener('change', function () {
+        var pos = wert.werte.indexOf(option.value);
+        if (box.checked && pos === -1) { wert.werte.push(option.value); }
+        if (!box.checked && pos !== -1) { wert.werte.splice(pos, 1); }
+        aktualisiere();
+      });
+      ref.stufenKaestchen.push({ box: box, value: option.value });
+      ref.werteListe.appendChild(huelle);
+    });
+
+    zeichneUebergaenge(feld);
+  }
+
+  /*
+   * Uebergaenge gibt es nur in Modell B. Modell A fuehrt sie als eigene
+   * Werte — deshalb ist der Block dort nicht sichtbar.
+   */
+  function zeichneUebergaenge(feld) {
+    var ref = knoten[feld.key];
+    var wert = zustand[feld.key];
+    var modell = modellVon(feld, wert.modell);
+    var cw = crosswalkBildung();
+
+    ref.uebergangsBlock.hidden = !modell.mitUebergaengen;
+    if (!modell.mitUebergaengen) { wert.uebergaenge = []; return; }
+
+    ref.uebergangsHinweis.textContent = (cw && cw.uebergaenge && cw.uebergaenge.regel) || '';
+    ref.uebergangsListe.textContent = '';
+    ref.uebergangsKaestchen = [];
+
+    uebergangsWerte().forEach(function (u, i) {
+      var boxId = 'fld-' + feld.key + '-ueb-' + i;
+      var box = el('input', { type: 'checkbox', id: boxId, value: u.key });
+      var huelle = el('label', { class: 'option', for: boxId }, [box, el('span', { text: u.label })]);
+      box.addEventListener('change', function () {
+        var pos = wert.uebergaenge.indexOf(u.key);
+        if (box.checked && pos === -1) { wert.uebergaenge.push(u.key); }
+        if (!box.checked && pos !== -1) { wert.uebergaenge.splice(pos, 1); }
+        aktualisiere();
+      });
+      ref.uebergangsKaestchen.push({ box: box, huelle: huelle, uebergang: u });
+      ref.uebergangsListe.appendChild(huelle);
+    });
+  }
+
+  function aktualisiereStufen(feld) {
+    var ref = knoten[feld.key];
+    var wert = zustand[feld.key];
+    var modell = modellVon(feld, wert.modell);
+
+    (ref.stufenKaestchen || []).forEach(function (k) {
+      k.box.checked = wert.werte.indexOf(k.value) !== -1;
+    });
+    ref.zaehler.textContent = wert.werte.length + ' gewählt'
+      + (feld.min ? ' · mindestens ' + feld.min : '');
+
+    if (!modell.mitUebergaengen) { return; }
+
+    /*
+     * Ein Uebergang setzt beide angrenzenden Bereiche voraus. Nicht waehlbare
+     * Uebergaenge werden deaktiviert dargestellt, nicht ausgeblendet: sonst
+     * bliebe unklar, warum sie fehlen.
+     */
+    var cw = crosswalkBildung();
+    var offenerPunkt = (cw && cw.uebergaenge && cw.uebergaenge.offenerPunkt) || '';
+
+    (ref.uebergangsKaestchen || []).forEach(function (k) {
+      var fehlend = (k.uebergang.voraussetzt || []).filter(function (b) {
+        return wert.werte.indexOf(b) === -1;
+      });
+      var erlaubt = fehlend.length === 0;
+      k.box.disabled = !erlaubt;
+      k.huelle.classList.toggle('gesperrt', !erlaubt);
+
+      var titel = [];
+      if (!erlaubt) {
+        titel.push('Erst wählbar, wenn auch ' + fehlend.map(function (b) {
+          return '„' + window.EduVocab.beschriftung('bildungsstruktur-bereiche', b) + '“';
+        }).join(' und ') + ' gewählt ist.');
+      }
+      if (k.uebergang.key === 'sek2_erwerbstaetigkeit' && offenerPunkt) {
+        titel.push(offenerPunkt);
+      }
+      if (!k.uebergang.entsprichtModellA) {
+        titel.push('In Modell A gibt es dafür keinen Wert.');
+      }
+      k.huelle.title = titel.join('\n');
+
+      // Ein nicht mehr zulaessiger Uebergang faellt heraus, sobald der
+      // angrenzende Bereich abgewaehlt wird.
+      if (!erlaubt) {
+        var pos = wert.uebergaenge.indexOf(k.uebergang.key);
+        if (pos !== -1) { wert.uebergaenge.splice(pos, 1); }
+      }
+      k.box.checked = wert.uebergaenge.indexOf(k.uebergang.key) !== -1;
+    });
+  }
+
+
+  /* ------------------------------------------ Geografie-Varianten (WS 4) */
+
+  /*
+   * Die Arbeitsgruppe hat die geografische Aufloesung nicht entschieden. Statt
+   * eine Variante zu setzen, stehen drei zur Wahl und werden am Formular
+   * geprueft. Der Variantenwaehler ist ein Werkzeug fuer die Arbeitsgruppe, kein
+   * Teil des Ausfuellwegs — er sitzt deshalb am Blockkopf, nicht im Feld.
+   */
+  var aktiveVarianten = {};    // Block-Id -> gewaehlte Variante
+  var bewertungen = {};        // Block-Id -> { variante: { urteil, notiz } }
+
+  function varianteVon(block) {
+    if (!block || !block.varianten) { return null; }
+    return aktiveVarianten[block.id] || block.varianten.werte[0].id;
+  }
+
+  function variantenWaehler(block) {
+    var name = 'variante-' + block.id;
+    var gruppe = el('div', { class: 'variantenwaehler', role: 'radiogroup', 'aria-label': 'Variante der Geografie-Erfassung' });
+
+    block.varianten.werte.forEach(function (v) {
+      var knopfId = name + '-' + v.id;
+      var box = el('input', { type: 'radio', name: name, id: knopfId, value: String(v.id) });
+      box.checked = v.id === varianteVon(block);
+      box.addEventListener('change', function () {
+        if (!box.checked) { return; }
+        aktiveVarianten[block.id] = v.id;
+        aktualisiere();
+        zeigeBewertung(block);
+      });
+      gruppe.appendChild(el('label', { class: 'variantenoption', for: knopfId, title: v.beschreibung },
+        [box, el('span', { text: 'Variante ' + v.id + ': ' + v.label })]));
+    });
+
+    var beschreibung = el('p', { class: 'hilfe variantenbeschreibung' });
+    var kasten = el('div', { class: 'variantenblock' }, [
+      el('p', { class: 'variantenhinweis', text: block.varianten.hinweis }),
+      gruppe,
+      beschreibung,
+      bewertungsFeld(block)
+    ]);
+    variantenKnoten[block.id] = { beschreibung: beschreibung };
+    return kasten;
+  }
+
+  var variantenKnoten = {};
+
+  /*
+   * Bewertung je Variante. Sie sammelt sich unter _test und wird beim Kopieren
+   * ausgeschlossen: Der Formulartest soll sich auswerten lassen, ohne dass ein
+   * Testartefakt in einen Beispieldatensatz geraet.
+   */
+  function bewertungsFeld(block) {
+    var bew = block.varianten.bewertung;
+    var name = 'bewertung-' + block.id;
+    var knoepfe = el('div', { class: 'bewertungsknoepfe', role: 'radiogroup', 'aria-label': bew.frage });
+
+    bew.optionen.forEach(function (o) {
+      var knopfId = name + '-' + o.value;
+      var box = el('input', { type: 'radio', name: name, id: knopfId, value: o.value });
+      box.addEventListener('change', function () {
+        if (box.checked) { setzeBewertung(block, { urteil: o.value }); }
+      });
+      knoepfe.appendChild(el('label', { class: 'bewertungsoption', for: knopfId },
+        [box, el('span', { text: o.label })]));
+    });
+
+    var notizId = name + '-notiz';
+    var notiz = el('textarea', { id: notizId, rows: '2', placeholder: 'Notiz zur Variante (optional)' });
+    notiz.addEventListener('input', function () { setzeBewertung(block, { notiz: notiz.value }); });
+
+    variantenBewertung[block.id] = { knoepfe: knoepfe, notiz: notiz };
+
+    return el('details', { class: 'bewertung' }, [
+      el('summary', { text: bew.frage }),
+      knoepfe,
+      el('label', { class: 'bewertungsnotiz', for: notizId, text: 'Notiz' }),
+      notiz
+    ]);
+  }
+
+  var variantenBewertung = {};
+
+  function setzeBewertung(block, teil) {
+    var v = varianteVon(block);
+    bewertungen[block.id] = bewertungen[block.id] || {};
+    var eintrag = bewertungen[block.id][v] || {};
+    if (teil.urteil !== undefined) { eintrag.urteil = teil.urteil; }
+    if (teil.notiz !== undefined) { eintrag.notiz = teil.notiz; }
+    bewertungen[block.id][v] = eintrag;
+    aktualisiereVorschau();
+  }
+
+  // Beim Variantenwechsel zeigt das Bewertungsfeld, was zu dieser Variante
+  // bereits notiert wurde — sonst ueberschreibt man unbemerkt die vorige.
+  function zeigeBewertung(block) {
+    var v = varianteVon(block);
+    var eintrag = (bewertungen[block.id] || {})[v] || {};
+    var ref = variantenBewertung[block.id];
+    if (!ref) { return; }
+    ref.knoepfe.querySelectorAll('input').forEach(function (box) {
+      box.checked = box.value === eintrag.urteil;
+    });
+    ref.notiz.value = eintrag.notiz || '';
+
+    var beschreibung = (variantenKnoten[block.id] || {}).beschreibung;
+    if (beschreibung) {
+      var gewaehlt = null;
+      block.varianten.werte.forEach(function (w) { if (w.id === v) { gewaehlt = w; } });
+      beschreibung.textContent = gewaehlt ? gewaehlt.beschreibung : '';
+    }
+  }
+
+  function testBlock() {
+    var ausgabe = {};
+    Object.keys(bewertungen).forEach(function (blockId) {
+      Object.keys(bewertungen[blockId]).forEach(function (variante) {
+        var e = bewertungen[blockId][variante];
+        if (!e.urteil && !(e.notiz || '').trim()) { return; }
+        ausgabe[blockId + '.variante' + variante] = {
+          urteil: e.urteil || null,
+          notiz: (e.notiz || '').trim() || null
+        };
+      });
+    });
+    return Object.keys(ausgabe).length ? ausgabe : null;
+  }
+
+  /* ------------------------------------------------ Trichter (Variante 1) */
+
+  /*
+   * Man gibt den praezisesten Raum an; die uebergeordneten Ebenen ergeben sich
+   * daraus und erscheinen als abgeleitete Chips. Ohne eingebettete Liste
+   * braeuchte das einen externen Dienst — und damit waere die Offline-
+   * Tauglichkeit dahin.
+   */
+  renderer.funnel = function (feld) {
+    var id = 'fld-' + feld.key;
+    var listenId = id + '-liste';
+
+    var eingabe = el('input', {
+      type: 'text', id: id, placeholder: feld.placeholder || '',
+      autocomplete: 'off', list: listenId
+    });
+    var datalist = el('datalist', { id: listenId });
+    feld.options.forEach(function (o) {
+      datalist.appendChild(el('option', {
+        value: o.label + ' (' + o.value + ')',
+        label: o.ebene === 'bundesland' ? 'Land' : 'Gemeinde'
+      }));
+    });
+
+    var hinzufuegen = el('button', { type: 'button', class: 'leise', text: 'Übernehmen' });
+    var zeile = el('div', { class: 'trichter-eingabe' }, [eingabe, hinzufuegen, datalist]);
+
+    var gewaehlt = el('ul', { class: 'trichter-auswahl' });
+    var abgeleitet = el('p', { class: 'chips trichter-abgeleitet' });
+    var meldung = el('p', { class: 'feld-fehler', role: 'status' });
+
+    function uebernehmen() {
+      var treffer = findeRaum(feld, eingabe.value);
+      if (!treffer) {
+        meldung.textContent = eingabe.value.trim()
+          ? 'Kein Raum mit dieser Bezeichnung in der eingebetteten Liste.'
+          : '';
+        return;
+      }
+      if (zustand[feld.key].indexOf(treffer.value) === -1) {
+        zustand[feld.key].push(treffer.value);
+      }
+      eingabe.value = '';
+      meldung.textContent = '';
+      aktualisiere();
+    }
+
+    hinzufuegen.addEventListener('click', uebernehmen);
+    eingabe.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); uebernehmen(); }
+    });
+
+    var huelle = el('div', {}, [zeile, meldung, gewaehlt, abgeleitet]);
+    var wrapper = feldRahmen(feld, huelle);
+    setzeBeschreibung(feld, eingabe);
+    knoten[feld.key].eingabe = eingabe;
+    knoten[feld.key].gewaehlt = gewaehlt;
+    knoten[feld.key].abgeleitet = abgeleitet;
+    knoten[feld.key].meldung = meldung;
+    return wrapper;
+  };
+
+  function findeRaum(feld, text) {
+    var gesucht = (text || '').trim().toLowerCase();
+    if (!gesucht) { return null; }
+    // "Bonn (05314)" ebenso zulassen wie "Bonn" oder "05314".
+    var inKlammern = gesucht.match(/\(([^)]+)\)\s*$/);
+    if (inKlammern) { gesucht = inKlammern[1].trim(); }
+    var treffer = null;
+    feld.options.forEach(function (o) {
+      if (treffer) { return; }
+      if (o.value === gesucht || o.label.toLowerCase() === gesucht) { treffer = o; }
+    });
+    return treffer;
+  }
+
+  function raumBegriff(schluessel) {
+    return window.EduVocab.begriff('raumgliederung', schluessel);
+  }
+
+  function aktualisiereTrichter(feld) {
+    var ref = knoten[feld.key];
+    var werte = zustand[feld.key];
+
+    ref.gewaehlt.textContent = '';
+    werte.forEach(function (schluessel) {
+      var b = raumBegriff(schluessel);
+      var text = (b ? b.label : schluessel) + ' · ' + schluessel;
+      var zeile = el('li', {}, [el('span', { text: text })]);
+      var weg = el('button', { type: 'button', class: 'leise', text: 'Entfernen' });
+      weg.addEventListener('click', function () {
+        var pos = zustand[feld.key].indexOf(schluessel);
+        if (pos !== -1) { zustand[feld.key].splice(pos, 1); }
+        aktualisiere();
+      });
+      zeile.appendChild(weg);
+      ref.gewaehlt.appendChild(zeile);
+    });
+
+    /* Die uebergeordneten Ebenen ergeben sich — sie werden nicht gepflegt. */
+    var laender = [];
+    werte.forEach(function (schluessel) {
+      var b = raumBegriff(schluessel);
+      if (!b) { return; }
+      var land = b.ebene === 'bundesland' ? b.key : b.uebergeordnet;
+      if (land && laender.indexOf(land) === -1) { laender.push(land); }
+    });
+    laender.sort();
+
+    ref.abgeleitet.textContent = '';
+    if (!werte.length) {
+      ref.abgeleitet.appendChild(el('span', { class: 'chips-leer', text: 'Noch kein Raum angegeben.' }));
+      return;
+    }
+    ref.abgeleitet.appendChild(el('span', { class: 'chips-titel', text: 'Ergibt sich daraus: ' }));
+    laender.forEach(function (land) {
+      ref.abgeleitet.appendChild(el('span', {
+        class: 'chip', text: window.EduVocab.beschriftung('bundeslaender', land) + ' (' + land + ')'
+      }));
+    });
+    ref.abgeleitet.appendChild(el('span', { class: 'chip', text: 'Deutschland (DE)' }));
+  }
 
   var letzteEntfernung = null;
 
@@ -857,18 +1474,24 @@
         legende,
         el('p', { class: 'abschnitt-intro', text: block.intro })
       ]);
+      if (block.varianten) { abschnitt.appendChild(variantenWaehler(block)); }
       block.fields.forEach(function (feld) {
+        BLOCK_JE_FELD[feld.key] = block;
         var fn = renderer[feld.type];
         if (!fn) { return; }
         abschnitt.appendChild(fn(feld));
       });
       ziel.appendChild(abschnitt);
+      if (block.varianten) { zeigeBewertung(block); }
     });
   }
 
   /* --------------------------------------------------- Sichtbarkeitsregeln */
 
   function istSichtbar(feld) {
+    // Variantenfelder sind nur in ihrer Variante sichtbar. Sie bleiben im
+    // Modell stehen, damit sich die Varianten im Gespraech vergleichen lassen.
+    if (feld.variante && feld.variante !== varianteVon(blockVon(feld))) { return false; }
     if (!feld.visibleWhen) { return true; }
     var wert = zustand[feld.visibleWhen.field];
     if (feld.visibleWhen.in) {
@@ -954,8 +1577,20 @@
     });
     var text = werte.length + ' gewählt';
     if (feld.max) { text += ' · höchstens ' + feld.max; }
+    if (feld.softMax) { text += ' · Richtwert ' + feld.softMax; }
     if (feld.min) { text += ' · mindestens ' + feld.min; }
     knoten[feld.key].zaehler.textContent = text;
+
+    /*
+     * Weiche Obergrenze: Die Auswahl bleibt moeglich. Eine Sperre wuerde im
+     * Workshop als Entscheidung gelesen, und beschlossen ist die Grenze nicht.
+     */
+    var warnung = knoten[feld.key].weicheGrenze;
+    if (warnung) {
+      var ueberschritten = !!feld.softMax && werte.length > feld.softMax;
+      warnung.hidden = !ueberschritten;
+      warnung.textContent = ueberschritten ? (feld.softMaxHinweis || '') : '';
+    }
   }
 
   /*
@@ -1235,6 +1870,24 @@
         case 'checkboxes':
           wert = zustand[feld.key].slice();
           break;
+        case 'funnel':
+          wert = zustand[feld.key].map(function (schluessel) {
+            var b = raumBegriff(schluessel);
+            return { key: schluessel, label: b ? b.label : schluessel, ebene: b ? b.ebene : null };
+          });
+          break;
+        case 'stageModel':
+          wert = zustand[feld.key].werte.length
+            ? {
+                modell: zustand[feld.key].modell,
+                werte: zustand[feld.key].werte.slice(),
+                quelle: zustand[feld.key].quelle
+              }
+            : {};
+          if (wert.werte && zustand[feld.key].uebergaenge.length) {
+            wert.uebergaenge = zustand[feld.key].uebergaenge.slice();
+          }
+          break;
         default:
           wert = (zustand[feld.key] || '').toString().trim();
       }
@@ -1259,28 +1912,71 @@
    * sektorstatistisch vergleichbar herausgeben.
    */
   function leiteAb(datensatz) {
+    var abgeleitet = {};
+    var etwas = false;
+
+    /* Aggregation der Handlungsfelder nach aussen. */
     var felder = datensatz.fieldsOfAction || [];
-    if (!felder.length) { return null; }
-
-    var cw = window.EduVocab.vokabular('crosswalks');
-    if (!cw) { return null; }
-
-    var ziviz = [], icnpo = [];
-    felder.forEach(function (key) {
-      cw.concepts.forEach(function (c) {
-        if (c.handlungsfeld !== key) { return; }
-        if (c.zivizFeld && ziviz.indexOf(c.zivizFeld) === -1) { ziviz.push(c.zivizFeld); }
-        var gruppe = c.icnpoUntergruppe || c.icnpoGruppe;
-        if (gruppe && icnpo.indexOf(gruppe) === -1) { icnpo.push(gruppe); }
+    var hw = window.EduVocab.vokabular('crosswalk-handlungsfelder');
+    if (felder.length && hw) {
+      var engagement = [], icnpo = [];
+      felder.forEach(function (key) {
+        hw.eintraege.forEach(function (e) {
+          if (e.handlungsfeld !== key) { return; }
+          if (e.engagementfeld && engagement.indexOf(e.engagementfeld) === -1) {
+            engagement.push(e.engagementfeld);
+          }
+          if (e.icnpo && icnpo.indexOf(e.icnpo) === -1) { icnpo.push(e.icnpo); }
+        });
       });
-    });
-    if (!ziviz.length && !icnpo.length) { return null; }
+      if (engagement.length || icnpo.length) {
+        abgeleitet.engagementfelder = engagement;
+        abgeleitet.icnpo = icnpo;
+        abgeleitet.dataTheme = 'EDUC';
+        etwas = true;
+      }
+    }
 
-    return {
-      zivizFields: ziviz,
-      icnpoGroups: icnpo,
-      dataTheme: cw.dataTheme || 'EDUC'
-    };
+    /*
+     * ISCED aus den Bildungsbereichen. Das zeigt im Gespraech, dass der
+     * Standard international anschlussfaehig ist, ohne dass jemand ISCED
+     * ausfuellen muesste. Nur Modell B traegt diese Zuordnung — Modell A
+     * laesst sich nicht verlustfrei uebersetzen.
+     */
+    var stufen = datensatz.educationStages;
+    if (stufen && stufen.modell === 'bildungsstruktur-bereiche' && stufen.werte.length) {
+      var isced = [], stufenQualitaet = [];
+      stufen.werte.forEach(function (bereich) {
+        var e = bereichsEintrag(bereich);
+        if (!e) { return; }
+        e.isced.forEach(function (k) { if (isced.indexOf(k) === -1) { isced.push(k); } });
+        if (stufenQualitaet.indexOf(e.iscedQualitaet) === -1) {
+          stufenQualitaet.push(e.iscedQualitaet);
+        }
+      });
+      isced.sort();
+      if (isced.length || stufenQualitaet.length) {
+        abgeleitet.isced = isced;
+        // Mehrere Bereiche koennen unterschiedlich gut uebersetzbar sein.
+        // Ausgegeben wird die schlechteste Stufe — sie begrenzt die Aussage.
+        abgeleitet.iscedQualitaet = schlechtesteQualitaet(stufenQualitaet);
+        etwas = true;
+      }
+    }
+
+    return etwas ? abgeleitet : null;
+  }
+
+  // Reihenfolge von belastbar nach unscharf.
+  var QUALITAETSRANG = ['eindeutig', 'aggregiert', 'mehrdeutig', 'nur_mit_zusatz', 'keine_entsprechung'];
+
+  function schlechtesteQualitaet(stufen) {
+    var rang = -1;
+    stufen.forEach(function (q) {
+      var i = QUALITAETSRANG.indexOf(q);
+      if (i > rang) { rang = i; }
+    });
+    return rang === -1 ? null : QUALITAETSRANG[rang];
   }
 
   function faerbeJson(text) {
@@ -1320,7 +2016,13 @@
 
   function aktualisiereVorschau() {
     var datensatz = baueDatensatz();
+    // Was kopiert wird, ist der Datensatz — ohne die Bewertungen aus dem
+    // Formulartest. Sie gehoeren in die Auswertung des Workshops, nicht in
+    // einen Beispieldatensatz.
     letzterJsonText = JSON.stringify(datensatz, null, 2);
+
+    var test = testBlock();
+    if (test) { datensatz._test = test; }
     document.getElementById('json-vorschau').innerHTML = vorschauHtml(datensatz);
     hebeFeldHervor();
   }
@@ -1369,13 +2071,27 @@
 
   /* ------------------------------------------------------ Pflichtfeldzähler */
 
+  /*
+   * Nur sichtbare Pflichtfelder zaehlen. Ein Feld, das zu einer anderen
+   * Variante gehoert oder dessen Bedingung nicht erfuellt ist, kann nicht
+   * ausgefuellt werden — es im Zaehler zu fuehren, hiesse eine Huerde
+   * anzeigen, die es nicht gibt.
+   */
   function pflichtfelder() {
-    return alleFelder().filter(function (feld) { return feld.requirement === 'P'; });
+    return alleFelder().filter(function (feld) {
+      return feld.requirement === 'P' && istSichtbar(feld);
+    });
   }
 
   function pflichtfeldErfuellt(feld) {
     var wert = zustand[feld.key];
     if (feld.type === 'checkboxes') {
+      return wert.length >= (feld.min || 1);
+    }
+    if (feld.type === 'stageModel') {
+      return wert.werte.length >= (feld.min || 1);
+    }
+    if (feld.type === 'funnel') {
       return wert.length >= (feld.min || 1);
     }
     return !leer((wert || '').toString().trim());
@@ -1421,6 +2137,12 @@
         case 'computedChips':
           aktualisiereChips(feld);
           break;
+        case 'stageModel':
+          aktualisiereStufen(feld);
+          break;
+        case 'funnel':
+          aktualisiereTrichter(feld);
+          break;
         case 'repeatable':
           aktualisiereEintragsFehler(feld);
           if (feld.key === 'areasOfActivity') { aktualisiereGebietsWarnungen(feld); }
@@ -1450,6 +2172,16 @@
 
       if (feld.type === 'wikidata' && ref.gewaehlt && !wikidataAus) {
         ref.gewaehlt.textContent = ref.label ? 'Gewählt: ' + ref.label : '';
+      }
+
+      /*
+       * Zuletzt: Gehoert das Feld zu einer Variante, entscheidet die Variante.
+       * Sie hat Vorrang vor allem, was die Typbehandlung gesetzt hat — sonst
+       * blendet etwa die Gebietswarnung ein Feld wieder ein, das gar nicht
+       * zur laufenden Variante gehoert.
+       */
+      if (feld.variante) {
+        ref.wrapper.hidden = feld.variante !== varianteVon(blockVon(feld));
       }
     });
 
@@ -1498,6 +2230,36 @@
   }
 
   /* -------------------------------------------------------------- Kopieren */
+
+  /*
+   * Export als Datei. Das ist der Weg, auf dem aus dem Prototyp erzeugte
+   * Beispiele in die weitere Arbeit gelangen — ohne Backend, ohne Upload.
+   * Der Dateiname traegt den Organisationsnamen, damit mehrere Exporte in
+   * einem Download-Ordner unterscheidbar bleiben.
+   */
+  function exportiereJson() {
+    var rueckmeldung = document.getElementById('kopier-rueckmeldung');
+    var name = (zustand.name || 'akteursprofil').toString().trim()
+      .toLowerCase()
+      .replace(/[äöüß]/g, function (z) {
+        return { 'ä': 'ae', 'ö': 'oe', 'ü': 'ue', 'ß': 'ss' }[z];
+      })
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 60) || 'akteursprofil';
+
+    var blob = new Blob([letzterJsonText], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = el('a', { href: url, download: name + '.json' });
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    // Der Browser braucht den Verweis noch einen Moment.
+    window.setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+
+    rueckmeldung.textContent = 'Als ' + name + '.json gespeichert.';
+    window.setTimeout(function () { rueckmeldung.textContent = ''; }, 4000);
+  }
 
   function kopiereJson() {
     var rueckmeldung = document.getElementById('kopier-rueckmeldung');
@@ -1555,6 +2317,17 @@
             var istSicht = radio.name.indexOf('-sicht') !== -1;
             radio.checked = radio.value === (istSicht ? zustand[feld.key].visibility : zustand[feld.key].value);
           });
+          break;
+        case 'stageModel':
+          // Ein Beispiel kann ein anderes Modell mitbringen; dann muss die
+          // Werteliste neu aufgebaut werden, nicht nur angehakt.
+          if (!Array.isArray(zustand[feld.key].uebergaenge)) {
+            zustand[feld.key].uebergaenge = [];
+          }
+          if (!zustand[feld.key].quelle) { zustand[feld.key].quelle = 'selbstauskunft'; }
+          ref.wechselHinweis.hidden = true;
+          ref.wechselHinweis.textContent = '';
+          zeichneStufen(feld);
           break;
         case 'checkboxes':
         case 'computedChips':
@@ -1768,6 +2541,7 @@
     });
 
     document.getElementById('json-kopieren').addEventListener('click', kopiereJson);
+    document.getElementById('json-export').addEventListener('click', exportiereJson);
     document.getElementById('formular-leeren').addEventListener('click', leereFormular);
     document.getElementById('speicher-verwerfen').addEventListener('click', verwirfZwischenstand);
     document.getElementById('modell-version').textContent = MODELL.version;

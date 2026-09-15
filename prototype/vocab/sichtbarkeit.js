@@ -1,30 +1,33 @@
 /*
- * Sichtbarkeit einer Angabe: veroeffentlicht oder nur zwischen Plattformen.
+ * Sichtbarkeit
+ *
+ * Erzeugt aus sichtbarkeit.json durch tools/vokabular-einbetten.mjs.
+ * Nicht von Hand aendern — Aenderungen gehoeren in die JSON-Datei.
  */
 
 EduVocab.register({
-    "id": "sichtbarkeit",
-    "label": "Sichtbarkeit",
-    "version": "0.1.0",
-    "status": "arbeitsstand",
-    "quelle": {
-      "bezeichnung": "Festlegung der Arbeitsgruppe KKAB",
-      "url": null,
-      "abgerufen": "2026-09-15",
-      "pruefstand": "unbestaetigt"
+  "id": "sichtbarkeit",
+  "label": "Sichtbarkeit",
+  "version": "0.1.0",
+  "status": "arbeitsstand",
+  "quelle": {
+    "bezeichnung": "Festlegung der Arbeitsgruppe KKAB",
+    "url": null,
+    "abgerufen": "2026-09-15",
+    "pruefstand": "unbestaetigt"
+  },
+  "concepts": [
+    {
+      "key": "public",
+      "label": "öffentlich",
+      "deprecated": false,
+      "ersetztDurch": null
     },
-    "concepts": [
-      {
-        "key": "public",
-        "label": "öffentlich",
-        "deprecated": false,
-        "ersetztDurch": null
-      },
-      {
-        "key": "network",
-        "label": "nur Plattform-Austausch",
-        "deprecated": false,
-        "ersetztDurch": null
-      }
-    ]
-  });
+    {
+      "key": "network",
+      "label": "nur Plattform-Austausch",
+      "deprecated": false,
+      "ersetztDurch": null
+    }
+  ]
+});

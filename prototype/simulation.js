@@ -30,9 +30,9 @@
       von: function (a) { return a.fieldsOfAction; }
     },
     {
-      id: 'bildungsabschnitt', label: 'Bildungsabschnitt', mehrwertig: true,
-      werte: function () { return VOK.bildungsabschnitte; },
-      von: function (a) { return a.educationStages; }
+      id: 'bildungsbereich', label: 'Bildungsbereich', mehrwertig: true,
+      werte: function () { return VOK.bildungsbereiche; },
+      von: function (a) { return a.educationStages.werte; }
     },
     {
       id: 'zielgruppe', label: 'Zielgruppenrolle', mehrwertig: true,

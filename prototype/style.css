@@ -175,10 +175,21 @@ fieldset.abschnitt legend {
   white-space: nowrap;
 }
 
+/*
+ * In der Review wurde ein optionales Feld fuer ein Pflichtfeld gehalten. Die
+ * Unterscheidung traegt deshalb drei Merkmale, nicht nur eines: Text,
+ * Sternchen und ein gefuellter Hintergrund gegenueber der leeren Umrandung.
+ * Keines davon ist auf Farbwahrnehmung angewiesen.
+ */
 .kennzeichen.pflicht {
-  color: var(--akzent);
+  color: #fff;
+  background: var(--akzent);
   border-color: var(--akzent);
   font-weight: 600;
+}
+
+.kennzeichen.optional {
+  font-style: italic;
 }
 
 .badge-ws4 {
@@ -1512,3 +1523,390 @@ pre.json .j-block[data-schluessel="activeInStates"].hervorgehoben {
 }
 
 .veraltet-wert { color: var(--text-leise); }
+
+
+/* ---------------------------------------- Bildungsabschnitte (Workshop 4) */
+
+.modellschalter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-bottom: .5rem;
+}
+
+.modelloption {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .35rem .6rem;
+  border: 1px solid var(--linie);
+  border-radius: 999px;
+  background: #fff;
+  cursor: pointer;
+  font-size: .92rem;
+}
+
+.modelloption:has(input:checked) {
+  border-color: var(--akzent);
+  background: var(--akzent-hell);
+  font-weight: 600;
+}
+
+/* :has() ist nicht ueberall vorhanden — der Fokusring darf davon nicht
+   abhaengen, sonst ist die Tastaturbedienung nicht erkennbar. */
+.modelloption:focus-within {
+  outline: 2px solid var(--akzent);
+  outline-offset: 2px;
+}
+
+.wechselhinweis {
+  margin: .5rem 0;
+  padding: .6rem .75rem;
+  border-left: 3px solid var(--akzent);
+  background: var(--akzent-hell);
+  font-size: .88rem;
+  line-height: 1.5;
+}
+
+.wechselhinweis strong,
+.wechselhinweis .wechselzeile {
+  display: block;
+}
+
+.wechselhinweis .wechselzeile {
+  margin-top: .3rem;
+}
+
+.uebergangsblock {
+  margin-top: .9rem;
+  padding-top: .7rem;
+  border-top: 1px dashed var(--linie);
+}
+
+.uebergangsblock[hidden] {
+  display: none;
+}
+
+.weiche-grenze {
+  margin: .4rem 0 0;
+  padding: .45rem .6rem;
+  border-left: 3px solid #B58900;
+  background: #FDF6E3;
+  font-size: .88rem;
+}
+
+.weiche-grenze[hidden] {
+  display: none;
+}
+
+/* --------------------------------------- Geografie-Varianten (Workshop 4) */
+
+.variantenblock {
+  margin: 0 0 1.1rem;
+  padding: .7rem .85rem;
+  border: 1px dashed var(--linie-kraeftig);
+  border-radius: 6px;
+  background: #FAFAFB;
+}
+
+.variantenhinweis {
+  margin: 0 0 .5rem;
+  font-size: .88rem;
+  color: var(--text-leise, #555);
+}
+
+.variantenwaehler {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+}
+
+.variantenoption {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .3rem .6rem;
+  border: 1px solid var(--linie);
+  border-radius: 999px;
+  background: #fff;
+  cursor: pointer;
+  font-size: .9rem;
+}
+
+.variantenoption:has(input:checked) {
+  border-color: var(--akzent);
+  background: var(--akzent-hell);
+  font-weight: 600;
+}
+
+.variantenoption:focus-within,
+.bewertungsoption:focus-within {
+  outline: 2px solid var(--akzent);
+  outline-offset: 2px;
+}
+
+.variantenbeschreibung {
+  margin: .45rem 0 0;
+}
+
+.bewertung {
+  margin-top: .6rem;
+  font-size: .9rem;
+}
+
+.bewertung > summary {
+  cursor: pointer;
+}
+
+.bewertungsknoepfe {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin: .5rem 0;
+}
+
+.bewertungsoption {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .28rem .55rem;
+  border: 1px solid var(--linie);
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.bewertungsoption:has(input:checked) {
+  border-color: var(--akzent);
+  background: var(--akzent-hell);
+}
+
+.bewertungsnotiz {
+  display: block;
+  margin-bottom: .2rem;
+}
+
+.bewertung textarea {
+  width: 100%;
+}
+
+/* ------------------------------------------------ Trichter (Variante 1) */
+
+.trichter-eingabe {
+  display: flex;
+  gap: .4rem;
+  align-items: stretch;
+}
+
+.trichter-eingabe input {
+  flex: 1 1 auto;
+}
+
+.trichter-auswahl {
+  list-style: none;
+  margin: .5rem 0 0;
+  padding: 0;
+}
+
+.trichter-auswahl li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  padding: .3rem .5rem;
+  border: 1px solid var(--linie);
+  border-radius: 4px;
+  margin-bottom: .3rem;
+  background: #fff;
+}
+
+.trichter-abgeleitet {
+  margin-top: .5rem;
+}
+
+.trichter-abgeleitet .chips-titel {
+  font-size: .88rem;
+  margin-right: .35rem;
+}
+
+/* ------------------------------------------------- Auswertungsansicht */
+
+.seite-auswertung .auswertung {
+  max-width: 62rem;
+  margin: 0 auto;
+  padding: 0 1.25rem 2rem;
+}
+
+.auswertung-quelle {
+  margin: 0 0 1.5rem;
+  padding: .6rem .8rem;
+  border-left: 3px solid var(--akzent);
+  background: var(--akzent-hell);
+  font-size: .88rem;
+  line-height: 1.55;
+}
+
+.auswertungsblock {
+  margin-bottom: 2.2rem;
+  break-inside: avoid;
+}
+
+.auswertungsblock h2 {
+  margin-bottom: .2rem;
+  font-size: 1.12rem;
+}
+
+.auswertung-lesehilfe {
+  margin: 0 0 .7rem;
+  font-size: .9rem;
+  color: var(--text-leise);
+  max-width: 44rem;
+}
+
+.auswertungstabelle {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .9rem;
+}
+
+.auswertungstabelle th,
+.auswertungstabelle td {
+  padding: .3rem .5rem;
+  border-bottom: 1px solid var(--linie);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.auswertungstabelle thead th {
+  font-size: .8rem;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  color: var(--text-leise);
+  border-bottom: 1px solid var(--linie-kraeftig);
+}
+
+.auswertungstabelle tbody th {
+  font-weight: 400;
+  width: 38%;
+}
+
+.auswertungstabelle .zahl {
+  width: 4rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  padding-right: 1rem;
+}
+
+.auswertungstabelle .zeile-leer th,
+.auswertungstabelle .zeile-leer .zahl {
+  color: var(--text-leise);
+}
+
+.balken-huelle {
+  background: #F2F3F5;
+  border-radius: 2px;
+  height: .7rem;
+  overflow: hidden;
+}
+
+.balken {
+  height: 100%;
+  background: var(--akzent);
+}
+
+.balken-leer {
+  background: transparent;
+}
+
+.rasterblock {
+  display: grid;
+  gap: 1.2rem;
+  grid-template-columns: minmax(16rem, 20rem) 1fr;
+  align-items: start;
+}
+
+.laenderraster {
+  width: 100%;
+  height: auto;
+}
+
+.raster-kuerzel { font-size: 9px; }
+.raster-zahl { font-size: 13px; font-weight: 700; }
+
+.druckhinweis {
+  margin: .4rem 0 0;
+  font-size: .82rem;
+  color: var(--text-leise);
+}
+
+@media (max-width: 720px) {
+  .rasterblock { grid-template-columns: 1fr; }
+}
+
+/* ------------------------------------------------------------- Ausdruck */
+
+/*
+ * Die Ansicht soll ausgedruckt und in einer Runde herumgegeben werden koennen.
+ * Deshalb: Navigation raus, Balken in Graustufen, Abschnitte nicht ueber die
+ * Seitengrenze brechen. Ein Balken allein traegt im Ausdruck nichts — die
+ * Zahl steht ohnehin daneben.
+ */
+@media print {
+  @page { size: A4 portrait; margin: 16mm 14mm; }
+
+  body { background: #fff; color: #000; font-size: 10pt; }
+
+  .sprunglink,
+  .seitennavigation,
+  .banner,
+  .druckhinweis { display: none !important; }
+
+  .kopf {
+    display: block;
+    border-bottom: 1pt solid #000;
+    padding-bottom: 4mm;
+    margin-bottom: 6mm;
+  }
+
+  .kopf h1 { font-size: 17pt; }
+
+  .auswertung { max-width: none; padding: 0; }
+
+  .auswertung-quelle {
+    border-left: 2pt solid #000;
+    background: none;
+    font-size: 8.5pt;
+  }
+
+  .auswertungsblock {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin-bottom: 8mm;
+  }
+
+  .auswertungstabelle { font-size: 9pt; }
+
+  .auswertungstabelle th,
+  .auswertungstabelle td { border-bottom: .3pt solid #999; }
+
+  .balken { background: #444; }
+  .balken-huelle { border: .3pt solid #999; background: #fff; }
+
+  .rasterblock { grid-template-columns: 1fr; }
+  .laenderraster { max-width: 110mm; }
+  .laenderraster rect { fill: #fff !important; stroke: #666 !important; }
+  .laenderraster text { fill: #000 !important; }
+
+  .fuss { font-size: 8pt; border-top: .5pt solid #999; }
+}
+
+.rasterfigur {
+  margin: 0;
+}
+
+.rasterfigur figcaption {
+  margin-top: .4rem;
+  font-size: .8rem;
+  color: var(--text-leise);
+  line-height: 1.45;
+}

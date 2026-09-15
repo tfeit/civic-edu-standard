@@ -4,121 +4,133 @@ Diese Datei ist als Erstes zu lesen, wenn Vokabulare geprüft oder
 fortgeschrieben werden. Sie hält fest, woher jede Werteliste stammt, wann sie
 zuletzt abgerufen wurde und wie belastbar sie ist.
 
-**Nichts hiervon ist von der Arbeitsgruppe beschlossen.** Die Prüfstände sagen
+**Nichts hiervon ist von der Arbeitsgruppe beschlossen.** Der Prüfstand sagt
 etwas über die Herkunft der Liste aus, nicht über ihre Verbindlichkeit.
+
+Stand: 15.09.2026, nach Workshop 4.
+
+---
+
+## Wie die Dateien zusammenhängen
+
+Die `.json` ist die Quelle. Die gleichnamige `.js` wird daraus erzeugt und
+ist nichts weiter als dieselben Angaben, eingepackt in einen Aufruf von
+`EduVocab.register`. Grund: Der Klickdummy muss per Doppelklick laufen, und
+Browser blockieren `fetch()` auf `file://` mit CORS.
+
+```
+node tools/vokabular-einbetten.mjs             erzeugt die .js aus der .json
+node tools/vokabular-einbetten.mjs --pruefen   meldet, ob beide auseinanderlaufen
+node tools/validate.mjs                        prüft den Beispieldatensatz
+```
+
+Änderungen gehören immer in die `.json`.
+
+---
+
+## Prüfstände
+
+| Wert | Bedeutung |
+|---|---|
+| `bestaetigt` | gegen die benannte Quelle geprüft |
+| `teilweise_bestaetigt` | ein Teil geprüft, der Rest nicht — `quelle.pruefstandDetail` sagt, welcher |
+| `recherchiert` | aus Sekundärquellen zusammengetragen, nicht am Original abgerufen |
+| `unbestaetigt` | Setzung der Arbeitsgruppe, keine externe Quelle |
+| `abgeleitet` | aus einem anderen Vokabular dieses Repositoriums errechnet |
 
 ---
 
 ## Stand je Vokabular
 
-| Datei | Version | Quelle | Abgerufen | Prüfstand | Offene Punkte |
-|---|---|---|---|---|---|
-| `handlungsfelder.js` | 0.2.0 | Platzhalterliste KKAB | 2026-09-15 | unbestätigt | Anzahl offen (23 oder 24); Konsolidierung aus dem Hausaufgabenformat steht aus |
-| `ziviz-engagementfelder.js` | 1.0.0 | ZiviZ-Survey 2023, Hauptbericht | 2026-09-15 | bestätigt | Eigener Gegenprüflauf war nicht möglich (siehe unten) |
-| `icnpo-gruppen.js` | 1.0.0 | ICNPO (Salamon/Anheier 1997) | 2026-09-15 | bestätigt | Deutsche Bezeichnungen sind Arbeitsübersetzungen |
-| `bildungsabschnitte.js` | 0.2.0 | Achterliste der Arbeitsgruppe | 2026-09-15 | unbestätigt | Drei Bruchstellen im Crosswalk, siehe `crosswalks.js` |
-| `lernformen.js` | 0.1.0 | openeduhub `educationalContext` | 2026-09-15 | bestätigt | Vorschlag, nicht beschlossen |
-| `isced.js` | 1.0.0 | ISCED 2011 (UNESCO UIS) | 2026-09-15 | abgeleitet | Deutsche Stufenbezeichnungen nicht gegen Eurostat geprüft |
-| `reichweite.js` | 0.1.0 | Festlegung der Arbeitsgruppe | 2026-09-15 | unbestätigt | — |
-| `rechtsformen.js` | 0.3.0 | Festlegung der Arbeitsgruppe, erweitert | 2026-09-15 | unbestätigt | Stiftungsregister: zur Entscheidung in WS 4 |
-| `organisationsstatus.js` | 0.1.0 | Festlegung der Arbeitsgruppe | 2026-09-15 | unbestätigt | — |
-| `zielgruppenrollen.js` | 0.2.0 | Festlegung der Arbeitsgruppe, erweitert | 2026-09-15 | unbestätigt | — |
-| `sdg.js` | 1.0.0 | Agenda 2030, deutsche Kurztitel | 2026-09-15 | bestätigt | Post-2030-Agenda nach dem Gipfel 2027 |
-| `adresstypen.js` | 0.2.0 | Festlegung der Arbeitsgruppe, erweitert | 2026-09-15 | unbestätigt | — |
-| `verwirklichung.js` | 0.1.0 | Festlegung der Arbeitsgruppe | 2026-09-15 | unbestätigt | — |
-| `sichtbarkeit.js` | 0.1.0 | Festlegung der Arbeitsgruppe | 2026-09-15 | unbestätigt | — |
-| `bundeslaender.js` | 1.0.0 | Amtlicher Gemeindeschlüssel | 2026-09-15 | bestätigt | Bei Gebietsreformen prüfen |
-| `herkunftsquellen.js` | 0.1.0 | Ableitung aus der Rechtsrecherche | 2026-09-15 | abgeleitet | Vorschlag, nicht beschlossen |
-| `crosswalks.js` | 0.1.0 | Eigene Zuordnung; ISCED teils belegt | 2026-09-15 | abgeleitet | Zuordnung zu ZiviZ und ICNPO ist eine Setzung |
+| Datei | Version | Begriffe | Quelle | Abgerufen | Prüfstand | Offene Punkte |
+|---|---|---|---|---|---|---|
+| `adresstypen.json` | 0.2.0 | 4 | Festlegung der Arbeitsgruppe KKAB, erweitert | 2026-09-15 | unbestaetigt | — |
+| `bildungsabschnitte-lebenslang.json` | 0.2.0 | 11 | Bildungsabschnitte des Nettiefinders (Netzwerk Stiftungen und Bildung), überno… | 2026-09-15 | bestaetigt | Definitionen im Entwurf; Modellentscheidung offen |
+| `bildungsstruktur-bereiche.json` | 0.2.0 | 6 | Arbeitskarte Bildungsstruktur im Miro-Board, gestützt auf den Artikel Bildungs… | 2026-09-15 | bestaetigt <br><small>bestaetigt_gegen_arbeitskarte</small> | Zuschreibung „KMK“ nicht belegt; Primarstufe und Sekundarstufe I als ein oder zwei Bereiche zu bestätigen |
+| `bundeslaender.json` | 1.0.0 | 16 | Amtlicher Gemeindeschluessel, erste zwei Stellen (Statistisches Bundesamt) | 2026-09-15 | bestaetigt | Bei Gebietsreformen prüfen |
+| `crosswalk-bildungsabschnitte.json` | 0.2.0 | 6 | Zuordnung Modell A zu Modell B aus der Arbeitskarte Bildungsstruktur im Miro-B… | 2026-09-15 | teilweise_bestaetigt <br><small>A-zu-B bestaetigt, ISCED recherchiert_nicht_abgerufen</small> | Drei offene Punkte: Weiterbildung im Tertiär- statt Quartärbereich, Auffangwert, Primarstufe/Sek I |
+| `crosswalk-handlungsfelder.json` | 0.1.0 | 23 | Eigener Zuordnungsvorschlag auf Basis der recherchierten Systematiken; nicht m… | 2026-09-15 | unbestaetigt | Vorschlag, nicht mit der Arbeitsgruppe abgestimmt; zwei Zuordnungen mit niedriger Sicherheit |
+| `engagementfelder.json` | 1.0.0 | 16 | Systematik der Engagementfelder aus der Zivilgesellschaftsforschung (16 Felder… | 2026-09-15 | recherchiert <br><small>recherchiert_nicht_abgerufen</small> | Labels nicht gegen den ZiviZ-Hauptbericht abgerufen |
+| `handlungsfelder.json` | 0.2.0 | 23 | Handlungsfelder der Arbeitsgruppe, übernommen aus der Arbeitsliste; 23 Begriff… | 2026-09-15 | teilweise_bestaetigt <br><small>begriffe_bestaetigt_definitionen_entwurf</small> | Definitionen im Entwurf; Lobbyarbeit fehlt; Auffangwert offen; Obergrenze und Schwerpunkt nicht beschlossen |
+| `herkunftsquellen.json` | 0.1.0 | 4 | Ableitung aus der Rechtsrecherche (Art. 14 DSGVO, Fall Bisnode Polska UODO 15.… | 2026-09-15 | abgeleitet | Vorschlag, nicht beschlossen |
+| `icnpo-gruppen.json` | 1.0.0 | 16 | International Classification of Non-profit Organizations (Salamon/Anheier 1997… | 2026-09-15 | bestaetigt | Deutsche Bezeichnungen sind Arbeitsübersetzungen |
+| `isced-2011.json` | 1.0.0 | 9 | UNESCO ISCED 2011; maschinenlesbare Fassung als Eurostat-Vokabular | 2026-09-15 | recherchiert <br><small>recherchiert_nicht_abgerufen</small> | Labels nicht gegen die Eurostat-Quelle abgerufen |
+| `lernformen.json` | 0.1.0 | 4 | openeduhub, Vokabular educationalContext (SKOS, CC0); prefLabel@de woertlich u… | 2026-09-15 | bestaetigt | Vorschlag, nicht beschlossen |
+| `organisationsstatus.json` | 0.2.0 | 5 | Festlegung der Arbeitsgruppe KKAB, in Workshop 4 auf drei Werte reduziert | 2026-09-15 | unbestaetigt | Schlüssel von Englisch auf Deutsch umgestellt; zwei Werte deprecated |
+| `raumgliederung.json` | 0.1.0 | 32 | Amtlicher Gemeindeschlüssel (AGS). Die 16 Länderschlüssel stammen aus vocab/bu… | 2026-09-15 | recherchiert <br><small>Abrufversuch am 15.09.2026 von der Egress-Richtlinie dieser Umgebung mit 403 abgelehnt. Nicht geraten, sondern</small> | Gemeindeschlüssel nicht gegen das amtliche Verzeichnis abgeglichen (Abruf am 15.09.2026 mit 403 abgelehnt) |
+| `rechtsformen.json` | 0.3.0 | 18 | Festlegung der Arbeitsgruppe KKAB, erweitert um Rechtsformen des Bildungssekto… | 2026-09-15 | unbestaetigt | Stiftungsregister: zur Entscheidung |
+| `reichweite-grob.json` | 0.1.0 | 4 | Variante 3 des Formulartests aus Workshop 4; Setzung der Arbeitsgruppe | 2026-09-15 | unbestaetigt | Variante 3 des Formulartests, nicht beschlossen |
+| `reichweite.json` | 0.1.0 | 6 | Festlegung der Arbeitsgruppe KKAB | 2026-09-15 | unbestaetigt | — |
+| `sdg.json` | 1.0.0 | 17 | Agenda 2030 der Vereinten Nationen, deutsche Kurztitel | 2026-09-15 | bestaetigt | Post-2030-Agenda nach dem Gipfel 2027 |
+| `sichtbarkeit.json` | 0.1.0 | 2 | Festlegung der Arbeitsgruppe KKAB | 2026-09-15 | unbestaetigt | — |
+| `verwirklichung.json` | 0.1.0 | 3 | Festlegung der Arbeitsgruppe KKAB | 2026-09-15 | unbestaetigt | — |
+| `zielgruppenrollen.json` | 0.2.0 | 5 | Festlegung der Arbeitsgruppe KKAB, erweitert | 2026-09-15 | unbestaetigt | Zwei Rollen deprecated, weil sie keine Teilnahmerolle beschreiben |
+
+Nicht mehr geladen, aber erhalten: `vocab/archiv/crosswalks-v0.1.json`. Die
+Datei enthält den dokumentierten Prüflauf gegen openeduhub vom 15.09.2026,
+einschließlich der dort festgestellten Abweichungen zur Zuordnung der
+Arbeitsgruppe. Sie folgt den alten Schlüsseln und wird deshalb nicht mehr
+ausgewertet.
 
 ---
 
-## Ungeprüfte Angaben
+## Was ausdrücklich ungeprüft ist
 
-Wörtlich übernommen aus der Vokabularrecherche, plus die Ergebnisse der
-Prüfläufe vom 15.09.2026:
+Diese Punkte sind vor einer Festlegung zu klären. Keiner davon ist ein
+Versehen — sie sind so dokumentiert, weil die Quelle sie offenlässt oder der
+Abruf nicht möglich war.
 
-- **Deutsche Labels aus `educationalContext`.** Die Recherche markierte fünf
-  Labels als aus URI-Slugs abgeleitet und nicht verifiziert: `schule`,
-  `grundschule`, `foerderschule`, `fernunterricht`, `informelles_lernen`.
-  **Geprüft am 15.09.2026 — vier bestätigt, eines abweichend:**
-  `schule` → „Schule", `foerderschule` → „Förderschule", `fernunterricht` →
-  „Fernunterricht", `informelles_lernen` → „Informelles Lernen" stimmen mit
-  dem kanonischen `prefLabel@de` überein. **`grundschule` trägt das prefLabel
-  „Primarstufe", nicht „Grundschule".** Der Slug bleibt `grundschule`.
-  Die zwölf Slugs selbst sind bestätigt.
-- **Zahl der KKAB-Handlungsfelder.** Offen (23 oder 24); die eingearbeitete
-  Liste ist ein Platzhalter mit 18 Einträgen.
-- **Vokabulare von betterplace, Stiftungssuche und DSEE.** Nicht als
-  geschlossene Listen öffentlich, deshalb nicht übernommen.
-- **Wikidata-Abdeckungszahlen.** Nicht datiert verfügbar; die Einschätzung
-  „lückenhaft bei kleinen Vereinen" ist qualitativ. Der Prototyp behandelt
-  „kein Treffer" deshalb als Normalfall.
-- **ZiviZ-Feldliste.** Als bestätigt übernommen, weil die Recherche sie
-  wörtlich vorlegte. Ein eigener Gegenprüflauf war aus der Arbeitsumgebung
-  nicht möglich (siehe Verifikationsläufe).
-- **Deutsche ISCED-Stufenbezeichnungen.** Aus der Recherche übernommen, nicht
-  gegen das Eurostat-Vokabular geprüft — der Abruf schlug fehl. Die
-  Stufenkennungen ED0 bis ED8 sind unstrittig.
+**Die Zuschreibung „KMK“ bei Modell B.** In Workshop 4 fiel die Bezeichnung,
+belegt ist sie nicht; die Quellkarte verweist auf den Wikipedia-Artikel zum
+Bildungssystem in Deutschland. Deshalb wird neutral von *Bildungsbereichen*
+gesprochen, der Alias bleibt in der Datei.
 
----
+**Die ISCED-Bezeichnungen.** Sie stammen aus einer Recherche, nicht aus einem
+Abruf der Eurostat-Quelle. Vor Produktivnutzung verifizieren.
 
-## Auslöser für Aktualisierung
+**Die Engagementfeld-Bezeichnungen.** Ebenso: die 16 Felder sind
+recherchiert, der ZiviZ-Hauptbericht wurde nicht abgerufen.
 
-Tritt eines dieser Ereignisse ein, ist das genannte Vokabular zu prüfen:
+**Alle Definitionen, Beispiele und Negativbeispiele.** Sie tragen je Begriff
+`definitionStatus: "entwurf"` und sind mit dem Netzwerk abzustimmen —
+insbesondere dort, wo sie Grenzen setzen, die in der Praxis anders gezogen
+werden. Die Oberfläche weist im Tooltip darauf hin.
 
-| Auslöser | Zu prüfen |
-|---|---|
-| NUTS-Umstellung auf Fassung 2027 | Geografie-Crosswalk |
-| Neue Major-Version von DCAT-AP.de | Geobezug-URIs, Datenthemenbindung in `crosswalks.js` |
-| Post-2030-Agenda nach dem SDG-Gipfel September 2027 | `sdg.js` |
-| ZiviZ-Survey-Welle 2027 | `ziviz-engagementfelder.js` |
-| Gebietsreformen | Gebietsstand in den Wirkungsgebieten, `bundeslaender.js` |
-| Abschluss des Hausaufgabenformats der Arbeitsgruppe | `handlungsfelder.js` von Platzhalter auf Arbeitsstand heben |
-| Entscheidung zum Stiftungsregister in WS 4 | `rechtsformen.js`, Registerart der rechtsfähigen Stiftung |
+**Die drei offenen Punkte im Bildungs-Crosswalk.** Sie stehen in der Datei
+unter `offenePunkte` und in `BILDUNGSABSCHNITTE.md` ausführlich:
+Weiterbildung ist dem Tertiär- statt dem Quartärbereich zugeordnet; der
+Auffangwert ist einem Bereich zugeordnet, obwohl er sachlich in keinen
+gehört; ob Primarstufe und Sekundarstufe I einen oder zwei Bereiche bilden,
+ist in der Quelle uneindeutig.
+
+**Der Handlungsfeld-Crosswalk insgesamt.** Er ist ein Zuordnungsvorschlag und
+nicht mit der Arbeitsgruppe abgestimmt. Jede Zeile trägt eine
+Sicherheitsangabe: 14 mit hoher, 7 mit mittlerer, 2 mit niedriger Sicherheit.
+Die beiden unsicheren — Diversität und Wirtschaft — erscheinen im Formular
+mit ihrer Begründung im Tooltip.
+
+**Die Gemeindeschlüssel in `raumgliederung.json`.** Der Abruf des amtlichen
+Gemeindeverzeichnisses wurde am 15.09.2026 von der Egress-Richtlinie der
+Arbeitsumgebung mit HTTP 403 abgelehnt. Die 16 Länderschlüssel stammen aus
+`bundeslaender.json` und sind belastbar; die 16 Gemeindeschlüssel sind
+recherchiert und als solche gekennzeichnet. Sie sind Demonstrationsmaterial
+für die Erprobung des Trichterprinzips, keine Raumgliederung.
 
 ---
 
-## Verifikationslauf
+## Regeln für die Fortschreibung
 
-So wird geprüft:
+1. **Schlüssel sind stabil und getrennt vom Anzeigenamen.** Ein `key` wird
+   nicht umbenannt. Wer ihn ändert, bricht jeden Datensatz, der ihn führt.
+2. **Terme werden nie gelöscht**, sondern auf `deprecated: true` gesetzt,
+   mit `ersetztDurch`, wo es einen Nachfolger gibt. Die Oberfläche blendet
+   sie aus der Auswahl aus, zeigt sie in bestehenden Datensätzen aber weiter
+   an — sonst fielen sie stillschweigend heraus.
+3. **Jede Änderung braucht einen Eintrag im `CHANGELOG.md`**, auch wenn das
+   Ergebnis „unverändert" oder „Abruf fehlgeschlagen" lautet.
+4. **Ein nicht dokumentierter Prüflauf ist kein Prüflauf.** Scheitert ein
+   Abruf, bleibt die Datei unverändert, der Prüfstand bleibt stehen, und der
+   Fehlversuch wird mit Datum vermerkt. Nicht raten.
 
-1. Quelle abrufen (URL im `quelle`-Block der jeweiligen Datei).
-2. Schlüssel und Labels vergleichen. **Schlüssel werden nie geändert** — auch
-   dann nicht, wenn die Quelle einen anderen Slug führt; abweichende Labels
-   werden übernommen, abweichende Schlüssel nur dokumentiert.
-3. `quelle.abgerufen` auf das Abrufdatum setzen, `quelle.pruefstand`
-   fortschreiben.
-4. Änderung in `CHANGELOG.md` vermerken — auch wenn sie „unverändert" lautet.
-5. Bei Fehlschlag: nichts ändern, Prüfstand belassen, den Fehlversuch mit
-   Datum hier und im Changelog notieren. **Nicht raten.**
-
-Ein nicht dokumentierter Prüflauf ist kein Prüflauf.
-
-### Durchgeführte Läufe, 15.09.2026
-
-| Lauf | Quelle | Ergebnis |
-|---|---|---|
-| 1 · educationalContext | `raw.githubusercontent.com/openeduhub/oeh-metadata-vocabs/master/educationalContext.ttl` | **Erfolgreich.** 12 Konzepte, deckungsgleich mit den deklarierten `skos:hasTopConcept`. Vier der fünf unsicheren Labels bestätigt, `grundschule` weicht ab (prefLabel „Primarstufe"). Zusätzlich ISCED-Bezüge über `skos:exactMatch` gewonnen. |
-| 2 · ISCED gegen Eurostat | `dd.eionet.europa.eu/vocabulary/eurostat/isced11/` | **Fehlgeschlagen.** Der Netzzugang der Arbeitsumgebung lässt die Domain nicht durch (keine Antwort). Stufenbezeichnungen unverändert, `pruefstand` bleibt `abgeleitet`. Teilbeleg aus Lauf 1: `educationalContext` ordnet den Konzepten ISCED-2011-Stufen zu; diese Bezüge sind in `crosswalks.js` vermerkt. |
-| 3 · Wikidata-Properties | `wikidata.org`, mehrere Wege | **Fehlgeschlagen.** Domain vom Netzzugang gesperrt (403). P227 und P10301 sind unverändert aus der Recherche übernommen und im Prototyp nur als Hinweistext geführt, nicht funktional ausgewertet. |
-| 4 · ZiviZ-Feldliste | `ziviz.de`, `stifterverband.org` | **Fehlgeschlagen.** Beide Domains gesperrt. Die 16 Felder sind wörtlich aus der Recherche übernommen; ihre Reihenfolge ist unverändert. |
-
-Die Beschränkung liegt am Netzzugang der Arbeitsumgebung, nicht an den
-Quellen. Die drei fehlgeschlagenen Läufe sollten aus einer Umgebung mit
-freiem Netzzugang wiederholt werden.
-
-### Abweichungen, die bewusst nicht vereinheitlicht wurden
-
-Beim Bildungs-Crosswalk weichen die ISCED-Zuordnungen der Arbeitsgruppe von
-denen ab, die `educationalContext` führt:
-
-| Abschnitt | Arbeitsgruppe | educationalContext |
-|---|---|---|
-| berufliche Bildung | ED3, ED4, ED5 | nur `level4` |
-| Hochschulbildung | ED5 bis ED8 | `level6`, `level7`, `level8` — ohne ED5 |
-| Sekundarstufe II | ED3, ggf. ED4 | nur `level3` |
-
-Beide Lesarten stehen in `crosswalks.js`, die Abweichung ist je Abschnitt als
-`anmerkung` vermerkt. Eine Vereinheitlichung wäre eine inhaltliche
-Entscheidung der Arbeitsgruppe, keine redaktionelle.
+Zur Ausnahme von Regel 1 bei den Handlungsfeldern und beim
+Organisationsstatus siehe `CHANGELOG.md`, Eintrag vom 15.09.2026.

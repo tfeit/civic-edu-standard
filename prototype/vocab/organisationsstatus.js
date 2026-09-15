@@ -1,48 +1,56 @@
 /*
- * Organisationsstatus — ist der Akteur derzeit handlungsfaehig?
+ * Status
+ * Workshop 4 hat die Werteliste reduziert: entscheidend ist die Unterscheidung zwischen aktiv und aufgelöst. Die früheren Werte „in Gründung“ und „in Auflösung“ sind schwer zu pflegen und vermutlich nicht handlungsrelevant. Sie bleiben als deprecated stehen, damit bestehende Datensätze lesbar bleiben. Die Schlüssel wurden dabei von Englisch auf Deutsch umgestellt; die Zuordnung steht in CHANGELOG.md.
+ *
+ * Erzeugt aus organisationsstatus.json durch tools/vokabular-einbetten.mjs.
+ * Nicht von Hand aendern — Aenderungen gehoeren in die JSON-Datei.
  */
 
 EduVocab.register({
-    "id": "organisationsstatus",
-    "label": "Status",
-    "version": "0.1.0",
-    "status": "arbeitsstand",
-    "quelle": {
-      "bezeichnung": "Festlegung der Arbeitsgruppe KKAB",
-      "url": null,
-      "abgerufen": "2026-09-15",
-      "pruefstand": "unbestaetigt"
+  "id": "organisationsstatus",
+  "label": "Status",
+  "version": "0.2.0",
+  "status": "arbeitsstand",
+  "quelle": {
+    "bezeichnung": "Festlegung der Arbeitsgruppe KKAB, in Workshop 4 auf drei Werte reduziert",
+    "url": null,
+    "abgerufen": "2026-09-15",
+    "pruefstand": "unbestaetigt"
+  },
+  "concepts": [
+    {
+      "key": "aktiv",
+      "label": "aktiv",
+      "hint": "Regelfall. Die Organisation arbeitet.",
+      "deprecated": false,
+      "ersetztDurch": null
     },
-    "concepts": [
-      {
-        "key": "founding",
-        "label": "in Gründung",
-        "deprecated": false,
-        "ersetztDurch": null
-      },
-      {
-        "key": "active",
-        "label": "aktiv",
-        "deprecated": false,
-        "ersetztDurch": null
-      },
-      {
-        "key": "dormant",
-        "label": "ruhend",
-        "deprecated": false,
-        "ersetztDurch": null
-      },
-      {
-        "key": "dissolving",
-        "label": "in Auflösung",
-        "deprecated": false,
-        "ersetztDurch": null
-      },
-      {
-        "key": "ended",
-        "label": "beendet",
-        "deprecated": false,
-        "ersetztDurch": null
-      }
-    ]
-  });
+    {
+      "key": "ruhend",
+      "label": "ruhend",
+      "hint": "Besteht fort, ist derzeit aber nicht tätig.",
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "aufgeloest",
+      "label": "aufgelöst",
+      "hint": "Beendet. Der Eintrag bleibt bestehen, damit vergangene Kooperationen nachvollziehbar bleiben.",
+      "deprecated": false,
+      "ersetztDurch": null
+    },
+    {
+      "key": "in_gruendung",
+      "label": "in Gründung",
+      "deprecated": true,
+      "ersetztDurch": "aktiv"
+    },
+    {
+      "key": "in_aufloesung",
+      "label": "in Auflösung",
+      "deprecated": true,
+      "ersetztDurch": "aufgeloest"
+    }
+  ],
+  "hinweis": "Workshop 4 hat die Werteliste reduziert: entscheidend ist die Unterscheidung zwischen aktiv und aufgelöst. Die früheren Werte „in Gründung“ und „in Auflösung“ sind schwer zu pflegen und vermutlich nicht handlungsrelevant. Sie bleiben als deprecated stehen, damit bestehende Datensätze lesbar bleiben. Die Schlüssel wurden dabei von Englisch auf Deutsch umgestellt; die Zuordnung steht in CHANGELOG.md."
+});

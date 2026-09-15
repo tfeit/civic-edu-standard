@@ -1,0 +1,298 @@
+{
+  "id": "handlungsfelder",
+  "label": "Handlungsfelder",
+  "version": "0.2.0",
+  "status": "arbeitsstand",
+  "quelle": {
+    "bezeichnung": "Handlungsfelder der Arbeitsgruppe, übernommen aus der Arbeitsliste; 23 Begriffe",
+    "url": null,
+    "abgerufen": "2026-09-15",
+    "pruefstand": "teilweise_bestaetigt",
+    "pruefstandDetail": "begriffe_bestaetigt_definitionen_entwurf"
+  },
+  "hinweis": "Die 23 Begriffe und ihre Schreibweise sind aus der Primärquelle übernommen. Definitionen, Beispiele und Negativbeispiele sind Entwürfe zur Abstimmung. Hinweis aus Workshop 4: Lobbyarbeit ist in dieser Liste nicht enthalten.",
+  "mehrfachauswahl": true,
+  "empfohleneObergrenze": 5,
+  "empfohlenerSchwerpunkt": true,
+  "concepts": [
+    {
+      "key": "bne",
+      "label": "Bildung für nachhaltige Entwicklung",
+      "zusatz": "Umweltbildung, Natur, Globales Lernen, Energie, Klimaschutz, Ernährung",
+      "definition": "Bildungsarbeit zu ökologischen und globalen Zusammenhängen und zur Gestaltung nachhaltiger Lebensweisen.",
+      "beispiele": [
+        "Schulgarten-Programm mit Ernährungsbildung",
+        "Werkstatt zu Klimafolgen im Quartier"
+      ],
+      "negativbeispiel": "Praktischer Naturschutz ohne Bildungsanteil - das ist keine Bildungsarbeit.",
+      "definitionStatus": "entwurf",
+      "deprecated": false
+    },
+    {
+      "key": "bildungsmanagement",
+      "label": "Bildungsmanagement",
+      "definition": "Steuerung, Organisation und Qualitätsentwicklung von Bildungsangeboten und -einrichtungen.",
+      "beispiele": [
+        "Beratung zu kommunalem Bildungsmanagement",
+        "Qualifizierung von Schulleitungen im Bereich Organisationsentwicklung"
+      ],
+      "negativbeispiel": "Fachdidaktische Fortbildung - das ist Lehrerinnen- und Lehrerbildung.",
+      "definitionStatus": "entwurf",
+      "deprecated": false
+    },
+    {
+      "key": "bildungssystem",
+      "label": "Bildungssystem",
+      "definition": "Arbeit an Strukturen, Rahmenbedingungen und Reformen des Bildungssystems insgesamt.",
+      "beispiele": [
+        "Politikberatung zu Schulstrukturfragen",
+        "Modellvorhaben zur Umgestaltung von Übergängen"
+      ],
+      "negativbeispiel": "Ein einzelnes Bildungsangebot an einer Schule - das wirkt im System, arbeitet aber nicht an ihm.",
+      "definitionStatus": "entwurf",
+      "deprecated": false
+    },
+    {
+      "key": "digitale_transformation",
+      "label": "Digitale Transformation",
+      "definition": "Bildungsarbeit zu digitalen Werkzeugen, Medienkompetenz und dem Wandel von Lernen und Arbeiten durch Digitalisierung.",
+      "beispiele": [
+        "Medienkompetenztraining für Jugendliche",
+        "Begleitung von Schulen bei der Einführung digitaler Lernumgebungen"
+      ],
+      "negativbeispiel": "Der Einsatz digitaler Werkzeuge als bloßes Mittel in einem anderen Handlungsfeld - maßgeblich ist der inhaltliche Schwerpunkt.",
+      "definitionStatus": "entwurf",
+      "deprecated": false
+    },
+    {
+      "key": "diversitaet",
+      "label": "Diversität",
+      "definition": "Bildungsarbeit zur Anerkennung von Vielfalt und zum Abbau von Diskriminierung.",
+      "beispiele": [
+        "Antidiskriminierungstraining an Schulen",
+        "Diversitätsorientierte Organisationsentwicklung im Bildungsbereich"
+      ],
+      "negativbeispiel": "Angebote, die auf die Teilhabe von Menschen mit Behinderung zielen - dafür ist Inklusion vorgesehen.",
+      "definitionStatus": "entwurf",
+      "deprecated": false
+    },
+    {
+      "key": "engagementfoerderung",
+      "label": "Ehrenamt- und Engagementförderung",
+      "definition": "Gewinnung, Qualifizierung und Begleitung freiwillig Engagierter sowie Stärkung von Engagementstrukturen.",
+      "beispiele": [
+        "Qualifizierung von Lesepatinnen und Lesepaten",
+        "Aufbau einer Freiwilligenagentur im ländlichen Raum"
+      ],
+      "negativbeispiel": "Die eigene ehrenamtliche Arbeitsweise einer Organisation - das ist eine Organisationseigenschaft, kein Handlungsfeld.",
+      "definitionStatus": "entwurf",
+      "deprecated": false
+    },
+    {
+      "key": "entwicklungszusammenarbeit",
+      "label": "Entwicklungszusammenarbeit",
+      "definition": "Bildungsarbeit im Rahmen internationaler Zusammenarbeit, überwiegend mit Partnern außerhalb Deutschlands.",
+      "beispiele": [
+        "Schulpartnerschaft mit einer Einrichtung im Globalen Süden",
+        "Qualifizierung von Lehrkräften in einem Partnerland"
+      ],
+      "negativbeispiel": "Globales Lernen an deutschen Schulen - das gehört zur Bildung für nachhaltige Entwicklung.",
+      "definitionStatus": "entwurf",
+      "deprecated": false
+    },
+    {
+      "key": "erzieherbildung",
+      "label": "Erzieherinnen- / Erzieherbildung",
+      "definition": "Aus- und Fortbildung pädagogischer Fachkräfte im Elementar- und Kita-Bereich.",
+      "beispiele": [
+        "Fortbildung zu alltagsintegrierter Sprachbildung",
+        "Praxisbegleitung für Berufseinsteigende in Kitas"
+      ],
+      "negativbeispiel": "Ein Angebot für Kinder in der Kita - maßgeblich ist, wer unmittelbar teilnimmt.",
+      "definitionStatus": "entwurf",
+      "deprecated": false
+    },
+    {
+      "key": "familienbildung",
+      "label": "Familien- / Elternbildung",
+      "definition": "Bildungsangebote für Eltern und Familien, auch zur Stärkung der häuslichen Lernumgebung.",
+      "beispiele": [
+        "Elternkurs zur Lernbegleitung",
+        "Familienbildungsangebot im Stadtteilzentrum"
+      ],
+      "negativbeispiel": "Elternarbeit als Begleitmaßnahme eines Schulprojekts - maßgeblich ist der Schwerpunkt des Angebots.",
+      "definitionStatus": "entwurf",
+      "deprecated": false
+    },
+    {
+      "key": "gesundheit_praevention",
+      "label": "Gesundheit, Prävention",
+      "definition": "Bildungsarbeit zu körperlicher und seelischer Gesundheit sowie zur Vorbeugung von Risiken.",
+      "beispiele": [
+        "Suchtprävention an weiterführenden Schulen",
+        "Programm zur psychischen Gesundheit von Jugendlichen"
+      ],
+      "negativbeispiel": "Bewegungsangebote mit sportlichem Schwerpunkt - dafür ist Sport und Bewegung vorgesehen.",
+      "definitionStatus": "entwurf",
+      "deprecated": false
+    },
+    {
+      "key": "inklusion",
+      "label": "Inklusion",
+      "definition": "Bildungsarbeit zur gleichberechtigten Teilhabe von Menschen mit Behinderung und zum Abbau von Barrieren.",
+      "beispiele": [
+        "Begleitung von Schulen auf dem Weg zur inklusiven Schule",
+        "Barrierefreie Lernmaterialien"
+      ],
+      "negativbeispiel": "Angebote zum Abbau von Diskriminierung allgemein - dafür ist Diversität vorgesehen.",
+      "definitionStatus": "entwurf",
+      "deprecated": false
+    },
+    {
+      "key": "integration_migration",
+      "label": "Integration von Zugewanderten, Flucht und Migration",
+      "definition": "Bildungsarbeit mit und für Menschen mit Flucht- oder Migrationsgeschichte sowie zur Gestaltung von Einwanderung.",
+      "beispiele": [
+        "Lernbegleitung für neu zugewanderte Jugendliche",
+        "Elternarbeit in Willkommensklassen"
+      ],
+      "negativbeispiel": "Sprachförderung ohne Migrationsbezug - das ist Sprachbildung.",
+      "definitionStatus": "entwurf",
+      "deprecated": false
+    },
+    {
+      "key": "interkulturelle_bildung",
+      "label": "Interkulturelle Bildung",
+      "definition": "Bildungsarbeit zum Umgang mit kultureller Vielfalt und zur Reflexion eigener Zugehörigkeiten.",
+      "beispiele": [
+        "Begegnungsprojekt zwischen Schulen unterschiedlicher Stadtteile",
+        "Fortbildung zu interkultureller Kompetenz"
+      ],
+      "negativbeispiel": "Maßnahmen zur Integration neu Zugewanderter - dafür ist das Feld Integration vorgesehen.",
+      "definitionStatus": "entwurf",
+      "deprecated": false
+    },
+    {
+      "key": "kulturelle_bildung",
+      "label": "Kulturelle Bildung",
+      "definition": "Bildungsarbeit in und durch Künste - Musik, Theater, Literatur, bildende Kunst, Film.",
+      "beispiele": [
+        "Theaterprojekt an einer Gesamtschule",
+        "Musikalische Frühförderung in Kitas"
+      ],
+      "negativbeispiel": "Ein Kulturangebot ohne Bildungsanteil, etwa ein reines Aufführungsformat.",
+      "definitionStatus": "entwurf",
+      "deprecated": false
+    },
+    {
+      "key": "lehrkraeftebildung",
+      "label": "Lehrerinnen- / Lehrerbildung",
+      "definition": "Aus-, Fort- und Weiterbildung von Lehrkräften sowie Begleitung im Berufseinstieg.",
+      "beispiele": [
+        "Fortbildungsreihe zu kooperativem Lernen",
+        "Mentoring für Lehrkräfte im Vorbereitungsdienst"
+      ],
+      "negativbeispiel": "Ein Angebot für Schülerinnen und Schüler, das Lehrkräfte lediglich vermitteln - maßgeblich ist, wer unmittelbar teilnimmt.",
+      "definitionStatus": "entwurf",
+      "deprecated": false
+    },
+    {
+      "key": "mint_bildung",
+      "label": "MINT-Bildung",
+      "definition": "Bildungsarbeit in Mathematik, Informatik, Naturwissenschaften und Technik.",
+      "beispiele": [
+        "Schülerlabor für Naturwissenschaften",
+        "Programmierwerkstatt in der Grundschule"
+      ],
+      "negativbeispiel": "Medienkompetenzarbeit ohne technisch-naturwissenschaftlichen Kern - das ist digitale Transformation.",
+      "definitionStatus": "entwurf",
+      "deprecated": false
+    },
+    {
+      "key": "persoenlichkeitsentwicklung",
+      "label": "Persönlichkeitsentwicklung",
+      "zusatz": "Talent-, Begabten-, Nachwuchsförderung, Persönlichkeitsbildung",
+      "definition": "Förderung individueller Fähigkeiten, Selbstwirksamkeit und Begabungen.",
+      "beispiele": [
+        "Stipendienprogramm mit ideeller Förderung",
+        "Mentoring zur Stärkung von Selbstwirksamkeit"
+      ],
+      "negativbeispiel": "Fachliche Förderung in einem Schulfach - das gehört in das jeweilige Fachfeld.",
+      "definitionStatus": "entwurf",
+      "deprecated": false
+    },
+    {
+      "key": "politische_bildung",
+      "label": "Politische Bildung",
+      "zusatz": "Demokratiebildung",
+      "definition": "Bildungsarbeit zu Demokratie, Beteiligung, politischen Prozessen und zum Umgang mit Demokratiefeindlichkeit.",
+      "beispiele": [
+        "Planspiel zu kommunaler Beteiligung",
+        "Workshop zu Verschwörungserzählungen"
+      ],
+      "negativbeispiel": "Interessenvertretung der eigenen Organisation gegenüber Politik - das ist keine Bildungsarbeit.",
+      "definitionStatus": "entwurf",
+      "deprecated": false
+    },
+    {
+      "key": "sport_bewegung",
+      "label": "Sport / Bewegung",
+      "definition": "Bildungsarbeit über Sport und Bewegung, einschließlich bewegungsbezogener Persönlichkeits- und Teamentwicklung.",
+      "beispiele": [
+        "Bewegungsprogramm im Ganztag",
+        "Sportbasiertes Antigewalttraining"
+      ],
+      "negativbeispiel": "Wettkampfsport ohne Bildungsanteil.",
+      "definitionStatus": "entwurf",
+      "deprecated": false
+    },
+    {
+      "key": "sprachbildung",
+      "label": "Sprachbildung",
+      "definition": "Förderung sprachlicher Fähigkeiten, mündlich wie schriftlich, einschließlich Lese- und Schreibförderung.",
+      "beispiele": [
+        "Lesepatenschaft an Grundschulen",
+        "Alphabetisierungskurs für Erwachsene"
+      ],
+      "negativbeispiel": "Sprachförderung als Teil eines Integrationsangebots - maßgeblich ist der Schwerpunkt.",
+      "definitionStatus": "entwurf",
+      "deprecated": false
+    },
+    {
+      "key": "stadt_quartiersentwicklung",
+      "label": "Stadt- / Quartiersentwicklung",
+      "definition": "Bildungsarbeit mit räumlichem Bezug auf Stadtteile und Quartiere, häufig sozialraumorientiert.",
+      "beispiele": [
+        "Bildungsnetzwerk im Quartier",
+        "Beteiligungsprojekt zur Gestaltung öffentlicher Räume mit Jugendlichen"
+      ],
+      "negativbeispiel": "Ein Angebot, das lediglich in einem Stadtteil stattfindet, ohne sich auf ihn zu beziehen - das ist eine Ortsangabe, kein Handlungsfeld.",
+      "definitionStatus": "entwurf",
+      "deprecated": false
+    },
+    {
+      "key": "wirtschaft",
+      "label": "Wirtschaft",
+      "definition": "Bildungsarbeit zu wirtschaftlichen Zusammenhängen, Arbeitswelt und unternehmerischem Denken.",
+      "beispiele": [
+        "Schülerfirma mit Begleitprogramm",
+        "Finanzbildung für junge Erwachsene"
+      ],
+      "negativbeispiel": "Berufsorientierung als Übergangsbegleitung - das ist ein Bildungsabschnitt, kein Handlungsfeld.",
+      "definitionStatus": "entwurf",
+      "deprecated": false
+    },
+    {
+      "key": "wissenschaft_forschung",
+      "label": "Wissenschaft und Forschung",
+      "definition": "Forschung zu Bildung sowie Wissenschaftskommunikation und die Verbindung von Forschung und Praxis.",
+      "beispiele": [
+        "Begleitforschung zu einem Bildungsprogramm",
+        "Transferformat zwischen Hochschule und Schulpraxis"
+      ],
+      "negativbeispiel": "Naturwissenschaftliche Bildungsangebote für Lernende - das ist MINT-Bildung.",
+      "definitionStatus": "entwurf",
+      "deprecated": false
+    }
+  ]
+}
