@@ -42,20 +42,36 @@
 
   var RECHTSFORMEN = [
     { value: 'registeredAssociation', label: 'eingetragener Verein (e. V.)' },
+    { value: 'unincorporatedAssociation', label: 'nicht rechtsfähiger Verein' },
     { value: 'gGmbH', label: 'gGmbH' },
     { value: 'GmbH', label: 'GmbH' },
     { value: 'UG', label: 'gUG/UG' },
-    { value: 'cooperative', label: 'gemeinnützige Genossenschaft' },
-    { value: 'foundation', label: 'rechtsfähige Stiftung' },
     { value: 'AG', label: 'gAG/AG' },
+    { value: 'cooperative', label: 'gemeinnützige Genossenschaft (eG)' },
+    { value: 'commercialCooperative', label: 'Genossenschaft (eG)' },
+    { value: 'foundation', label: 'rechtsfähige Stiftung' },
+    { value: 'dependentFoundation', label: 'nicht rechtsfähige (treuhänderische) Stiftung' },
     { value: 'eGbR', label: 'eingetragene GbR (eGbR)' },
+    { value: 'partnership', label: 'Partnerschaftsgesellschaft (PartG, PartG mbB)' },
+    { value: 'commercialPartnership', label: 'Personenhandelsgesellschaft (OHG, KG)' },
+    { value: 'publicLawCorporation', label: 'Körperschaft des öffentlichen Rechts' },
     { value: 'informalGroup', label: 'nicht eingetragene Initiative/Gruppe' },
     { value: 'naturalPerson', label: 'Einzelperson' },
+    { value: 'foreignLegalForm', label: 'ausländische Rechtsform' },
     { value: 'other', label: 'andere' }
   ];
 
   // Registerart je Rechtsform. Rechtsformen ohne Eintrag bekommen kein
-  // Registerfeld (Stiftung, informelle Gruppe, Einzelperson, andere).
+  // Registerfeld: nicht rechtsfaehiger Verein, Stiftung, treuhaenderische
+  // Stiftung, Koerperschaft des oeffentlichen Rechts, informelle Gruppe,
+  // Einzelperson, auslaendische Rechtsform, andere.
+  //
+  // Zur Entscheidung in WS 4: Mit dem bundesweiten Stiftungsregister fuehren
+  // rechtsfaehige Stiftungen eine Registerkennung. Die Vorgabe fuer diesen
+  // Arbeitsstand lautet "Stiftung: kein Registerfeld"; ob das Schema die
+  // Kennung kuenftig erfasst, ist von der Arbeitsgruppe zu klaeren und der
+  // Rechtsstand dabei zu pruefen. Umgesetzt waere es mit einer Zeile hier:
+  //   foundation: 'SR'
   var REGISTERART_JE_RECHTSFORM = {
     registeredAssociation: 'VR',
     gGmbH: 'HRB',
@@ -63,7 +79,10 @@
     UG: 'HRB',
     AG: 'HRB',
     eGbR: 'GsR',
-    cooperative: 'GnR'
+    cooperative: 'GnR',
+    commercialCooperative: 'GnR',
+    partnership: 'PR',
+    commercialPartnership: 'HRA'
   };
 
   var STATUS = [
@@ -76,7 +95,9 @@
 
   var ADRESSTYPEN = [
     { value: 'headquarters', label: 'Sitz' },
-    { value: 'branch', label: 'weiterer Standort' }
+    { value: 'office', label: 'Geschäftsstelle' },
+    { value: 'branch', label: 'weiterer Standort' },
+    { value: 'postalAddress', label: 'Postanschrift' }
   ];
 
   // Platzhalterliste — Konsolidierung in Workshop 4.
@@ -92,7 +113,13 @@
     { value: 'civicEducation', label: 'politische Bildung' },
     { value: 'healthEducation', label: 'Gesundheitsbildung' },
     { value: 'volunteering', label: 'Engagementförderung' },
-    { value: 'inclusion', label: 'Inklusion' }
+    { value: 'inclusion', label: 'Inklusion' },
+    { value: 'interculturalEducation', label: 'interkulturelle Bildung' },
+    { value: 'economicLiteracy', label: 'ökonomische Bildung und Finanzbildung' },
+    { value: 'antiDiscrimination', label: 'Antidiskriminierung und Diversität' },
+    { value: 'violencePrevention', label: 'Gewaltprävention und Konfliktbearbeitung' },
+    { value: 'familyEducation', label: 'Eltern- und Familienbildung' },
+    { value: 'environmentalEducation', label: 'Umweltbildung und Naturerfahrung' }
   ];
 
   var BILDUNGSABSCHNITTE = [
@@ -109,7 +136,9 @@
   var ZIELGRUPPENROLLEN = [
     { value: 'beneficiaries', label: 'Endbegünstigte' },
     { value: 'multipliers', label: 'Multiplikator:innen/Fachkräfte' },
-    { value: 'institutions', label: 'Institutionen' }
+    { value: 'institutions', label: 'Institutionen' },
+    { value: 'policyMakers', label: 'politische Entscheidungsträger:innen' },
+    { value: 'funders', label: 'Fördergebende' }
   ];
 
   var SDGS = [
