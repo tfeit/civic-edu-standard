@@ -5,6 +5,10 @@ name: Prototyp veröffentlichen
 on:
   push:
     branches: ["main"]
+  # Die Pruefung laeuft auch am Pull Request. Sonst faellt ein Fehler erst
+  # nach dem Merge auf, und die Vorschau zeigt einen kaputten Stand.
+  pull_request:
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
@@ -12,8 +16,11 @@ permissions:
   pages: write
   id-token: write
 
+# Die Gruppe enthaelt die Referenz, damit ein Prueflauf am Pull Request nicht
+# hinter einer laufenden Veroeffentlichung aus main wartet. Zwei Laeufe aus
+# main teilen weiterhin dieselbe Gruppe und serialisieren wie vorgesehen.
 concurrency:
-  group: "pages"
+  group: "pages-${{ github.ref }}"
   cancel-in-progress: false
 
 jobs:
@@ -32,6 +39,9 @@ jobs:
 
   deploy:
     needs: pruefen
+    # Veroeffentlicht wird nur aus main. Am Pull Request prueft der Lauf
+    # lediglich, ohne die Seite anzufassen.
+    if: github.event_name != 'pull_request'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
