@@ -33,6 +33,11 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
+        with:
+          # Schaltet GitHub Pages fuer das Repositorium ein, falls es noch
+          # nicht eingeschaltet ist, und setzt die Quelle auf GitHub Actions.
+          # Ohne das bricht der Lauf hier mit "Get Pages site failed" ab.
+          enablement: true
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
