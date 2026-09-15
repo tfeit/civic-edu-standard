@@ -1,0 +1,178 @@
+{
+  "id": "crosswalk-bildungsabschnitte",
+  "label": "Übersetzung zwischen Bildungsabschnitten, Bildungsbereichen und ISCED",
+  "version": "0.2.0",
+  "status": "arbeitsstand",
+  "achsen": {
+    "leitachse": "bildungsstruktur-bereiche",
+    "weitere": [
+      "bildungsabschnitte-lebenslang",
+      "isced-2011"
+    ]
+  },
+  "quelle": {
+    "bezeichnung": "Zuordnung Modell A zu Modell B aus der Arbeitskarte Bildungsstruktur im Miro-Board; Zuordnung zu ISCED recherchiert",
+    "url": "https://de.wikipedia.org/wiki/Bildungssystem_in_Deutschland",
+    "abgerufen": "2026-09-15",
+    "pruefstand": "teilweise_bestaetigt",
+    "pruefstandDetail": "A-zu-B bestaetigt, ISCED recherchiert_nicht_abgerufen"
+  },
+  "qualitaetsstufen": {
+    "eindeutig": "Eins-zu-eins übersetzbar, ohne Informationsverlust.",
+    "aggregiert": "Ein Wert der Leitachse fasst mehrere Werte der Zielachse zusammen; Rückübersetzung ist unscharf.",
+    "mehrdeutig": "Zuordnung hängt vom Einzelfall ab; mehrere Ziele möglich.",
+    "keine_entsprechung": "Kein Äquivalent in der Zielachse vorhanden.",
+    "nur_mit_zusatz": "Zuordnung nur möglich, wenn der Quellwert um eine Stufenangabe ergänzt wird."
+  },
+  "eintraege": [
+    {
+      "bereich": "elementarbereich",
+      "isced": [
+        "ED0"
+      ],
+      "iscedQualitaet": "eindeutig",
+      "lebenslang": [
+        "fruehkindliche_bildung",
+        "kita",
+        "uebergang_kita_schule"
+      ],
+      "lebenslangQualitaet": "aggregiert",
+      "hinweis": "Modell A differenziert innerhalb des Elementarbereichs nach Ort und Übergang. Rückübersetzung von B nach A ist nicht eindeutig."
+    },
+    {
+      "bereich": "primarstufe",
+      "isced": [
+        "ED1"
+      ],
+      "iscedQualitaet": "eindeutig",
+      "lebenslang": [
+        "schulische_bildung"
+      ],
+      "lebenslangQualitaet": "nur_mit_zusatz",
+      "zusatz": "Schulische Bildung (Primarstufe)",
+      "hinweis": "Die Quellkarte löst den Containerbegriff über einen Klammerzusatz auf. Ohne diesen Zusatz ist die Zuordnung nicht möglich."
+    },
+    {
+      "bereich": "sekundarstufe_1",
+      "isced": [
+        "ED2"
+      ],
+      "iscedQualitaet": "eindeutig",
+      "lebenslang": [
+        "schulische_bildung"
+      ],
+      "lebenslangQualitaet": "nur_mit_zusatz",
+      "zusatz": "Schulische Bildung (Sekundarstufe I)",
+      "hinweis": "Die Quellkarte führt Primarstufe und Sekundarstufe I unter einer gemeinsamen Überschrift, unterscheidet sie aber in den Einträgen."
+    },
+    {
+      "bereich": "sekundarstufe_2",
+      "isced": [
+        "ED3",
+        "ED4"
+      ],
+      "iscedQualitaet": "mehrdeutig",
+      "lebenslang": [
+        "schulische_bildung",
+        "uebergang_schule_beruf",
+        "berufliche_erstausbildung"
+      ],
+      "lebenslangQualitaet": "aggregiert",
+      "zusatz": "Schulische Bildung (Sekundarstufe II)",
+      "hinweis": "ED4 ist zwischen Sekundarstufe II und Tertiärbereich nicht trennscharf. In Modell A verteilt sich dieser Bereich auf drei Werte."
+    },
+    {
+      "bereich": "tertiaerbereich",
+      "isced": [
+        "ED5",
+        "ED6",
+        "ED7",
+        "ED8"
+      ],
+      "iscedQualitaet": "aggregiert",
+      "lebenslang": [
+        "hochschule",
+        "berufsbezogene_bildung",
+        "nebenberufliche_bildung"
+      ],
+      "lebenslangQualitaet": "aggregiert",
+      "hinweis": "Die Quellkarte ordnet berufsbezogene und nebenberufliche Bildung ausdrücklich als Weiterbildung dem Tertiärbereich zu. Das weicht von der gängigen Systematik ab, die Weiterbildung im Quartärbereich führt - siehe offenePunkte."
+    },
+    {
+      "bereich": "quartaerbereich",
+      "isced": [],
+      "iscedQualitaet": "keine_entsprechung",
+      "lebenslang": [
+        "nachberufliche_bildung",
+        "sonstiges"
+      ],
+      "lebenslangQualitaet": "aggregiert",
+      "hinweis": "ISCED klassifiziert Programme nach Niveau, nicht Weiterbildung als Lebensphase. Nachberufliche Bildung hat in keiner internationalen Systematik eine Entsprechung und ist ein eigenständiges Konzept der Arbeitsgruppe."
+    }
+  ],
+  "offenePunkte": [
+    {
+      "punkt": "Weiterbildung im Tertiär- statt Quartärbereich",
+      "beschreibung": "Die Quellkarte ordnet berufsbezogene und nebenberufliche Bildung dem Tertiärbereich zu, obwohl beide ausdrücklich als Weiterbildung bezeichnet sind. In der gängigen deutschen Systematik ist Weiterbildung der Quartärbereich; der Tertiärbereich umfasst Hochschul- und Fachschulbildung. Folge: Der Quartärbereich enthält derzeit nur nachberufliche Bildung und den Auffangwert. Vor einer Festlegung zu klären."
+    },
+    {
+      "punkt": "Auffangwert im Quartärbereich",
+      "beschreibung": "Bildungsabschnitt Sonstiges ist in der Quellkarte dem Quartärbereich zugeordnet. Ein Auffangwert gehört sachlich in keinen bestimmten Bereich. Vorschlag: eigene Zuordnung ohne Bereich, außerhalb der Systematik geführt."
+    },
+    {
+      "punkt": "Primarstufe und Sekundarstufe I als ein oder zwei Bereiche",
+      "beschreibung": "Die Quellkarte führt beide unter einer gemeinsamen Überschrift, unterscheidet sie aber in den Einträgen. Dieses Vokabular führt sie als zwei Werte, weil die Unterscheidung in der Quelle vorhanden ist. Zu bestätigen."
+    }
+  ],
+  "uebergaenge": {
+    "hinweis": "Vorschlag aus Workshop 4, nicht beschlossen: In Modell B werden Übergänge nicht als eigene Bereiche geführt, sondern als zusätzliches Attribut. Modell A führt zwei Übergänge als eigene Werte - das ist einer der Unterschiede zwischen den Modellen.",
+    "regel": "Ein Übergang darf nur angegeben werden, wenn beide angrenzenden Bereiche ebenfalls ausgewählt sind. Ausnahme: sek2_erwerbstaetigkeit setzt nur sekundarstufe_2 voraus.",
+    "offenerPunkt": "Modell A kennt nur die Übergänge Kita-Schule und Schule-Beruf. Der in Workshop 4 als fachlich ebenso bedeutsam benannte Übergang Primarstufe-Sekundarstufe I fehlt dort. Das ist die Stringenzlücke, die zu entscheiden ist: alle Übergänge systematisch führen oder nur die beiden etablierten.",
+    "werte": [
+      {
+        "key": "elementar_primar",
+        "label": "Übergang Elementarbereich - Primarstufe",
+        "voraussetzt": [
+          "elementarbereich",
+          "primarstufe"
+        ],
+        "entsprichtModellA": "uebergang_kita_schule"
+      },
+      {
+        "key": "primar_sek1",
+        "label": "Übergang Primarstufe - Sekundarstufe I",
+        "voraussetzt": [
+          "primarstufe",
+          "sekundarstufe_1"
+        ],
+        "entsprichtModellA": null
+      },
+      {
+        "key": "sek1_sek2",
+        "label": "Übergang Sekundarstufe I - Sekundarstufe II",
+        "voraussetzt": [
+          "sekundarstufe_1",
+          "sekundarstufe_2"
+        ],
+        "entsprichtModellA": null
+      },
+      {
+        "key": "sek2_tertiaer",
+        "label": "Übergang Sekundarstufe II - Tertiärbereich",
+        "voraussetzt": [
+          "sekundarstufe_2",
+          "tertiaerbereich"
+        ],
+        "entsprichtModellA": null
+      },
+      {
+        "key": "sek2_erwerbstaetigkeit",
+        "label": "Übergang Schule - Beruf",
+        "voraussetzt": [
+          "sekundarstufe_2"
+        ],
+        "entsprichtModellA": "uebergang_schule_beruf"
+      }
+    ]
+  }
+}

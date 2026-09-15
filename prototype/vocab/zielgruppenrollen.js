@@ -1,5 +1,6 @@
 /*
  * Zielgruppenrollen
+ * Workshop 4: Erfasst wird die Rolle, in der jemand am Angebot teilnimmt. Auf drei Rollen reduziert; die Werte für Politik und Fördernde bleiben als deprecated stehen, weil sie keine Teilnahmerolle beschreiben.
  *
  * Erzeugt aus zielgruppenrollen.json durch tools/vokabular-einbetten.mjs.
  * Nicht von Hand aendern — Aenderungen gehoeren in die JSON-Datei.
@@ -25,7 +26,7 @@ EduVocab.register({
     },
     {
       "key": "multipliers",
-      "label": "Multiplikator:innen/Fachkräfte",
+      "label": "Multiplikator:innen und Fachkräfte",
       "deprecated": false,
       "ersetztDurch": null
     },
@@ -38,14 +39,15 @@ EduVocab.register({
     {
       "key": "policyMakers",
       "label": "politische Entscheidungsträger:innen",
-      "deprecated": false,
+      "deprecated": true,
       "ersetztDurch": null
     },
     {
       "key": "funders",
       "label": "Fördergebende",
-      "deprecated": false,
+      "deprecated": true,
       "ersetztDurch": null
     }
-  ]
+  ],
+  "hinweis": "Workshop 4: Erfasst wird die Rolle, in der jemand am Angebot teilnimmt. Auf drei Rollen reduziert; die Werte für Politik und Fördernde bleiben als deprecated stehen, weil sie keine Teilnahmerolle beschreiben."
 });
