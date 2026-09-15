@@ -79,6 +79,7 @@
   /* -------------------------------------------------------------- Zustand */
 
   var zustand = {};        // Feldschlüssel -> Wert
+  var herkunft = {};       // Feldschlüssel -> { quelle, quellenUrl, erfasstAm }
   var knoten = {};         // Feldschlüssel -> DOM-Referenzen
   var wikidataAus = false; // Autosuggest nicht erreichbar
 
@@ -125,7 +126,78 @@
     feld.subfields.forEach(function (teil) {
       eintrag[teil.key] = teil.default || '';
     });
+    if (feld.provenance) { eintrag._herkunft = { quelle: '', quellenUrl: '' }; }
     return eintrag;
+  }
+
+  /* -------------------------------------------------------- Herkunft */
+
+  /*
+   * Eingeklappte Herkunftsangabe. Sie existiert, weil ein spaeteres
+   * Verzeichnis uebernommener Kontaktdaten dokumentieren muss, woher sie
+   * stammen — ohne diese Angabe traegt die Interessenabwaegung nicht.
+   * Zugeklappt, damit das Formular nicht laenger wirkt.
+   */
+  function herkunftsBlock(traeger, id) {
+    var quellen = VOK.herkunftsquellen;
+    var huelle = el('details', { class: 'herkunft' });
+    huelle.appendChild(el('summary', { text: 'Herkunft der Angabe' }));
+
+    var auswahlId = id + '-herkunft-quelle';
+    var urlId = id + '-herkunft-url';
+
+    var auswahl = el('select', { id: auswahlId });
+    auswahl.appendChild(el('option', { value: '', text: '— keine Angabe —' }));
+    quellen.forEach(function (o) {
+      auswahl.appendChild(el('option', { value: o.value, text: o.label }));
+    });
+    auswahl.value = traeger.quelle || '';
+
+    var urlFeld = el('input', {
+      type: 'url', id: urlId, placeholder: 'https://…', autocomplete: 'off'
+    });
+    urlFeld.value = traeger.quellenUrl || '';
+
+    var urlZeile = el('div', { class: 'teilfeld' }, [
+      el('label', { for: urlId, text: 'Quellen-Adresse (optional)' }),
+      urlFeld
+    ]);
+
+    var hinweis = el('p', { class: 'hinweis herkunft-hinweis' });
+
+    function nachfuehren() {
+      var gewaehlt = auswahl.value;
+      var begriff = null;
+      quellen.forEach(function (o) { if (o.value === gewaehlt) { begriff = o; } });
+      var fremd = !!gewaehlt && gewaehlt !== 'selbstauskunft';
+      urlZeile.hidden = !fremd;
+      hinweis.textContent = fremd
+        ? 'Bei Übernahme aus öffentlichen Quellen gelten Informationspflichten nach Art. 14 DSGVO. Herkunft und Datum werden mitgespeichert.'
+        : '';
+      if (begriff) { void begriff; }
+    }
+
+    auswahl.addEventListener('change', function () {
+      traeger.quelle = auswahl.value;
+      if (!traeger.quelle) { traeger.quellenUrl = ''; urlFeld.value = ''; }
+      nachfuehren();
+      aktualisiere();
+    });
+    urlFeld.addEventListener('input', function () {
+      traeger.quellenUrl = urlFeld.value;
+      aktualisiere();
+    });
+
+    huelle.appendChild(el('div', { class: 'herkunft-felder' }, [
+      el('div', { class: 'teilfeld' }, [
+        el('label', { for: auswahlId, text: 'Quelle' }),
+        auswahl
+      ]),
+      urlZeile
+    ]));
+    huelle.appendChild(hinweis);
+    nachfuehren();
+    return huelle;
   }
 
   /* ------------------------------------------------- Kennzeichen / Badges */
@@ -150,6 +222,12 @@
     return el('span', { class: 'badge-ws4', text: 'zur Entscheidung in WS 4' });
   }
 
+  // Felder aus der Vokabularrecherche: als Vorschlag kenntlich, nicht als
+  // beschlossener Bestandteil des Schemas.
+  function badgeVorschlag() {
+    return el('span', { class: 'badge-vorschlag', text: 'Vorschlag aus Recherche — nicht beschlossen' });
+  }
+
   /* ------------------------------------------------------ Feld-Grundgerüst */
 
   function feldRahmen(feld, steuerelement, optionen) {
@@ -167,6 +245,7 @@
     }
     kopfKinder.push(kennzeichenKnoten(feld));
     if (feld.pending) { kopfKinder.push(badgeWs4()); }
+    if (feld.experimental || feld.proposal) { kopfKinder.push(badgeVorschlag()); }
 
     var kinder = [el('div', { class: 'feld-kopf' }, kopfKinder)];
     if (feld.help) { kinder.push(el('p', { class: 'hilfe', id: hilfeId, text: feld.help })); }
@@ -230,7 +309,14 @@
         zustand[feld.key] = eingabe.value;
         aktualisiere();
       });
-      var wrapper = feldRahmen(feld, eingabe);
+
+      var steuerung = eingabe;
+      if (feld.provenance) {
+        herkunft[feld.key] = herkunft[feld.key] || { quelle: '', quellenUrl: '' };
+        steuerung = el('div', {}, [eingabe, herkunftsBlock(herkunft[feld.key], 'fld-' + feld.key)]);
+      }
+
+      var wrapper = feldRahmen(feld, steuerung);
       setzeBeschreibung(feld, eingabe);
       knoten[feld.key].eingabe = eingabe;
       return wrapper;
@@ -308,10 +394,17 @@
     feld.options.forEach(function (option, index) {
       var boxId = 'fld-' + feld.key + '-' + index;
       var box = el('input', { type: 'checkbox', id: boxId, value: option.value });
-      var beschriftungsKnoten = el('label', { class: 'option', for: boxId }, [
-        box,
-        el('span', { text: option.label })
-      ]);
+      var optionsKinder = [box, el('span', { text: option.label })];
+      if (option.tooltip) {
+        // Die ISCED-Entsprechung steht am Begriff selbst; sie ist im Workshop
+        // die entscheidende Information und darf nicht nur im Tooltip stecken.
+        optionsKinder.push(el('span', { class: 'option-zusatz', text: option.tooltip }));
+      }
+      var beschriftungsKnoten = el('label', {
+        class: 'option' + (option.tooltip ? ' option-mit-zusatz' : ''),
+        for: boxId,
+        title: option.tooltip || null
+      }, optionsKinder);
       box.addEventListener('change', function () {
         var werte = zustand[feld.key];
         if (box.checked) {
@@ -328,11 +421,13 @@
     });
 
     var zaehler = el('p', { class: 'auswahlzaehler', 'aria-live': 'polite' });
-    var huelle = el('div', {}, [liste, zaehler]);
+    var veraltet = el('ul', { class: 'veraltete-werte', hidden: true });
+    var huelle = el('div', {}, [liste, veraltet, zaehler]);
     var wrapper = feldRahmen(feld, huelle, { gruppenLabel: true });
     liste.setAttribute('aria-describedby', knoten[feld.key].beschrieben);
     knoten[feld.key].kaestchen = kaestchen;
     knoten[feld.key].zaehler = zaehler;
+    knoten[feld.key].veraltet = veraltet;
     return wrapper;
   };
 
@@ -565,7 +660,13 @@
       ]);
 
       var fehler = el('p', { class: 'feld-fehler', role: 'status' });
-      behaelter.appendChild(el('div', { class: 'eintrag' }, [kopf, raster, fehler]));
+      var eintragsKinder = [kopf, raster];
+      if (feld.provenance) {
+        eintrag._herkunft = eintrag._herkunft || { quelle: '', quellenUrl: '' };
+        eintragsKinder.push(herkunftsBlock(eintrag._herkunft, 'fld-' + feld.key + '-' + index));
+      }
+      eintragsKinder.push(fehler);
+      behaelter.appendChild(el('div', { class: 'eintrag' }, eintragsKinder));
     });
 
     if (fokusLetzten) {
@@ -675,7 +776,7 @@
     function sucheWikidata(suchbegriff) {
       var url = 'https://www.wikidata.org/w/api.php?action=wbsearchentities' +
         '&search=' + encodeURIComponent(suchbegriff) +
-        '&language=de&uselang=de&type=item&format=json&origin=*';
+        '&language=de&uselang=de&type=item&limit=10&format=json&origin=*';
       var abbruch = window.AbortController ? new AbortController() : null;
       var abbruchTimer = window.setTimeout(function () {
         if (abbruch) { abbruch.abort(); }
@@ -704,16 +805,26 @@
       if (!liste.length) {
         treffer.hidden = true;
         eingabe.setAttribute('aria-expanded', 'false');
+        // Kein Treffer ist bei kleineren Organisationen der Normalfall und
+        // wird auch so benannt — nicht als Fehlschlag.
+        gewaehlt.textContent = 'Kein Wikidata-Eintrag gefunden — das ist bei kleineren Organisationen üblich. Feld kann leer bleiben.';
         return;
       }
       liste.slice(0, 8).forEach(function (eintrag) {
-        var knopf = el('button', { type: 'button' }, [
+        var beschreibung = eintrag.description || 'ohne Beschreibung';
+        var kinder = [
           el('span', { class: 'treffer-label' }, [
             document.createTextNode(eintrag.label || eintrag.id),
             el('span', { class: 'treffer-qid', text: ' · ' + eintrag.id })
           ]),
-          el('span', { class: 'treffer-beschreibung', text: eintrag.description || 'ohne Beschreibung' })
-        ]);
+          el('span', { class: 'treffer-beschreibung', text: beschreibung })
+        ];
+        // Deutschlandbezug nur aus dem vorliegenden Suchergebnis ableiten —
+        // ein zweiter Abruf je Tastendruck waere unverhaeltnismaessig.
+        if (/deutsch|german|in Deutschland/i.test(beschreibung)) {
+          kinder.push(el('span', { class: 'treffer-marke', text: 'Deutschlandbezug laut Beschreibung' }));
+        }
+        var knopf = el('button', { type: 'button' }, kinder);
         knopf.addEventListener('click', function () {
           uebernehme(eintrag.id, eintrag.label || '');
         });
@@ -833,6 +944,7 @@
 
   function aktualisiereCheckboxen(feld) {
     var werte = zustand[feld.key];
+    zeigeVeralteteWerte(feld);
     var grenzeErreicht = !!feld.max && werte.length >= feld.max;
     knoten[feld.key].kaestchen.forEach(function (eintrag) {
       eintrag.box.checked = werte.indexOf(eintrag.value) !== -1;
@@ -844,6 +956,48 @@
     if (feld.max) { text += ' · höchstens ' + feld.max; }
     if (feld.min) { text += ' · mindestens ' + feld.min; }
     knoten[feld.key].zaehler.textContent = text;
+  }
+
+  /*
+   * Ein Begriff, der im Vokabular auf deprecated gesetzt wurde, erscheint
+   * nicht mehr in der Auswahl. Steht er aber bereits in einem Datensatz,
+   * wird er weiter angezeigt — ausgegraut und benannt. Andernfalls fiele
+   * er stillschweigend aus dem Datensatz, ohne dass es jemand bemerkt.
+   */
+  function zeigeVeralteteWerte(feld) {
+    var ref = knoten[feld.key];
+    if (!ref || !feld.vokabular) { return; }
+    var behaelter = ref.veraltet;
+    if (!behaelter) { return; }
+
+    var sichtbare = {};
+    (feld.options || []).forEach(function (o) { sichtbare[o.value] = true; });
+    var veraltete = (zustand[feld.key] || []).filter(function (wert) {
+      return !sichtbare[wert];
+    });
+
+    behaelter.textContent = '';
+    behaelter.hidden = !veraltete.length;
+    if (!veraltete.length) { return; }
+
+    veraltete.forEach(function (wert) {
+      var begriff = window.EduVocab.begriff(feld.vokabular, wert);
+      var text = (begriff ? begriff.label : wert) + ' — nicht mehr im Vokabular';
+      if (begriff && begriff.ersetztDurch) {
+        text += ', ersetzt durch ' + window.EduVocab.beschriftung(feld.vokabular, begriff.ersetztDurch);
+      }
+      var zeile = el('li', {}, [
+        el('span', { class: 'veraltet-wert', text: text })
+      ]);
+      var entfernen = el('button', { type: 'button', class: 'leise', text: 'Entfernen' });
+      entfernen.addEventListener('click', function () {
+        var pos = zustand[feld.key].indexOf(wert);
+        if (pos !== -1) { zustand[feld.key].splice(pos, 1); }
+        aktualisiere();
+      });
+      zeile.appendChild(entfernen);
+      behaelter.appendChild(zeile);
+    });
   }
 
   function aktualisiereAbgeleiteteAuswahl(feld) {
@@ -1024,6 +1178,17 @@
     });
   }
 
+  // Herkunft eines Eintrags oder Feldes in die JSON-Form bringen. Ohne
+  // gewaehlte Quelle entsteht kein Block — leere Angaben bleiben ausgelassen.
+  function herkunftJson(traeger) {
+    if (!traeger || !traeger.quelle) { return null; }
+    var block = { quelle: traeger.quelle, erfasstAm: heute() };
+    if (traeger.quelle !== 'selbstauskunft' && (traeger.quellenUrl || '').trim()) {
+      block.quellenUrl = traeger.quellenUrl.trim();
+    }
+    return block;
+  }
+
   function saubereEintraege(feld) {
     var ergebnis = [];
     zustand[feld.key].forEach(function (eintrag) {
@@ -1034,6 +1199,8 @@
         if (wert !== '') { sauber[teil.key] = wert; }
       });
       if (feld.stampToday) { sauber[feld.stampToday] = heute(); }
+      var hk = herkunftJson(eintrag._herkunft);
+      if (hk) { sauber.provenance = hk; }
       ergebnis.push(sauber);
     });
     return ergebnis;
@@ -1071,9 +1238,49 @@
         default:
           wert = (zustand[feld.key] || '').toString().trim();
       }
-      if (!leer(wert)) { datensatz[feld.key] = wert; }
+      if (leer(wert)) { return; }
+
+      // Traegt das Feld eine Herkunftsangabe, wird aus dem Wert ein Objekt.
+      var hk = feld.provenance ? herkunftJson(herkunft[feld.key]) : null;
+      datensatz[feld.key] = hk ? { value: wert, provenance: hk } : wert;
     });
+
+    var abgeleitet = leiteAb(datensatz);
+    if (abgeleitet) { datensatz.derived = abgeleitet; }
     return datensatz;
+  }
+
+  /* ------------------------------------------------------- Ableitungen */
+
+  /*
+   * Aggregation der Handlungsfelder. Sie wird nicht erfasst, sondern aus
+   * den angekreuzten Feldern berechnet — analog zu "Aktiv in (Bundesland)".
+   * Genau das ist der Punkt der Zweistufigkeit: bildungsspezifisch ankreuzen,
+   * sektorstatistisch vergleichbar herausgeben.
+   */
+  function leiteAb(datensatz) {
+    var felder = datensatz.fieldsOfAction || [];
+    if (!felder.length) { return null; }
+
+    var cw = window.EduVocab.vokabular('crosswalks');
+    if (!cw) { return null; }
+
+    var ziviz = [], icnpo = [];
+    felder.forEach(function (key) {
+      cw.concepts.forEach(function (c) {
+        if (c.handlungsfeld !== key) { return; }
+        if (c.zivizFeld && ziviz.indexOf(c.zivizFeld) === -1) { ziviz.push(c.zivizFeld); }
+        var gruppe = c.icnpoUntergruppe || c.icnpoGruppe;
+        if (gruppe && icnpo.indexOf(gruppe) === -1) { icnpo.push(gruppe); }
+      });
+    });
+    if (!ziviz.length && !icnpo.length) { return null; }
+
+    return {
+      zivizFields: ziviz,
+      icnpoGroups: icnpo,
+      dataTheme: cw.dataTheme || 'EDUC'
+    };
   }
 
   function faerbeJson(text) {
@@ -1329,6 +1536,8 @@
   // Wird nur bei Beispieldaten, Zuruecksetzen und beim Laden eines
   // Zwischenstands aufgerufen, nie waehrend einer laufenden Eingabe.
   function zeichneWerte() {
+    // Die Herkunftsblöcke werden beim Neuzeichnen der Einträge mitgebaut;
+    // für die einfachen Felder genügt es, den Zweig zu leeren.
     alleFelder().forEach(function (feld) {
       var ref = knoten[feld.key];
       if (!ref) { return; }
