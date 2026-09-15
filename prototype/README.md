@@ -1,14 +1,23 @@
 # Klickdummy „Akteursprofil“
 
-Klickbare Eingabemaske zum Datenschema für Organisationsprofile. Sie macht das
-Feldmodell aus der Perspektive einer ausfüllenden Organisation erfahrbar und
-zeigt daneben den Datensatz, der dabei entsteht.
+Drei Seiten zum Datenschema für Organisationsprofile: eine klickbare
+Eingabemaske, die das Feldmodell aus der Perspektive einer ausfüllenden
+Organisation erfahrbar macht; eine Netzdarstellung des Modells; und eine
+Kreuztabelle, die zeigt, was mit gemeinsamen Feldern auswertbar wird.
 
 > **v0-Arbeitsstand.** Feldnamen, JSON-Schlüssel, Vokabulare und
 > Verbindlichkeiten sind in Abstimmung. Vier Felder tragen das Kennzeichen
 > „zur Entscheidung in WS 4“: Rufname, info@-Adresse, Telefon,
 > Mutterorganisation. Die Liste der Handlungsfelder ist als Platzhalterliste
 > gekennzeichnet.
+
+## Die drei Seiten
+
+| Seite | Was sie zeigt |
+|---|---|
+| `index.html` | **Formular** — die Eingabemaske. Sachlich gehalten: sie simuliert echte Arbeit und soll nicht ablenken. |
+| `schema.html` | **Datenmodell** — Netzdarstellung, umschaltbar zwischen Schemastruktur und Akteursnetz. |
+| `simulation.html` | **Verschneidung** — zwei Merkmale gegeneinander gelegt, als Kreuztabelle. |
 
 ## Starten
 
@@ -30,9 +39,12 @@ Repositoriumsdateien erscheinen dort nicht.
 | Datei | Inhalt |
 |---|---|
 | `fields.js` | Das Feldmodell als Datenstruktur: Blöcke, Felder, Typen, Verbindlichkeit, Hilfetexte, Vokabulare — dazu die drei Beispielprofile |
-| `app.js` | Renderer und Verhalten — kennt Feldtypen, nicht Felder |
-| `index.html` | Rahmen: Banner, Kopf, zwei Spalten |
-| `style.css` | Gestaltung |
+| `akteure.js` | 36 erfundene Akteure, schemakonform — Grundlage für Netz und Kreuztabelle |
+| `app.js` | Renderer und Verhalten des Formulars — kennt Feldtypen, nicht Felder |
+| `netz.js` | Kraftlayout und SVG-Zeichnung für die Netzdarstellung |
+| `schema.js` | Die beiden Netzansichten |
+| `simulation.js` | Kreuztabelle und Filter |
+| `style.css` | Gestaltung aller drei Seiten |
 
 Das Formular wird vollständig aus `fields.js` erzeugt. Eine Vokabular-Änderung
 dort — ein weiteres Handlungsfeld, ein anderer Labeltext, ein zusätzliches
@@ -140,7 +152,10 @@ sichtbare Fokus und die Zeile über der Vorschau bereits benennen.
 ## Nicht enthalten
 
 Kein Backend, keine Speicherung auf Servern, kein Schema-Validator, keine
-Mehrsprachigkeit, keine Nutzerkonten.
+Mehrsprachigkeit, keine Nutzerkonten. Der Akteursbestand hinter Netz und
+Kreuztabelle ist erfunden: 36 Organisationen mit Namen aus festen Bausteinen,
+deterministisch erzeugt. Ein Bezug zu realen Organisationen besteht nicht, und
+die Einträge tragen aus demselben Grund keine Wikidata-Kennung.
 
 ## Selbsttest
 
@@ -239,6 +254,68 @@ Erzeugter Datensatz:
     }
   ]
 }```
+
+## Datenmodell im Netz
+
+Zwei Ansichten auf denselben Gegenstand, über einen Umschalter erreichbar.
+
+**Schemastruktur.** Jeder Knoten ist ein Feld, die Farbe zeigt den Block. Die
+Blöcke sind selbst Knoten — ohne sie zerfiele die Darstellung in drei
+Punktwolken, denn das Feldmodell hat nur wenige konditionale Kanten. Diese
+wenigen sind die eigentliche Aussage und deshalb kräftiger gezeichnet, mit
+Pfeilspitze: Rechtsform blendet die Registerkennung ein, Reichweite die
+Wirkungsgebiete, Handlungsfelder speisen die Auswahl des Schwerpunkts,
+Wirkungsgebiete berechnen das Bundesland.
+
+Die Kanten werden aus `fields.js` abgeleitet, nicht von Hand gezeichnet. Wer
+dort eine Abhängigkeit ergänzt, sieht sie hier ohne weiteres Zutun.
+
+**Akteursnetz.** Jeder kleine Knoten ist ein Datensatz. Die großen Knoten sind
+die Schlüssel, über die Datensätze verschiedener Verbände zusammenfinden:
+Bundesland und Handlungsfeld. Das ist der Ertrag des Standards als Bild.
+
+Die Farbbedeutung ist in beiden Ansichten dieselbe — blau für Identität und
+Akteur, orange für Tätigkeit und Handlungsfeld, grün für Raum und Bundesland.
+Dieselben drei Farben markieren im Formular die Abschnitte A, C und D.
+
+Das Layout ist deterministisch: gleicher Seed, gleiche Anordnung. Die Grafik
+sieht bei jedem Aufruf gleich aus, was das Erklären erleichtert.
+
+## Verschneidung
+
+Zwei Merkmale gegeneinander gelegt, die Zahl der Akteure je Kombination.
+Zeilen und Spalten sind frei wählbar aus sieben Merkmalen; zwei Filter
+schränken den Bestand zusätzlich ein. Ein Klick auf eine Zelle zeigt, welche
+Akteure dahinterstehen.
+
+Die Darstellung ist eine echte HTML-Tabelle mit Zeilen- und Spaltenköpfen.
+Die Tabellenansicht ist damit kein Zusatz zur Grafik, sondern die Grafik
+selbst: Jede Zelle trägt ihre Zahl im Text, die Farbe wiederholt sie nur. Ohne
+Farbwahrnehmung bleibt alles lesbar.
+
+Zur Farbskala: eine Farbe, hell nach dunkel, für Menge — nie ein Farbkreis.
+Bei kleinen Höchstwerten bekommt jeder Akteur eine eigene Stufe, sonst färbte
+eine Zelle mit drei Akteuren im dunkelsten Ton und täuschte Menge vor. Die
+Skala zeigt genau die Stufen, die vorkommen.
+
+Bei mehrwertigen Merkmalen — ein Akteur kann mehrere Handlungsfelder haben —
+zählt er in mehreren Zellen. Die Fußzeile weist darauf hin, sonst wirken die
+Summen falsch.
+
+## Farben
+
+Die drei Datenfarben sind gegen die Zeichenfläche geprüft: Helligkeitsband,
+Chroma, Kontrast (alle ≥ 3:1) und Unterscheidbarkeit bei Rot-Grün-Sehschwäche
+über alle Paare, simuliert nach Machado-Oliveira-Fernandes.
+
+| Rolle | Farbe | Kontrast |
+|---|---|---|
+| Identität / Akteur · Block A | `#2a78d6` | 4,30:1 |
+| Tätigkeit / Handlungsfeld · Block C | `#eb6834` | 3,12:1 |
+| Raum / Bundesland · Block D | `#199e70` | 3,32:1 |
+
+Die Akzentfarbe `#1F3864` bleibt dem Bedienrahmen vorbehalten — Kopfzeile,
+Schaltflächen, Fokus — und trägt nie Daten.
 
 ## Lizenz
 

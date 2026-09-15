@@ -780,3 +780,617 @@ pre.json .j-block.hervorgehoben {
 
 .rueckgaengig[hidden] { display: none; }
 .rueckgaengig button { margin-left: 0.25rem; }
+
+/* ================================================================ *
+ * Seiten 2 und 3 — Netzdarstellung und Verschneidung
+ *
+ * Die Datenfarben sind gegen die Zeichenflaeche geprueft (OKLab-CVD,
+ * Kontrast >= 3:1 in allen drei Slots). Die Akzentfarbe #1F3864 bleibt
+ * dem Bedienrahmen vorbehalten und traegt nie Daten.
+ * ================================================================ */
+
+:root {
+  --daten-a: #2a78d6;   /* Identitaet / Akteur   — 4.30:1 */
+  --daten-c: #eb6834;   /* Taetigkeit / Feld     — 3.12:1 */
+  --daten-d: #199e70;   /* Raum / Bundesland     — 3.32:1 */
+  --flaeche-viz: #fcfcfb;
+
+  /* Sequenzielle Blau-Rampe fuer Mengen (hell -> dunkel, eine Farbe) */
+  --rampe-0: #f2f5f8;
+  --rampe-1: #cde2fb;
+  --rampe-2: #9ec5f4;
+  --rampe-3: #6da7ec;
+  --rampe-4: #3987e5;
+  --rampe-5: #256abf;
+  --rampe-6: #184f95;
+  --rampe-7: #0d366b;
+}
+
+/* ------------------------------------------------ Seitennavigation */
+
+.seitennavigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  flex: 0 0 auto;
+}
+
+.seitennavigation a {
+  display: block;
+  padding: 0.3125rem 0.75rem;
+  font-size: 0.875rem;
+  text-decoration: none;
+  color: var(--akzent);
+  border: 1px solid var(--linie);
+  border-radius: var(--radius);
+  background: var(--flaeche);
+}
+
+.seitennavigation a:hover { background: var(--akzent-hell); }
+
+.seitennavigation a[aria-current="page"] {
+  background: var(--akzent);
+  border-color: var(--akzent);
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+/* ---------------------------------------------------- Netz: Layout */
+
+.netz-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 20rem);
+  gap: var(--spalte);
+  align-items: start;
+  padding: var(--spalte);
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+@media (max-width: 1000px) {
+  .netz-layout { grid-template-columns: minmax(0, 1fr); }
+}
+
+.netz-bereich {
+  border: 1px solid var(--linie);
+  border-radius: var(--radius);
+  background: var(--flaeche);
+  padding: 1rem 1.125rem 1.125rem;
+}
+
+.netz-kopf {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+}
+
+.umschalter {
+  display: inline-flex;
+  border: 1px solid var(--akzent);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+.umschalter legend { display: none; }
+
+.umschalter label {
+  position: relative;
+  display: block;
+  padding: 0.3125rem 0.875rem;
+  font-size: 0.875rem;
+  color: var(--akzent);
+  cursor: pointer;
+  border-left: 1px solid var(--akzent);
+}
+
+.umschalter label:first-of-type { border-left: 0; }
+
+.umschalter input {
+  position: absolute;
+  opacity: 0;
+  width: 100%; height: 100%;
+  left: 0; top: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.umschalter label:hover { background: var(--akzent-hell); }
+
+.umschalter input:checked ~ span { font-weight: 600; }
+
+.umschalter label:has(input:checked) {
+  background: var(--akzent);
+  color: #FFFFFF;
+}
+
+.umschalter label:focus-within {
+  outline: 3px solid var(--akzent);
+  outline-offset: 1px;
+}
+
+.legende {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.8125rem;
+  color: var(--text-leise);
+}
+
+.legende li { display: flex; align-items: center; gap: 0.375rem; }
+
+.legende-punkt {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+
+.punkt-a { background: var(--daten-a); }
+.punkt-c { background: var(--daten-c); }
+.punkt-d { background: var(--daten-d); }
+
+.netz-erklaerung {
+  margin: 0.75rem 0 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-leise);
+  max-width: 78ch;
+}
+
+.netz-buehne {
+  border: 1px solid var(--linie);
+  border-radius: var(--radius);
+  background: var(--flaeche-viz);
+  overflow: hidden;
+}
+
+#netz {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 980 / 640;
+}
+
+/* ----------------------------------------------- Netz: Marken */
+
+.netz-kante {
+  fill: none;
+  stroke: #c3c7cf;
+  stroke-width: 1.25;
+  transition: stroke 120ms linear, stroke-width 120ms linear, opacity 120ms linear;
+}
+
+.netz-kante.kante-sichtbarkeit { stroke: #9aa2b1; stroke-width: 1.75; }
+.netz-kante.kante-auswahl { stroke: #b0a08f; stroke-width: 1.75; }
+.netz-kante.kante-berechnung { stroke: #8fb6a6; stroke-width: 1.75; }
+
+.netz-pfeilspitze { fill: #5d6879; }
+
+.netz-kante.betont { stroke: var(--akzent); stroke-width: 2.25; }
+.netz-kante.gedimmt { opacity: 0.12; }
+
+.netz-ring { fill: var(--flaeche-viz); }
+
+.netz-punkt { transition: opacity 120ms linear; }
+
+.gruppe-a .netz-punkt { fill: var(--daten-a); }
+.gruppe-c .netz-punkt { fill: var(--daten-c); }
+.gruppe-d .netz-punkt { fill: var(--daten-d); }
+
+.netz-knoten-gruppe { cursor: pointer; }
+
+.netz-label {
+  font-size: 11px;
+  fill: var(--text-leise);
+  pointer-events: none;
+  paint-order: stroke;
+  stroke: var(--flaeche-viz);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+.netz-label.label-gross {
+  font-size: 12px;
+  font-weight: 600;
+  fill: var(--text);
+}
+
+.netz-knoten-gruppe.gedimmt { opacity: 0.2; }
+
+.netz-knoten-gruppe.gewaehlt .netz-ring {
+  fill: var(--flaeche-viz);
+  stroke: var(--akzent);
+  stroke-width: 2.5;
+}
+
+.netz-knoten-gruppe.gewaehlt .netz-label {
+  fill: var(--text);
+  font-weight: 600;
+}
+
+.netz-knoten-gruppe:focus { outline: none; }
+
+.netz-knoten-gruppe:focus-visible .netz-ring {
+  stroke: var(--akzent);
+  stroke-width: 3;
+}
+
+/* ------------------------------------------------ Detailspalte */
+
+.detail-spalte {
+  position: sticky;
+  top: var(--spalte);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+@media (max-width: 1000px) {
+  .detail-spalte { position: static; }
+}
+
+.detail-titel {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--akzent);
+}
+
+.detail-untertitel {
+  margin: 0.875rem 0 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-leise);
+}
+
+.detail-hilfe {
+  margin: 0 0 0.625rem;
+  font-size: 0.875rem;
+  color: var(--text-leise);
+}
+
+.detail-leer {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-leise);
+}
+
+.detailliste { margin: 0; }
+
+.detail-zeile {
+  display: grid;
+  grid-template-columns: 9rem minmax(0, 1fr);
+  gap: 0.5rem;
+  padding: 0.1875rem 0;
+  border-top: 1px solid var(--flaeche-leise);
+  font-size: 0.8125rem;
+}
+
+.detail-zeile:first-child { border-top: 0; }
+
+.detail-zeile dt { color: var(--text-leise); }
+.detail-zeile dd { margin: 0; }
+
+.detail-beziehungen,
+.detail-akteure {
+  margin: 0.25rem 0 0;
+  padding-left: 1.125rem;
+  font-size: 0.8125rem;
+}
+
+.detail-beziehungen li,
+.detail-akteure li { margin-bottom: 0.125rem; }
+
+.detail-mehr {
+  margin: 0.375rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--text-leise);
+}
+
+/* ------------------------------------------------ Textfassung */
+
+.textfassung {
+  margin-top: 0.875rem;
+  font-size: 0.875rem;
+}
+
+.textfassung summary {
+  cursor: pointer;
+  color: var(--akzent);
+  padding: 0.25rem 0;
+}
+
+.textfassung-tabelle {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+}
+
+.textfassung-tabelle th,
+.textfassung-tabelle td {
+  text-align: left;
+  padding: 0.25rem 0.5rem;
+  border-bottom: 1px solid var(--linie);
+  vertical-align: top;
+}
+
+.textfassung-tabelle th { color: var(--text-leise); font-weight: 600; }
+
+/* Kopfzeile des Formulars: Navigation ueber dem Timer */
+.kopf-rechts {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.625rem;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 900px) {
+  .kopf-rechts { align-items: flex-start; }
+}
+
+/* Zugehörigkeit zum Block: nur Gerüst, deshalb sehr zurückhaltend.
+   Die konditionalen Kanten darüber tragen die eigentliche Aussage. */
+.netz-kante.kante-zugehoerig {
+  stroke: #dcdfe5;
+  stroke-width: 1;
+}
+
+/* ------------------------------------------------- Verschneidung */
+
+.steuerzeile {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem 1rem;
+  padding: 0.875rem var(--spalte);
+  background: var(--flaeche);
+  border-bottom: 1px solid var(--linie);
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+.steuerfeld { display: flex; flex-direction: column; gap: 0.1875rem; }
+
+.steuerfeld label {
+  font-size: 0.75rem;
+  color: var(--text-leise);
+  letter-spacing: 0.01em;
+}
+
+.steuerfeld select { width: auto; min-width: 11rem; }
+
+.steuer-trenner {
+  width: 1px;
+  align-self: stretch;
+  background: var(--linie);
+  margin: 0 0.25rem;
+}
+
+.matrix-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 19rem);
+  gap: var(--spalte);
+  align-items: start;
+  padding: var(--spalte);
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+@media (max-width: 1050px) {
+  .matrix-layout { grid-template-columns: minmax(0, 1fr); }
+}
+
+.matrix-bereich {
+  border: 1px solid var(--linie);
+  border-radius: var(--radius);
+  background: var(--flaeche);
+  padding: 1rem 1.125rem 1.125rem;
+  min-width: 0;
+}
+
+.matrix-kopf {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.matrix-kopf h2 { margin: 0; font-size: 1rem; font-weight: 600; }
+
+.kennzahl {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-leise);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Farbskala: eine Farbe, hell nach dunkel — sie zeigt Menge, nicht Identität */
+.skala { display: flex; align-items: center; gap: 0.375rem; }
+
+.skala-text { font-size: 0.75rem; color: var(--text-leise); }
+.skala-marke { font-variant-numeric: tabular-nums; }
+
+.skala-leiste { display: flex; gap: 2px; }
+
+.skala-feld {
+  width: 15px; height: 11px;
+  border-radius: 1px;
+  display: block;
+}
+
+.matrix-huelle { overflow-x: auto; }
+
+.matrix-tabelle {
+  border-collapse: separate;
+  border-spacing: 2px;   /* 2px Flächenlücke statt Rahmen um die Zellen */
+  font-size: 0.8125rem;
+}
+
+.matrix-tabelle th {
+  font-weight: 600;
+  color: var(--text-leise);
+  text-align: left;
+  font-size: 0.75rem;
+  padding: 0.125rem 0.375rem;
+  vertical-align: bottom;
+}
+
+.matrix-tabelle .ecke {
+  font-weight: 400;
+  color: var(--text-leise);
+  white-space: nowrap;
+  padding-right: 0.75rem;
+}
+
+.matrix-tabelle .kopf-spalte {
+  height: 8.5rem;
+  vertical-align: bottom;
+  padding: 0;
+  width: 2rem;
+}
+
+/* Spaltenköpfe schräg stellen: hält die Tabelle schmal genug für den Beamer */
+.matrix-tabelle .kopf-spalte .kopf-text {
+  display: block;
+  transform-origin: bottom left;
+  transform: rotate(-60deg) translateX(0.25rem);
+  white-space: nowrap;
+  width: 1.5rem;
+}
+
+.matrix-tabelle .kopf-zeile {
+  white-space: nowrap;
+  padding-right: 0.625rem;
+  vertical-align: middle;
+  color: var(--text);
+}
+
+.matrix-tabelle .summe-kopf { color: var(--text-leise); }
+
+.zelle {
+  width: 2rem;
+  height: 2rem;
+  min-width: 2rem;
+  text-align: center;
+  vertical-align: middle;
+  border-radius: 2px;
+  font-variant-numeric: tabular-nums;
+  padding: 0;
+  cursor: pointer;
+  transition: outline-color 100ms linear;
+}
+
+.zelle.leer {
+  cursor: default;
+  color: #b9bcc3;
+  background: var(--flaeche-leise);
+}
+
+.zellwert { display: block; line-height: 2rem; }
+
+/* Sequenzielle Rampe (Blau 100 -> 700). Ab Stufe 5 helle Schrift. */
+.zelle.stufe-0 { background: var(--flaeche-leise); }
+.zelle.stufe-1 { background: var(--rampe-1); color: var(--text); }
+.zelle.stufe-2 { background: var(--rampe-2); color: var(--text); }
+.zelle.stufe-3 { background: var(--rampe-3); color: var(--text); }
+.zelle.stufe-4 { background: var(--rampe-4); color: #FFFFFF; }
+.zelle.stufe-5 { background: var(--rampe-5); color: #FFFFFF; }
+.zelle.stufe-6 { background: var(--rampe-6); color: #FFFFFF; }
+.zelle.stufe-7 { background: var(--rampe-7); color: #FFFFFF; }
+
+.skala-feld.stufe-0 { background: var(--flaeche-leise); }
+.skala-feld.stufe-1 { background: var(--rampe-1); }
+.skala-feld.stufe-2 { background: var(--rampe-2); }
+.skala-feld.stufe-3 { background: var(--rampe-3); }
+.skala-feld.stufe-4 { background: var(--rampe-4); }
+.skala-feld.stufe-5 { background: var(--rampe-5); }
+.skala-feld.stufe-6 { background: var(--rampe-6); }
+.skala-feld.stufe-7 { background: var(--rampe-7); }
+
+.zelle:hover:not(.leer) { outline: 2px solid var(--akzent); outline-offset: -2px; }
+
+.zelle.gewaehlt {
+  outline: 3px solid var(--akzent);
+  outline-offset: -3px;
+}
+
+.matrix-tabelle .summe {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-leise);
+  padding: 0 0.375rem;
+}
+
+.matrix-fuss {
+  margin: 0.625rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--text-leise);
+  max-width: 82ch;
+}
+
+.akteur-name { display: block; }
+
+.akteur-zusatz {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-leise);
+}
+
+.detail-akteure li { margin-bottom: 0.375rem; }
+
+/* ------------------------------------- Formular: typografischer Feinschliff
+ *
+ * Das Formular bleibt sachlich — es simuliert echte Arbeit und darf nicht
+ * ablenken. Geschaerft werden nur die Stufen: Abschnitt, Feldname, Hilfetext.
+ * Der schmale Balken je Abschnitt traegt die Blockfarbe der Netzdarstellung
+ * und verbindet beide Seiten, ohne laut zu werden.
+ */
+
+fieldset.abschnitt {
+  border-left-width: 3px;
+  padding-top: 0.25rem;
+}
+
+#formular fieldset.abschnitt[data-block="A"] { border-left-color: var(--daten-a); }
+#formular fieldset.abschnitt[data-block="C"] { border-left-color: var(--daten-c); }
+#formular fieldset.abschnitt[data-block="D"] { border-left-color: var(--daten-d); }
+
+fieldset.abschnitt legend {
+  font-size: 1.125rem;
+  letter-spacing: -0.005em;
+}
+
+.abschnitt-intro {
+  margin-top: 0.125rem;
+  padding-bottom: 0.875rem;
+  border-bottom: 1px solid var(--flaeche-leise);
+}
+
+.feld { padding: 1rem 0 0.9375rem; }
+
+.feld-kopf { margin-bottom: 0.25rem; }
+
+.feld-kopf label,
+.feld-kopf .gruppen-label {
+  font-size: 0.9375rem;
+  letter-spacing: -0.003em;
+  color: var(--text);
+}
+
+.hilfe { margin-bottom: 0.625rem; line-height: 1.5; }
+
+@media (max-width: 800px) {
+  /* Der senkrechte Trenner trennt nach dem Umbruch nichts mehr. */
+  .steuer-trenner { display: none; }
+  .steuerfeld { flex: 1 1 13rem; }
+  .steuerfeld select { min-width: 0; width: 100%; }
+}
