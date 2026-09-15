@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Datenmodell im Netz — Akteursprofil (EduStandard)</title>
+<meta name="description" content="Netzdarstellung des Datenschemas für Organisationsprofile: Felder und ihre Abhängigkeiten, Akteure und ihre gemeinsamen Schlüssel.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="seite-netz">
+
+<a class="sprunglink" href="#netz-bereich">Zur Grafik springen</a>
+
+<p class="banner" role="note">Prototyp · Arbeitsstand · Vokabulare in Konsolidierung</p>
+
+<header class="kopf">
+  <div>
+    <h1>Datenmodell im Netz</h1>
+    <p>
+      Dasselbe Schema aus zwei Blickwinkeln: als Struktur von Feldern und
+      Abhängigkeiten, und als Netz von Datensätzen, die über gemeinsame
+      Schlüssel zusammenfinden.
+    </p>
+  </div>
+  <nav class="seitennavigation" aria-label="Seiten des Prototyps">
+    <a href="index.html">Formular</a>
+    <a href="schema.html" aria-current="page">Datenmodell</a>
+    <a href="simulation.html">Verschneidung</a>
+  </nav>
+</header>
+
+<main class="netz-layout">
+
+  <section class="netz-bereich" id="netz-bereich" aria-labelledby="netz-titel">
+    <div class="netz-kopf">
+      <h2 id="netz-titel" class="nur-sr">Netzdarstellung</h2>
+      <fieldset class="umschalter">
+        <legend class="nur-sr">Ansicht wählen</legend>
+        <label>
+          <input type="radio" name="ansicht" value="schema" checked>
+          <span>Schemastruktur</span>
+        </label>
+        <label>
+          <input type="radio" name="ansicht" value="akteure">
+          <span>Akteursnetz</span>
+        </label>
+      </fieldset>
+      <ul class="legende" aria-label="Farbbedeutung">
+        <li><span class="legende-punkt punkt-a" aria-hidden="true"></span><span id="legende-links">A · Identität</span></li>
+        <li><span class="legende-punkt punkt-c" aria-hidden="true"></span><span id="legende-mitte">C · Tätigkeitsprofil</span></li>
+        <li><span class="legende-punkt punkt-d" aria-hidden="true"></span><span id="legende-rechts">D · Wirkungsraum</span></li>
+      </ul>
+    </div>
+
+    <p class="netz-erklaerung" id="netz-erklaerung"></p>
+
+    <div class="netz-buehne">
+      <svg id="netz" aria-labelledby="netz-titel" aria-describedby="netz-erklaerung"></svg>
+    </div>
+
+    <details class="textfassung">
+      <summary>Textfassung der Grafik</summary>
+      <div id="textfassung-inhalt"></div>
+    </details>
+  </section>
+
+  <aside class="detail-spalte" aria-labelledby="detail-titel-sr">
+    <h2 id="detail-titel-sr" class="nur-sr">Angaben zum gewählten Knoten</h2>
+    <div class="karte" id="detail" aria-live="polite"></div>
+    <p class="karte-hinweis">
+      Die Abhängigkeiten der Schemastruktur werden aus <code>fields.js</code>
+      abgeleitet. Eine Änderung am Feldmodell erscheint hier ohne weiteres Zutun.
+    </p>
+  </aside>
+
+</main>
+
+<footer class="fuss">
+  <p>
+    Der Akteursbestand ist erfunden und dient allein der Veranschaulichung.
+    Die Namen sind aus festen Bausteinen zusammengesetzt; ein Bezug zu realen
+    Organisationen besteht nicht.
+  </p>
+</footer>
+
+<script src="fields.js"></script>
+<script src="akteure.js"></script>
+<script src="netz.js"></script>
+<script src="schema.js"></script>
+</body>
+</html>
