@@ -173,6 +173,13 @@
         ],
         "entsprichtModellA": "uebergang_schule_beruf"
       }
+    ],
+    "offenePunkte": [
+      {
+        "punkt": "Zuordnung von „Übergang Schule – Beruf\" zu den Bereichen",
+        "beschreibung": "Dieses Vokabular ordnet den Modell-A-Wert „Übergang Schule – Beruf\" dem Übergang sek2_erwerbstaetigkeit zu; sek2_tertiaer hat keine Entsprechung in Modell A. Aus der Arbeitsgruppe kam die Rückmeldung, dass „Übergang Schule – Beruf\" auch den Übergang von der Sekundarstufe II in den Tertiärbereich abdecke. Beides ist vertretbar: Im deutschen Sprachgebrauch meint „Schule – Beruf\" überwiegend den Weg in Ausbildung und Erwerbstätigkeit, der Weg in ein Studium wird meist getrennt benannt. Möglich ist auch, dass der eine Wert aus Modell A beide Übergänge aus Modell B zusammenfasst — dann wäre die Rückübersetzung mehrdeutig. Die Zuordnung bleibt unverändert, bis die Arbeitsgruppe entschieden hat.",
+        "herkunft": "Rückmeldung aus der Arbeitsgruppe, 15.09.2026"
+      }
     ]
   }
 }

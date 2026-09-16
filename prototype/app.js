@@ -2199,13 +2199,34 @@
       }
 
       /*
-       * Zuletzt: Gehoert das Feld zu einer Variante, entscheidet die Variante.
-       * Sie hat Vorrang vor allem, was die Typbehandlung gesetzt hat — sonst
-       * blendet etwa die Gebietswarnung ein Feld wieder ein, das gar nicht
-       * zur laufenden Variante gehoert.
+       * Zuletzt: Gehoert das Feld zu einer fremden Variante, wird es
+       * ausgeblendet — das hat Vorrang vor allem, was die Typbehandlung
+       * gesetzt hat. Gehoert es zur laufenden Variante, wird es hier aber
+       * *nicht* eingeblendet: Darueber entscheidet weiter die eigene
+       * Bedingung des Feldes.
+       *
+       * Die frühere Fassung setzte hidden in beide Richtungen und hat damit
+       * die Gebietsliste sichtbar gelassen, obwohl noch keine Reichweite
+       * gewaehlt war. Zu sehen war dann eine Ueberschrift ohne ein einziges
+       * Eingabefeld darunter.
        */
-      if (feld.variante) {
-        ref.wrapper.hidden = feld.variante !== varianteVon(blockVon(feld));
+      if (feld.variante && feld.type !== 'repeatable') {
+        ref.wrapper.hidden = feld.variante !== varianteVon(blockVon(feld))
+          // Fremde Variante: ausblenden, unabhaengig von allem anderen.
+          ? true
+          // Eigene Variante: Ueber die Sichtbarkeit entscheidet weiter die
+          // Bedingung des Feldes. Hat es keine, ist es schlicht sichtbar.
+          : !istSichtbar(feld);
+      }
+
+      /*
+       * Wiederholte Felder blenden sich selbst ein und aus — etwa die
+       * Gebietsliste, die von der Reichweite abhaengt. Hier wird deshalb nur
+       * die fremde Variante ausgeblendet, nie etwas eingeblendet.
+       */
+      if (feld.variante && feld.type === 'repeatable'
+          && feld.variante !== varianteVon(blockVon(feld))) {
+        ref.wrapper.hidden = true;
       }
     });
 

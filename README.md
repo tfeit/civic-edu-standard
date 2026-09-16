@@ -197,7 +197,11 @@ Sechs Punkte, zu denen die Arbeitsgruppe noch keine tragfähige Antwort hat:
    und welche wird für Auswertungen tatsächlich gebraucht?
 3. **Zielgruppenvokabular.** Wie lassen sich Zielgruppen so fassen, dass sie
    über Organisationstypen hinweg vergleichbar bleiben, ohne zu grob zu
-   werden?
+   werden? Aus der Erprobung am Formular kamen dazu zwei konkrete Fragen:
+   Soll die Bezeichnung eine Auswahlliste statt Freitext werden? Und können
+   Institutionen wie Schulen eine eigene Rolle bleiben, oder werden die
+   Rollen zusammengefasst? Solange das offen ist, bleibt das Feld Freitext —
+   eine Auswahlliste wäre bereits die Entscheidung.
 4. **Handlungsfelder.** Die 23 Begriffe sind nicht alle dieselbe Art von
    Kategorie; Diversität und Inklusion überschneiden sich; ein Feld für
    Interessenvertretung fehlt.
