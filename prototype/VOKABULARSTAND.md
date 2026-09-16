@@ -66,7 +66,13 @@ node tools/validate.mjs                        prüft den Beispieldatensatz
 | `verwirklichung.json` | 0.1.0 | 3 | Festlegung der Arbeitsgruppe KKAB | 2026-09-15 | unbestaetigt | — |
 | `zielgruppenrollen.json` | 0.2.0 | 5 | Festlegung der Arbeitsgruppe KKAB, erweitert | 2026-09-15 | unbestaetigt | Zwei Rollen deprecated, weil sie keine Teilnahmerolle beschreiben |
 
-Nicht mehr geladen, aber erhalten: `vocab/archiv/crosswalks-v0.1.json`. Die
+Nicht mehr geladen, aber erhalten: `vocab/archiv/lernformen-v0.1.json`. Das
+Feld „Lernform / Schulform" war ein Vorschlag aus der Vokabularrecherche und
+nicht Gegenstand eines Workshops; auf Rückmeldung aus der Arbeitsgruppe ist
+es aus dem Feldmodell entfernt worden. Die Werteliste bleibt erhalten, falls
+die Frage wiederkommt.
+
+Ebenso nicht mehr geladen: `vocab/archiv/crosswalks-v0.1.json`. Die
 Datei enthält den dokumentierten Prüflauf gegen openeduhub vom 15.09.2026,
 einschließlich der dort festgestellten Abweichungen zur Zuordnung der
 Arbeitsgruppe. Sie folgt den alten Schlüsseln und wird deshalb nicht mehr

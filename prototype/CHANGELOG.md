@@ -7,6 +7,47 @@ Format: Datum · Datei · Änderung · Quelle.
 
 ---
 
+## 2026-09-16 · Rückmeldung aus der Arbeitsgruppe
+
+Vier Punkte aus einer Rückmeldung zum Prototyp. Zwei umgesetzt, zwei
+festgehalten statt entschieden.
+
+### Umgesetzt
+
+- **Feld „Lernform / Schulform" entfernt** · Es war ein Vorschlag aus der
+  Vokabularrecherche und nicht Gegenstand eines Workshops; im Sachstand
+  taucht es nicht auf. Auf Rückmeldung entfernt. Kein Datensatz und kein
+  Beispiel hat darauf verwiesen. `lernformen.json` liegt unter
+  `vocab/archiv/`, falls die Frage wiederkommt.
+- **Gebietsliste bei Variante 2** · Beim eigenen Ausfüllen stand die
+  Überschrift „Wirkungsgebiete" da, aber kein Eingabefeld darunter; nach dem
+  Einfügen eines Beispiels erschienen sie. Ursache war eine Regression aus
+  dem Einbau der Geografie-Varianten: Die Variantenprüfung setzte die
+  Sichtbarkeit in beide Richtungen und hat damit die Bedingung des Feldes
+  überschrieben, die die Liste erst ab einer gewählten Reichweite zeigt.
+  Jetzt blendet die Variante nur aus, nie ein. Zusätzlich nennt das
+  Reichweitenfeld die Abhängigkeit im Hinweistext.
+
+### Festgehalten, nicht entschieden
+
+- **Zielgruppen als Auswahlliste** · Rückmeldung: Die Bezeichnung wäre besser
+  eine Auswahl als Freitext; außerdem sei das Wechseln zwischen den Rollen
+  schwierig, und es stelle sich die Frage, ob Institutionen wie Schulen eine
+  Zielgruppe sein können. Das Vokabular ist laut Sachstand ausdrücklich
+  offen — eine Auswahlliste wäre die Entscheidung, nicht ihre Vorbereitung.
+  Das Feld trägt jetzt das Kennzeichen „noch zu entscheiden" und nennt beide
+  Fragen im Hinweistext; im README stehen sie bei der offenen Frage zum
+  Zielgruppenvokabular.
+- **Übergang Schule – Beruf** · Rückmeldung: Der Übergang Sekundarstufe II →
+  Tertiärbereich entspreche „Schule – Beruf". Dieses Vokabular ordnet
+  „Schule – Beruf" bisher `sek2_erwerbstaetigkeit` zu, `sek2_tertiaer` hat
+  keine Entsprechung in Modell A. Beides ist vertretbar; möglich ist auch,
+  dass der eine Wert aus Modell A beide Übergänge zusammenfasst. Die
+  Zuordnung bleibt unverändert, der Punkt steht unter
+  `uebergaenge.offenePunkte` im Crosswalk.
+
+---
+
 ## 2026-09-15 · Chips und Feinschliff der Oberfläche
 
 ### Chips

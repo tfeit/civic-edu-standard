@@ -60,7 +60,6 @@
       mitUebergaengen: false
     }
   ];
-  var LERNFORMEN = vok('lernformen');
   var ZIELGRUPPENROLLEN = vok('zielgruppenrollen');
   var SDGS = vok('sdg');
   var VERWIRKLICHUNG = vok('verwirklichung');
@@ -401,9 +400,17 @@
             kurz: 'Zielgruppen',
             type: 'repeatable',
             requirement: 'E',
+            // Das Feld ist aufgenommen, sein Vokabular aber nicht entschieden.
+            // Die Bezeichnung bleibt deshalb Freitext: Eine Auswahlliste waere
+            // eine Festlegung, und die steht der Arbeitsgruppe zu, nicht dem
+            // Prototyp.
+            pending: true,
             help: 'Erfasst wird die Primärzielgruppe: wer unmittelbar beteiligt ist, nicht wo mittelbar Wirkung entsteht.',
             note: 'Eine Person kann mehrere Rollen haben. Maßgeblich ist, in welcher Rolle sie an eurem '
-              + 'Angebot teilnimmt — „Lehrkräfte und Kinder“ sind zwei Einträge.',
+              + 'Angebot teilnimmt — „Lehrkräfte und Kinder“ sind zwei Einträge. '
+              + 'Offen ist, ob die Bezeichnung eine Auswahlliste statt Freitext wird — und ob '
+              + 'Institutionen wie Schulen eine eigene Rolle bleiben oder mit den übrigen '
+              + 'zusammengefasst werden.',
             entryLabel: 'Zielgruppe',
             addLabel: 'Zielgruppe hinzufügen',
             subfields: [
@@ -444,16 +451,6 @@
             help: 'Auf welches der gewählten Ziele zahlt die Arbeit am deutlichsten ein?',
             optionsFrom: 'sdgs',
             emptyHint: 'Bitte zuerst Nachhaltigkeitsziele auswählen.'
-          },
-          {
-            key: 'learningFormats',
-            label: 'Lernform / Schulform',
-            type: 'checkboxes',
-            requirement: 'O',
-            proposal: true,
-            vokabular: 'lernformen',
-            help: 'Keine Bildungsphase, sondern die Form des Lernens oder die Schulform. Getrennt geführt, damit die Phasenachse eindeutig bleibt.',
-            options: LERNFORMEN
           },
           {
             key: 'implementation',
@@ -519,7 +516,8 @@
             requirement: 'P',
             variante: 2,
             help: 'Wie weit reicht die Arbeit räumlich?',
-            note: 'Gebiet und Reichweite sind nicht dasselbe: Wer in Bonn tätig ist, ist nicht automatisch landesweit tätig.',
+            note: 'Gebiet und Reichweite sind nicht dasselbe: Wer in Bonn tätig ist, ist nicht automatisch '
+              + 'landesweit tätig. Bei lokal, regional und landesweit erscheint darunter eine Gebietsliste.',
             options: REICHWEITEN
           },
           {
@@ -719,7 +717,6 @@
     // Auswertungsachse: die Bildungsbereiche. Sie sind die Leitachse des
     // Crosswalks und tragen als einzige eine ISCED-Entsprechung.
     bildungsbereiche: BILDUNGSMODELLE[0].options,
-    lernformen: LERNFORMEN,
     zielgruppenrollen: ZIELGRUPPENROLLEN,
     sdgs: SDGS,
     verwirklichung: VERWIRKLICHUNG,
