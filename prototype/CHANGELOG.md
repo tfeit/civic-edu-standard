@@ -7,6 +7,50 @@ Format: Datum · Datei · Änderung · Quelle.
 
 ---
 
+## 2026-09-16 · Zielgruppen als umschaltbare Fassungen
+
+Auf Wunsch der Arbeitsgruppe liegt das Zielgruppenfeld jetzt in drei
+Fassungen vor, nach demselben Muster wie die Geografie in Block D: Die
+Varianten stehen nebeneinander und werden am Formular geprüft, statt eine
+davon zu setzen.
+
+| Fassung | Eingabe | Im Austauschformat |
+|---|---|---|
+| 1 · Rolle plus Freitext | der heutige Stand | `{role, label}` |
+| 2 · Rolle plus Auswahl | Rolle wählen, dann die Zielgruppe dieser Rolle | `{role, value, label}` |
+| 3 · eine Liste ohne Rollen | ankreuzen, Rolle wird abgeleitet | `{value, label}` plus `derived.zielgruppenrollen` |
+
+Alle drei schreiben unter denselben Schlüssel `targetGroups`. Im
+Austauschformat soll sichtbar werden, was die Fassungen unterscheidet —
+nicht, wie das Feld im Prototyp heißt. Fassung 2 führt neben der
+Beschriftung den stabilen Schlüssel mit; das ist der ganze Unterschied zum
+Freitext und gehört deshalb in die Vorschau.
+
+- **zielgruppen-entwurf.json** · Neu, 21 Begriffe, `status: "entwurf"`,
+  `pruefstand: "unbestaetigt"`. Kein externes Vokabular: Die Begriffe sind
+  aus dem zusammengetragen, was im Repositorium bereits vorkommt — den
+  Beispielen und Negativbeispielen der Bildungsbereiche, den
+  Handlungsfeldern und den drei Beispielprofilen. Jeder Begriff trägt die
+  Rolle, zu der er gehört, damit die Zuordnung an einer Stelle gepflegt wird.
+- **Beispielprofile** · Alle drei tragen ihre Zielgruppen jetzt in allen drei
+  Notationen. Damit lässt sich dieselbe Organisation im Workshop direkt
+  vergleichen — und der Vergleich zeigt auch, was dabei verlorengeht:
+  „Kinder der Jahrgangsstufen 1 bis 4" wird zum gröberen „Kinder im
+  Grundschulalter".
+
+### Zwei Dinge am Rand
+
+- **Der Variantenwähler steht jetzt beim ersten Feld seiner Variante**, nicht
+  mehr am Blockkopf. In Block D ändert das nichts, weil dort alle Felder zur
+  Geografie gehören. In Block C betrifft die Umschaltung nur die Zielgruppen;
+  ein Wähler weit darüber hätte ausgesehen, als betreffe er den ganzen Block.
+- **Die Sichtbarkeitsregel für Variantenfelder** ist zusammengefasst und trägt
+  jetzt drei Fälle statt zwei Sonderwege: fremde Variante ausblenden, eigene
+  ohne Bedingung einblenden, eigene mit Bedingung dem Feld überlassen. Der
+  letzte Fall ist der, an dem die Gebietsliste zweimal gestolpert ist.
+
+---
+
 ## 2026-09-16 · Rückmeldung aus der Arbeitsgruppe
 
 Vier Punkte aus einer Rückmeldung zum Prototyp. Zwei umgesetzt, zwei
