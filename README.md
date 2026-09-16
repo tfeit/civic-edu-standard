@@ -200,8 +200,10 @@ Sechs Punkte, zu denen die Arbeitsgruppe noch keine tragfähige Antwort hat:
    werden? Aus der Erprobung am Formular kamen dazu zwei konkrete Fragen:
    Soll die Bezeichnung eine Auswahlliste statt Freitext werden? Und können
    Institutionen wie Schulen eine eigene Rolle bleiben, oder werden die
-   Rollen zusammengefasst? Solange das offen ist, bleibt das Feld Freitext —
-   eine Auswahlliste wäre bereits die Entscheidung.
+   Rollen zusammengefasst? Beides lässt sich am Formular ausprobieren: Das
+   Zielgruppenfeld liegt in drei Fassungen vor — Rolle plus Freitext, Rolle
+   plus Auswahl, und eine Liste ohne Rollen. Die Liste in den beiden letzten
+   ist ein Entwurf für den Test, keine Festlegung.
 4. **Handlungsfelder.** Die 23 Begriffe sind nicht alle dieselbe Art von
    Kategorie; Diversität und Inklusion überschneiden sich; ein Feld für
    Interessenvertretung fehlt.

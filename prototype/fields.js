@@ -61,6 +61,19 @@
     }
   ];
   var ZIELGRUPPENROLLEN = vok('zielgruppenrollen');
+  var ZIELGRUPPEN_ENTWURF = vok('zielgruppen-entwurf');
+
+  /*
+   * Zielgruppen je Rolle. Die Zuordnung steht am Begriff selbst, damit die
+   * Liste an einer Stelle gepflegt wird und nicht zweimal.
+   */
+  function zielgruppenJeRolle(rolle) {
+    if (!rolle) { return []; }
+    return ZIELGRUPPEN_ENTWURF.filter(function (o) {
+      var b = V.begriff('zielgruppen-entwurf', o.value);
+      return b && b.rolle === rolle;
+    });
+  }
   var SDGS = vok('sdg');
   var VERWIRKLICHUNG = vok('verwirklichung');
   var SICHTBARKEIT = vok('sichtbarkeit');
@@ -350,6 +363,30 @@
         id: 'C',
         title: 'C · Tätigkeitsprofil',
         intro: 'Was tut die Organisation inhaltlich — und mit wem hat sie es unmittelbar zu tun?',
+
+        /*
+         * Das Zielgruppenvokabular ist nicht entschieden. Statt eine Liste zu
+         * setzen, stehen drei Fassungen zur Erprobung nebeneinander — dasselbe
+         * Vorgehen wie bei der Geografie in Block D. Der Waehler betrifft nur
+         * die Zielgruppen und steht deshalb bei ihnen, nicht am Blockkopf.
+         */
+        varianten: {
+          hinweis: 'Drei Fassungen des Zielgruppenfeldes stehen zur Erprobung. Welche in '
+            + 'Version 1.0 gilt, ist offen — die Liste in Variante 2 und 3 ist ein Entwurf.',
+          werte: [
+            { id: 1, label: 'Rolle plus Freitext', beschreibung: 'Der heutige Stand: Rolle auswählen, Bezeichnung frei eintragen.' },
+            { id: 2, label: 'Rolle plus Auswahl', beschreibung: 'Rolle auswählen, dann die Zielgruppe aus der Liste dieser Rolle.' },
+            { id: 3, label: 'eine Liste ohne Rollen', beschreibung: 'Alles in einer Liste. Die Rolle wird abgeleitet, nicht gefragt.' }
+          ],
+          bewertung: {
+            frage: 'Wie war diese Fassung auszufüllen?',
+            optionen: [
+              { value: 'verstaendlich', label: 'verständlich' },
+              { value: 'unklar', label: 'unklar' },
+              { value: 'zu_aufwendig', label: 'zu aufwendig' }
+            ]
+          }
+        },
         fields: [
           {
             key: 'fieldsOfAction',
@@ -393,6 +430,7 @@
           },
           {
             key: 'targetGroups',
+            jsonKey: 'targetGroups',
             label: 'Wer nimmt an euren Angeboten teil?',
             // Im Formular steht die Leitfrage, weil sie das Feld erhebbar
             // macht. In der Netzdarstellung waere eine Frage als Knotenname
@@ -400,17 +438,11 @@
             kurz: 'Zielgruppen',
             type: 'repeatable',
             requirement: 'E',
-            // Das Feld ist aufgenommen, sein Vokabular aber nicht entschieden.
-            // Die Bezeichnung bleibt deshalb Freitext: Eine Auswahlliste waere
-            // eine Festlegung, und die steht der Arbeitsgruppe zu, nicht dem
-            // Prototyp.
+            variante: 1,
             pending: true,
             help: 'Erfasst wird die Primärzielgruppe: wer unmittelbar beteiligt ist, nicht wo mittelbar Wirkung entsteht.',
             note: 'Eine Person kann mehrere Rollen haben. Maßgeblich ist, in welcher Rolle sie an eurem '
-              + 'Angebot teilnimmt — „Lehrkräfte und Kinder“ sind zwei Einträge. '
-              + 'Offen ist, ob die Bezeichnung eine Auswahlliste statt Freitext wird — und ob '
-              + 'Institutionen wie Schulen eine eigene Rolle bleiben oder mit den übrigen '
-              + 'zusammengefasst werden.',
+              + 'Angebot teilnimmt — „Lehrkräfte und Kinder“ sind zwei Einträge.',
             entryLabel: 'Zielgruppe',
             addLabel: 'Zielgruppe hinzufügen',
             subfields: [
@@ -428,6 +460,70 @@
                 placeholder: 'Lehrkräfte Sekundarstufe I'
               }
             ]
+          },
+          {
+            key: 'targetGroupsAuswahl',
+            jsonKey: 'targetGroups',
+            // Der stabile Schluessel neben der Beschriftung ist der ganze
+            // Unterschied zum Freitext — er gehoert deshalb in die Vorschau.
+            alsDatensatz: function (eintraege) {
+              return eintraege.map(function (e) {
+                return { role: e.role, value: e.value, label: V.beschriftung('zielgruppen-entwurf', e.value) };
+              });
+            },
+            label: 'Wer nimmt an euren Angeboten teil?',
+            kurz: 'Zielgruppen',
+            type: 'repeatable',
+            requirement: 'E',
+            variante: 2,
+            pending: true,
+            help: 'Erst die Rolle, dann die Zielgruppe aus der Liste dieser Rolle.',
+            note: 'Die Liste ist ein Entwurf für diesen Test, keine Festlegung. Sie ist bewusst kurz: '
+              + 'Sie soll prüfbar machen, ob eine Auswahl gegenüber Freitext trägt — nicht die Frage '
+              + 'beantworten, welche Zielgruppen der Standard führt.',
+            entryLabel: 'Zielgruppe',
+            addLabel: 'Zielgruppe hinzufügen',
+            subfields: [
+              {
+                key: 'role',
+                label: 'Rolle',
+                type: 'select',
+                options: ZIELGRUPPENROLLEN,
+                default: 'beneficiaries'
+              },
+              {
+                key: 'value',
+                label: 'Zielgruppe',
+                type: 'abhaengigeAuswahl',
+                optionsFrom: 'role',
+                optionenFuer: zielgruppenJeRolle
+              }
+            ]
+          },
+          {
+            key: 'targetGroupsFlach',
+            jsonKey: 'targetGroups',
+            alsDatensatz: function (schluessel) {
+              return schluessel.map(function (k) {
+                return { value: k, label: V.beschriftung('zielgruppen-entwurf', k) };
+              });
+            },
+            label: 'Wer nimmt an euren Angeboten teil?',
+            kurz: 'Zielgruppen',
+            type: 'checkboxes',
+            requirement: 'E',
+            variante: 3,
+            pending: true,
+            help: 'Eine Liste ohne Rollen. Ankreuzen, was zutrifft.',
+            note: 'Die Rolle wird nicht gefragt, sondern aus dem Wert abgeleitet und im '
+              + 'Austauschformat mitgegeben. Diese Variante prüft, ob die Unterscheidung zwischen '
+              + 'Endbegünstigten, Fachkräften und Institutionen beim Ausfüllen gebraucht wird.',
+            options: ZIELGRUPPEN_ENTWURF,
+            optionZusatz: function (option) {
+              var b = V.begriff('zielgruppen-entwurf', option.value);
+              return b ? V.beschriftung('zielgruppenrollen', b.rolle) : null;
+            },
+            columns: 1
           },
           {
             key: 'sdgs',
@@ -616,6 +712,14 @@
           { role: 'beneficiaries', label: 'Kinder der Jahrgangsstufen 1 bis 4' },
           { role: 'multipliers', label: 'Ehrenamtliche Lesepat:innen' }
         ],
+        // Dieselben Zielgruppen in den beiden Entwurfsfassungen. Der Vergleich
+        // zeigt auch, was dabei verlorengeht: „Jahrgangsstufen 1 bis 4“ wird
+        // zum gröberen „Kinder im Grundschulalter“.
+        targetGroupsAuswahl: [
+          { role: 'beneficiaries', value: 'grundschulkinder' },
+          { role: 'multipliers', value: 'ehrenamtliche' }
+        ],
+        targetGroupsFlach: ['grundschulkinder', 'ehrenamtliche'],
         sdgs: ['4'],
         implementation: { value: 'operational', visibility: 'public' },
         scope: 'local',
@@ -654,6 +758,11 @@
           { role: 'multipliers', label: 'Lehrkräfte Sekundarstufe I' },
           { role: 'beneficiaries', label: 'Schülerinnen und Schüler der Jahrgänge 7 bis 10' }
         ],
+        targetGroupsAuswahl: [
+          { role: 'multipliers', value: 'lehrkraefte' },
+          { role: 'beneficiaries', value: 'schueler_sek1' }
+        ],
+        targetGroupsFlach: ['lehrkraefte', 'schueler_sek1'],
         sdgs: ['4', '16'],
         implementation: { value: 'operational', visibility: 'public' },
         scope: 'state',
@@ -691,6 +800,11 @@
           { role: 'institutions', label: 'Gemeinnützige Bildungsträger' },
           { role: 'institutions', label: 'Bildungsverwaltungen der Länder' }
         ],
+        targetGroupsAuswahl: [
+          { role: 'institutions', value: 'bildungstraeger' },
+          { role: 'institutions', value: 'bildungsverwaltungen' }
+        ],
+        targetGroupsFlach: ['bildungstraeger', 'bildungsverwaltungen'],
         sdgs: ['4', '8', '10'],
         primarySdg: '4',
         implementation: { value: 'funding', visibility: 'network' },
@@ -718,6 +832,7 @@
     // Crosswalks und tragen als einzige eine ISCED-Entsprechung.
     bildungsbereiche: BILDUNGSMODELLE[0].options,
     zielgruppenrollen: ZIELGRUPPENROLLEN,
+    zielgruppenEntwurf: ZIELGRUPPEN_ENTWURF,
     sdgs: SDGS,
     verwirklichung: VERWIRKLICHUNG,
     sichtbarkeit: SICHTBARKEIT,

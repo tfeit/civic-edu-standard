@@ -1240,6 +1240,34 @@
           eingabe.value = eintrag[teil.key] || teil.default || '';
           eingabe.addEventListener('change', function () {
             eintrag[teil.key] = eingabe.value;
+            // Haengt ein anderes Unterfeld an diesem, muss der Eintrag neu
+            // gezeichnet werden: seine Auswahl ist jetzt eine andere.
+            if (feld.subfields.some(function (t) { return t.optionsFrom === teil.key; })) {
+              zeichneEintraege(feld, false);
+            }
+            aktualisiere();
+          });
+        } else if (teil.type === 'abhaengigeAuswahl') {
+          /*
+           * Auswahl, die von einem anderen Unterfeld abhaengt — etwa die
+           * Zielgruppe, die zur gewaehlten Rolle passt. Passt der gemerkte
+           * Wert nicht mehr zur Rolle, faellt er heraus statt stillschweigend
+           * stehenzubleiben.
+           */
+          eingabe = el('select', { id: teilId });
+          var bezug = eintrag[teil.optionsFrom] || '';
+          var erlaubt = teil.optionenFuer(bezug);
+          eingabe.appendChild(el('option', { value: '', text: '— bitte wählen —' }));
+          erlaubt.forEach(function (option) {
+            eingabe.appendChild(el('option', { value: option.value, text: option.label }));
+          });
+          if (!erlaubt.some(function (o) { return o.value === eintrag[teil.key]; })) {
+            eintrag[teil.key] = '';
+          }
+          eingabe.value = eintrag[teil.key] || '';
+          eingabe.disabled = !bezug;
+          eingabe.addEventListener('change', function () {
+            eintrag[teil.key] = eingabe.value;
             aktualisiere();
           });
         } else {
@@ -1314,7 +1342,15 @@
     feld.subfields.forEach(function (teil) {
       var wert = (eintrag[teil.key] || '').trim();
       if (!wert) { return; }
-      teile.push(teil.type === 'select' ? beschriftung(teil.options, wert) : wert);
+      if (teil.type === 'select') {
+        teile.push(beschriftung(teil.options, wert));
+      } else if (teil.type === 'abhaengigeAuswahl') {
+        // Die Zusammenfassung ist zum Lesen da, nicht zum Nachschlagen —
+        // hier gehoert die Beschriftung hin, nicht der Schluessel.
+        teile.push(beschriftung(teil.optionenFuer(eintrag[teil.optionsFrom] || ''), wert));
+      } else {
+        teile.push(wert);
+      }
     });
     return teile.length ? ' · ' + teile.join(' · ') : '';
   }
@@ -1486,9 +1522,20 @@
         legende,
         el('p', { class: 'abschnitt-intro', text: block.intro })
       ]);
-      if (block.varianten) { abschnitt.appendChild(variantenWaehler(block)); }
+      /*
+       * Der Variantenwaehler steht unmittelbar vor dem ersten Feld, das zu
+       * einer Variante gehoert — nicht am Blockkopf. In Block D ist das
+       * dasselbe, weil dort alle Felder zur Geografie gehoeren. In Block C
+       * betrifft die Umschaltung nur die Zielgruppen; ein Waehler weit
+       * darueber wuerde so aussehen, als betraefe er den ganzen Block.
+       */
+      var waehlerGesetzt = !block.varianten;
       block.fields.forEach(function (feld) {
         BLOCK_JE_FELD[feld.key] = block;
+        if (!waehlerGesetzt && feld.variante) {
+          abschnitt.appendChild(variantenWaehler(block));
+          waehlerGesetzt = true;
+        }
         var fn = renderer[feld.type];
         if (!fn) { return; }
         abschnitt.appendChild(fn(feld));
@@ -1905,9 +1952,17 @@
       }
       if (leer(wert)) { return; }
 
+      /*
+       * Varianten desselben Feldes schreiben unter denselben Schluessel. Im
+       * Austauschformat soll sichtbar werden, was die Fassungen unterscheidet
+       * — nicht, wie das Feld im Prototyp heisst.
+       */
+      if (feld.alsDatensatz) { wert = feld.alsDatensatz(wert); }
+      if (leer(wert)) { return; }
+
       // Traegt das Feld eine Herkunftsangabe, wird aus dem Wert ein Objekt.
       var hk = feld.provenance ? herkunftJson(herkunft[feld.key]) : null;
-      datensatz[feld.key] = hk ? { value: wert, provenance: hk } : wert;
+      datensatz[feld.jsonKey || feld.key] = hk ? { value: wert, provenance: hk } : wert;
     });
 
     var abgeleitet = leiteAb(datensatz);
@@ -1986,6 +2041,22 @@
         }
         etwas = true;
       }
+    }
+
+    /*
+     * Rollen aus den Zielgruppen ableiten. Nur die rollenlose Fassung braucht
+     * das: Dort wird die Rolle nicht gefragt, steht aber am Begriff und
+     * gehoert ins Austauschformat — sonst ginge die Vergleichbarkeit mit den
+     * anderen Fassungen verloren.
+     */
+    var zielgruppen = datensatz.targetGroups || [];
+    if (zielgruppen.length && zielgruppen.every(function (z) { return !z.role; })) {
+      var rollen = [];
+      zielgruppen.forEach(function (z) {
+        var b = window.EduVocab.begriff('zielgruppen-entwurf', z.value);
+        if (b && b.rolle && rollen.indexOf(b.rolle) === -1) { rollen.push(b.rolle); }
+      });
+      if (rollen.length) { abgeleitet.zielgruppenrollen = rollen; etwas = true; }
     }
 
     return etwas ? abgeleitet : null;
@@ -2210,23 +2281,24 @@
        * gewaehlt war. Zu sehen war dann eine Ueberschrift ohne ein einziges
        * Eingabefeld darunter.
        */
-      if (feld.variante && feld.type !== 'repeatable') {
-        ref.wrapper.hidden = feld.variante !== varianteVon(blockVon(feld))
-          // Fremde Variante: ausblenden, unabhaengig von allem anderen.
-          ? true
-          // Eigene Variante: Ueber die Sichtbarkeit entscheidet weiter die
-          // Bedingung des Feldes. Hat es keine, ist es schlicht sichtbar.
-          : !istSichtbar(feld);
-      }
-
       /*
-       * Wiederholte Felder blenden sich selbst ein und aus — etwa die
-       * Gebietsliste, die von der Reichweite abhaengt. Hier wird deshalb nur
-       * die fremde Variante ausgeblendet, nie etwas eingeblendet.
+       * Zuletzt die Variantenzugehoerigkeit. Drei Faelle, und der dritte ist
+       * der, an dem die frueheren Fassungen gescheitert sind:
+       *
+       *   fremde Variante            -> ausblenden, unabhaengig von allem
+       *   eigene, ohne Bedingung     -> einblenden
+       *   eigene, mit Bedingung      -> das Feld entscheidet selbst
+       *
+       * Der letzte Fall betrifft die Gebietsliste: Sie haengt an der
+       * Reichweite. Wuerde die Variante sie einblenden, staende die
+       * Ueberschrift ohne ein einziges Eingabefeld darunter.
        */
-      if (feld.variante && feld.type === 'repeatable'
-          && feld.variante !== varianteVon(blockVon(feld))) {
-        ref.wrapper.hidden = true;
+      if (feld.variante) {
+        if (feld.variante !== varianteVon(blockVon(feld))) {
+          ref.wrapper.hidden = true;
+        } else if (!feld.visibleWhen) {
+          ref.wrapper.hidden = false;
+        }
       }
     });
 
